@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banco Bar — Simulatore di cocktail</title>
+<meta name="description" content="Banco bar virtuale per imparare a preparare cocktail: 43 ricette verificate, dimostrazione passo-passo, esercitazione guidata e sfida. Per istituti alberghieri.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Banco Bar — Simulatore di cocktail">
+<meta property="og:description" content="43 ricette verificate, tre modalità didattiche e un banco bar virtuale accessibile. Per istituti alberghieri.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317120e'/%3E%3Cpath d='M8 8h16l-7 9v7h4v2H11v-2h4v-7z' fill='%23c9a227'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip-link" href="#contenuto">Salta al contenuto</a>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 6h20l-8.5 11v8h5v2.5H9.5V25h5v-8z" fill="currentColor"/><circle cx="22.5" cy="9.5" r="2.4" fill="#e85d10"/></svg>
+    <div class="brand-text">
+      <span class="brand-name">Banco Bar</span>
+      <span class="brand-sub">Simulatore di cocktail</span>
+    </div>
+  </div>
+  <div class="topbar-controls">
+    <label class="switch">
+      <input type="checkbox" id="toggle-movimento">
+      <span class="switch-track" aria-hidden="true"></span>
+      <span class="switch-label">Movimento ridotto</span>
+    </label>
+    <label class="switch">
+      <input type="checkbox" id="toggle-testo">
+      <span class="switch-track" aria-hidden="true"></span>
+      <span class="switch-label">Testo grande</span>
+    </label>
+  </div>
+</header>
+
+<main id="contenuto">
+
+  <!-- ============ CATALOGO ============ -->
+  <section id="vista-catalogo" class="vista" aria-labelledby="titolo-catalogo">
+    <div class="catalogo-head">
+      <h1 id="titolo-catalogo">Scegli il cocktail da preparare</h1>
+      <p class="lede">Un banco bar virtuale per imparare tecniche e ricette. Guarda la dimostrazione, esercitati con il dosatore, poi mettiti alla prova nella sfida. <strong id="conteggio-ricette"></strong></p>
+    </div>
+
+    <form class="filtri" id="filtri" role="search" aria-label="Filtra le ricette">
+      <div class="filtro filtro-ricerca">
+        <label for="cerca">Cerca</label>
+        <input type="search" id="cerca" name="cerca" placeholder="Nome o ingrediente…" autocomplete="off">
+      </div>
+      <div class="filtro">
+        <label for="filtro-tipologia">Tipologia</label>
+        <select id="filtro-tipologia" name="tipologia">
+          <option value="">Tutte</option>
+        </select>
+      </div>
+      <div class="filtro">
+        <label for="filtro-tecnica">Tecnica</label>
+        <select id="filtro-tecnica" name="tecnica">
+          <option value="">Tutte</option>
+        </select>
+      </div>
+      <fieldset class="filtro filtro-alcol">
+        <legend>Presenza di alcol</legend>
+        <div class="radio-riga">
+          <label><input type="radio" name="alcol" value="" checked> Tutte</label>
+          <label><input type="radio" name="alcol" value="no"> Analcoliche</label>
+          <label><input type="radio" name="alcol" value="tracce"> Tracce d'alcol</label>
+          <label><input type="radio" name="alcol" value="si"> Alcoliche</label>
+        </div>
+      </fieldset>
+      <label class="switch switch-solo-analcoliche">
+        <input type="checkbox" id="solo-analcoliche">
+        <span class="switch-track" aria-hidden="true"></span>
+        <span class="switch-label">Mostra solo analcoliche</span>
+      </label>
+    </form>
+
+    <p class="risultato-info" id="risultato-info" role="status"></p>
+    <ul class="griglia-ricette" id="griglia-ricette"></ul>
+    <p class="vuoto" id="catalogo-vuoto" hidden>Nessuna ricetta corrisponde ai filtri. Prova a togliere un filtro.</p>
+  </section>
+
+  <!-- ============ SCHEDA RICETTA ============ -->
+  <section id="vista-ricetta" class="vista" aria-labelledby="titolo-ricetta" hidden>
+    <button class="btn btn-back" id="back-catalogo" type="button">← Catalogo</button>
+    <div class="scheda-head">
+      <h1 id="titolo-ricetta"></h1>
+      <div class="badge-riga" id="scheda-badge"></div>
+      <p class="fonte-riga" id="scheda-fonte"></p>
+    </div>
+    <div class="scheda-grid">
+      <div class="scheda-dettagli" id="scheda-dettagli"></div>
+      <div class="modalita-scelta">
+        <h2>Come vuoi lavorare?</h2>
+        <button class="btn-modalita" id="avvia-demo" type="button">
+          <span class="btn-modalita-titolo">Dimostrazione</span>
+          <span class="btn-modalita-testo">Il barista virtuale prepara il cocktail passo dopo passo. Puoi mettere in pausa, tornare indietro e rivedere una singola operazione.</span>
+        </button>
+        <button class="btn-modalita" id="avvia-guidata" type="button">
+          <span class="btn-modalita-titolo">Esercitazione guidata</span>
+          <span class="btn-modalita-testo">Prepari tu con dosatore e strumenti. La ricetta resta consultabile e ogni errore riceve una correzione precisa.</span>
+        </button>
+        <button class="btn-modalita" id="avvia-sfida" type="button">
+          <span class="btn-modalita-titolo">Sfida</span>
+          <span class="btn-modalita-testo">Ricevi solo il nome del cocktail e lo prepari a memoria. Alla fine ricevi un riepilogo con gli errori da correggere.</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BANCO DI LAVORO ============ -->
+  <section id="vista-banco" class="vista" aria-labelledby="titolo-banco" hidden>
+    <div class="banco-head">
+      <button class="btn btn-back" id="back-scheda" type="button">← Scheda</button>
+      <div class="banco-titolo">
+        <h1 id="titolo-banco"></h1>
+        <span class="modo-etichetta" id="modo-etichetta"></span>
+      </div>
+      <button class="btn btn-riavvia" id="btn-riavvia" type="button">Ricomincia</button>
+    </div>
+
+    <div class="banco-grid">
+      <div class="banco-scena-col">
+        <div class="scena-wrap">
+          <svg id="scena" viewBox="0 0 800 430" role="img" aria-label="Banco bar: area di preparazione con bicchiere, shaker e mixing glass"></svg>
+        </div>
+
+        <div class="contenitore-tabs" role="group" aria-label="Scegli il contenitore di lavoro" id="contenitore-tabs"></div>
+
+        <div class="banco-strumenti" id="banco-strumenti" role="group" aria-label="Strumenti"></div>
+
+        <div class="scaffale-wrap">
+          <h2 class="scaffale-titolo">Scaffale ingredienti</h2>
+          <div class="scaffale" id="scaffale" role="group" aria-label="Ingredienti disponibili"></div>
+        </div>
+
+        <div class="dosatore" id="dosatore" aria-label="Dosatore virtuale">
+          <div class="dosatore-testa">
+            <span class="dosatore-ing" id="dosatore-ing">Seleziona un ingrediente dallo scaffale</span>
+            <span class="dosatore-valore" id="dosatore-valore"></span>
+          </div>
+          <div class="dosatore-corpo" id="dosatore-corpo" hidden>
+            <svg class="jigger-svg" viewBox="0 0 60 90" aria-hidden="true">
+              <path d="M8 6h44l-14 40v34h-16V46z" fill="none" stroke="#c9a227" stroke-width="2.5"/>
+              <clipPath id="jigger-clip"><path d="M10 8h40l-13 38v32h-14V46z"/></clipPath>
+              <g clip-path="url(#jigger-clip)"><rect id="jigger-liquido" x="6" y="80" width="48" height="0" fill="#c9a227"/></g>
+            </svg>
+            <div class="dosatore-controlli">
+              <label class="dosatore-unita-label" for="dosatore-unita">Unità</label>
+              <select id="dosatore-unita"></select>
+              <div class="dosatore-slider-riga" id="dosatore-slider-riga">
+                <input type="range" id="dosatore-slider" min="0" max="120" step="2.5" value="30" aria-label="Dose in millilitri">
+                <input type="number" id="dosatore-numero" min="0" max="300" step="2.5" value="30" aria-label="Dose numerica">
+              </div>
+              <div class="preset-riga" id="preset-riga" aria-label="Dosi rapide"></div>
+              <label class="switch switch-galleggia" id="galleggia-wrap" hidden>
+                <input type="checkbox" id="dosatore-galleggia">
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="switch-label">Fai galleggiare (layer)</span>
+              </label>
+              <button class="btn btn-versa" id="btn-versa" type="button">Versa</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="operazioni" id="operazioni" role="group" aria-label="Operazioni di preparazione"></div>
+      </div>
+
+      <aside class="banco-pannello">
+        <div class="pannello-demo" id="pannello-demo" hidden>
+          <h2>Dimostrazione</h2>
+          <div class="demo-passo-corrente" id="demo-passo-corrente" aria-live="polite"></div>
+          <div class="demo-controlli">
+            <button class="btn btn-icona" id="demo-prev" type="button" aria-label="Passaggio precedente">←</button>
+            <button class="btn btn-play" id="demo-play" type="button">Pausa</button>
+            <button class="btn btn-icona" id="demo-next" type="button" aria-label="Passaggio successivo">→</button>
+            <button class="btn" id="demo-ripeti" type="button">Rivedi passaggio</button>
+          </div>
+          <ol class="demo-lista" id="demo-lista"></ol>
+        </div>
+
+        <div class="pannello-guidata" id="pannello-guidata" hidden>
+          <h2>Ricetta</h2>
+          <div class="ricetta-consultabile" id="ricetta-consultabile"></div>
+          <div class="obiettivo" id="obiettivo"></div>
+        </div>
+
+        <div class="pannello-sfida" id="pannello-sfida" hidden>
+          <h2>Sfida a memoria</h2>
+          <p class="sfida-intro">Prepara il cocktail senza guardare la ricetta. Quando hai finito, premi <strong>Servi</strong> per ricevere il riepilogo.</p>
+          <button class="btn btn-servi" id="btn-servi" type="button">Servi il cocktail</button>
+        </div>
+
+        <div class="feedback-zona">
+          <h2 class="feedback-titolo">Registro</h2>
+          <div class="feedback-live" id="feedback-live" role="status" aria-live="polite"></div>
+          <ol class="registro" id="registro" reversed></ol>
+        </div>
+      </aside>
+    </div>
+
+    <div class="riepilogo" id="riepilogo" hidden aria-labelledby="riepilogo-titolo">
+      <h2 id="riepilogo-titolo">Riepilogo della sfida</h2>
+      <div class="riepilogo-punteggio" id="riepilogo-punteggio"></div>
+      <div class="riepilogo-sezioni" id="riepilogo-sezioni"></div>
+      <div class="riepilogo-azioni">
+        <button class="btn" id="riepilogo-ricetta" type="button">Rivedi la ricetta</button>
+        <button class="btn btn-versa" id="riepilogo-riprova" type="button">Riprova la sfida</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>App didattica per istituti alberghieri. Le ricette alcoliche sono presentate a scopo educativo: il consumo di alcol è vietato ai minori. Le ricette IBA seguono le schede ufficiali <a href="https://iba-world.com/cocktails/all-cocktails/" rel="noopener">International Bartenders Association</a>; le altre citano la fonte professionale in scheda.</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
