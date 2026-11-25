@@ -5,6 +5,8 @@ Pensata per studenti di istituto alberghiero e per la proiezione in aula durante
 
 Nessun account, nessun backend, nessuna chiave API: solo HTML, CSS, JavaScript e un archivio JSON.
 
+**Demo online:** <https://profpako.github.io/cocktail-creator/>
+
 ## Avvio
 
 Serve un server HTTP statico perché le ricette sono caricate con `fetch` (con `file://` il browser
