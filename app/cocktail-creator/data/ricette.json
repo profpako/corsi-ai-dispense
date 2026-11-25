@@ -1,0 +1,1136 @@
+{
+  "versione": 1,
+  "note": "Archivio ricette separato dalla UI. Modificare qui per correggere o ampliare. Ogni ricetta cita la fonte verificata. Unità: ml, gocce, spruzzo (dash), cucchiaino, pezzi, rametti, foglie, tazza, fetta, colmare, a_piacere, qb. q=null per colmare/a_piacere/qb/spruzzo non quantificati.",
+  "tecniche": {
+    "build": { "nome": "Build (diretto nel bicchiere)", "descrizione": "Ingredienti versati direttamente nel bicchiere di servizio, nell'ordine della ricetta." },
+    "shake": { "nome": "Shake (shaker)", "descrizione": "Ingredienti agitati nello shaker con ghiaccio, poi filtrati nel bicchiere." },
+    "stir": { "nome": "Stir (mixing glass)", "descrizione": "Ingredienti mescolati nel mixing glass con ghiaccio e bar spoon, poi filtrati." },
+    "muddle": { "nome": "Muddle (pestello)", "descrizione": "Ingredienti freschi pestati nel bicchiere o nello shaker per estrarre succhi e oli." },
+    "blend": { "nome": "Blend (frullatore)", "descrizione": "Ingredienti frullati con ghiaccio fino a consistenza liscia e cremosa." },
+    "roll": { "nome": "Roll (travaso)", "descrizione": "Il composto viene travasato avanti e indietro tra i due tin dello shaker: miscela delicata, ideale per succhi densi." },
+    "layer": { "nome": "Layer (strati)", "descrizione": "Ingredienti disposti in strati separati, versando sul dorso del bar spoon per far galleggiare il più leggero." }
+  },
+  "bicchieri": {
+    "highball": { "nome": "Highball (tumbler alto)", "capacita": 350 },
+    "tumbler_alto": { "nome": "Tumbler alto", "capacita": 350 },
+    "old_fashioned": { "nome": "Old fashioned (tumbler basso)", "capacita": 300 },
+    "double_rocks": { "nome": "Double rocks", "capacita": 350 },
+    "coupe": { "nome": "Coppa cocktail", "capacita": 200 },
+    "martini": { "nome": "Coppa Martini", "capacita": 200 },
+    "flute": { "nome": "Flute", "capacita": 180 },
+    "calice_vino": { "nome": "Calice da vino", "capacita": 400 },
+    "hurricane": { "nome": "Hurricane / calice grande", "capacita": 450 },
+    "mug": { "nome": "Mule cup (rame)", "capacita": 350 },
+    "irish": { "nome": "Irish coffee glass", "capacita": 250 },
+    "shot": { "nome": "Shot", "capacita": 60 }
+  },
+  "strumenti": {
+    "jigger": { "nome": "Jigger (dosatore)" },
+    "shaker": { "nome": "Shaker" },
+    "mixing_glass": { "nome": "Mixing glass" },
+    "bar_spoon": { "nome": "Bar spoon" },
+    "strainer": { "nome": "Strainer" },
+    "muddler": { "nome": "Muddler (pestello)" },
+    "blender": { "nome": "Frullatore" }
+  },
+  "ingredienti": {
+    "gin": { "nome": "Gin", "colore": "#dfe8dc", "tipo": "spirito", "alcol": true },
+    "vodka": { "nome": "Vodka", "colore": "#e8eef2", "tipo": "spirito", "alcol": true },
+    "vodka_citron": { "nome": "Vodka citron", "colore": "#e8eec8", "tipo": "spirito", "alcol": true },
+    "rum_bianco": { "nome": "Rum bianco cubano", "colore": "#efe8d4", "tipo": "spirito", "alcol": true },
+    "rum_ambrato": { "nome": "Rum ambrato giamaicano", "colore": "#b06a20", "tipo": "spirito", "alcol": true },
+    "rum_martinica": { "nome": "Rum di melassa Martinica", "colore": "#a86828", "tipo": "spirito", "alcol": true },
+    "goslings": { "nome": "Rum scuro Goslings", "colore": "#4a2810", "tipo": "spirito", "alcol": true },
+    "tequila": { "nome": "Tequila 100% agave", "colore": "#e8dca8", "tipo": "spirito", "alcol": true },
+    "cachaca": { "nome": "Cachaça", "colore": "#efe6c8", "tipo": "spirito", "alcol": true },
+    "bourbon": { "nome": "Bourbon whiskey", "colore": "#a85f18", "tipo": "spirito", "alcol": true },
+    "rye": { "nome": "Rye whiskey", "colore": "#9c5a1a", "tipo": "spirito", "alcol": true },
+    "cognac": { "nome": "Cognac", "colore": "#8f4f16", "tipo": "spirito", "alcol": true },
+    "irish_whiskey": { "nome": "Irish whiskey", "colore": "#b06a20", "tipo": "spirito", "alcol": true },
+    "bitter_campari": { "nome": "Bitter Campari", "colore": "#c8281e", "tipo": "bitter", "alcol": true },
+    "aperol": { "nome": "Aperol", "colore": "#e85d10", "tipo": "bitter", "alcol": true },
+    "vermouth_rosso": { "nome": "Vermouth rosso dolce", "colore": "#7a2e1e", "tipo": "vermouth", "alcol": true },
+    "vermouth_dry": { "nome": "Vermouth dry", "colore": "#e6e0c0", "tipo": "vermouth", "alcol": true },
+    "triple_sec": { "nome": "Triple sec", "colore": "#f0e6c8", "tipo": "liquore", "alcol": true },
+    "cointreau": { "nome": "Cointreau", "colore": "#e8d8a0", "tipo": "liquore", "alcol": true },
+    "orange_curacao": { "nome": "Orange curaçao", "colore": "#d8a030", "tipo": "liquore", "alcol": true },
+    "kahlua": { "nome": "Kahlúa (liquore al caffè)", "colore": "#3a2010", "tipo": "liquore", "alcol": true },
+    "peach_schnapps": { "nome": "Peach schnapps", "colore": "#f0c060", "tipo": "liquore", "alcol": true },
+    "lime_succo": { "nome": "Succo di lime fresco", "colore": "#cfe8a0", "tipo": "succo", "alcol": false },
+    "limone_succo": { "nome": "Succo di limone fresco", "colore": "#f0e878", "tipo": "succo", "alcol": false },
+    "arancia_succo": { "nome": "Succo d'arancia fresco", "colore": "#f5a623", "tipo": "succo", "alcol": false },
+    "ananas_succo": { "nome": "Succo d'ananas", "colore": "#f5d76e", "tipo": "succo", "alcol": false },
+    "mirtillo_succo": { "nome": "Succo di mirtillo rosso (cranberry)", "colore": "#c02848", "tipo": "succo", "alcol": false },
+    "pomodoro_succo": { "nome": "Succo di pomodoro", "colore": "#c83828", "tipo": "succo", "alcol": false },
+    "passion_succo": { "nome": "Succo di passion fruit", "colore": "#f5c842", "tipo": "succo", "alcol": false },
+    "pesca_purea": { "nome": "Purea di pesca bianca", "colore": "#f5b870", "tipo": "succo", "alcol": false },
+    "granatina": { "nome": "Granatina (sciroppo di melograno)", "colore": "#a81830", "tipo": "sciroppo", "alcol": false },
+    "zucchero_sciroppo": { "nome": "Sciroppo di zucchero (1:1)", "colore": "#e8e0d0", "tipo": "sciroppo", "alcol": false },
+    "zucchero_sciroppo_rich": { "nome": "Sciroppo di zucchero ricco (2:1)", "colore": "#d8c8a0", "tipo": "sciroppo", "alcol": false },
+    "miele_sciroppo": { "nome": "Sciroppo di miele", "colore": "#d8a838", "tipo": "sciroppo", "alcol": false },
+    "orgeat": { "nome": "Sciroppo d'orgeat (mandorla)", "colore": "#f0e8d8", "tipo": "sciroppo", "alcol": false },
+    "cola": { "nome": "Cola", "colore": "#4a2810", "tipo": "bibita", "alcol": false },
+    "soda": { "nome": "Soda water", "colore": "#e8f0f5", "tipo": "bibita", "alcol": false },
+    "acqua": { "nome": "Acqua naturale", "colore": "#e8f0f5", "tipo": "bibita", "alcol": false },
+    "ginger_beer": { "nome": "Ginger beer", "colore": "#e8d8a8", "tipo": "bibita", "alcol": false },
+    "ginger_ale": { "nome": "Ginger ale", "colore": "#efe0b8", "tipo": "bibita", "alcol": false },
+    "soda_pompelmo": { "nome": "Soda al pompelmo rosa", "colore": "#f0a0a8", "tipo": "bibita", "alcol": false },
+    "prosecco": { "nome": "Prosecco", "colore": "#f0e8c0", "tipo": "vino", "alcol": true },
+    "champagne": { "nome": "Champagne", "colore": "#f5ecc8", "tipo": "vino", "alcol": true },
+    "espresso": { "nome": "Espresso forte", "colore": "#2a1808", "tipo": "caffe", "alcol": false },
+    "caffe_caldo": { "nome": "Caffè caldo", "colore": "#3a2410", "tipo": "caffe", "alcol": false },
+    "te_freddo": { "nome": "Tè nero freddo", "colore": "#8a5a20", "tipo": "bibita", "alcol": false },
+    "panna": { "nome": "Panna fresca liquida", "colore": "#f8f4e8", "tipo": "latticino", "alcol": false },
+    "latte_cocco": { "nome": "Latte di cocco", "colore": "#f5f0e0", "tipo": "latticino", "alcol": false },
+    "crema_cocco": { "nome": "Crema di cocco", "colore": "#f8f2e0", "tipo": "latticino", "alcol": false },
+    "crodino": { "nome": "Crodino Biondo", "colore": "#e87820", "tipo": "bibita", "alcol": false },
+    "uovo_albume": { "nome": "Albume d'uovo", "colore": "#f5f0e0", "tipo": "altro", "alcol": false },
+    "uovo_tuorlo": { "nome": "Tuorlo d'uovo", "colore": "#f0c848", "tipo": "altro", "alcol": false },
+    "menta": { "nome": "Menta fresca", "colore": "#3a8a3a", "tipo": "erba", "alcol": false },
+    "basilico": { "nome": "Basilico italiano", "colore": "#4a9a3a", "tipo": "erba", "alcol": false },
+    "lime_spicchi": { "nome": "Lime a spicchi", "colore": "#8ac850", "tipo": "frutta", "alcol": false },
+    "ananas_congelato": { "nome": "Ananas congelato a pezzi", "colore": "#f5d76e", "tipo": "frutta", "alcol": false },
+    "zucchero_semolato": { "nome": "Zucchero bianco semolato", "colore": "#f5f0e8", "tipo": "altro", "alcol": false },
+    "zucchero_canna": { "nome": "Zucchero di canna", "colore": "#d8c0a0", "tipo": "altro", "alcol": false },
+    "zucchero_cubetti": { "nome": "Zolletta di zucchero", "colore": "#f5f0e8", "tipo": "altro", "alcol": false },
+    "angostura": { "nome": "Angostura aromatic bitters", "colore": "#6a2818", "tipo": "bitter", "alcol": true },
+    "worcestershire": { "nome": "Salsa Worcestershire", "colore": "#4a2818", "tipo": "spezia", "alcol": false },
+    "tabasco": { "nome": "Salsa piccante (Tabasco)", "colore": "#c83818", "tipo": "spezia", "alcol": false },
+    "rafano": { "nome": "Salsa di rafano", "colore": "#f0e8d8", "tipo": "spezia", "alcol": false },
+    "sale": { "nome": "Sale", "colore": "#f5f5f5", "tipo": "spezia", "alcol": false },
+    "sale_sedano": { "nome": "Sale al sedano", "colore": "#e8e8d8", "tipo": "spezia", "alcol": false },
+    "pepe": { "nome": "Pepe nero", "colore": "#3a3a3a", "tipo": "spezia", "alcol": false },
+    "arancia_fetta": { "nome": "Fetta d'arancia", "colore": "#f5a623", "tipo": "guarnizione", "alcol": false },
+    "arancia_spicchio": { "nome": "Spicchio d'arancia", "colore": "#f5a623", "tipo": "guarnizione", "alcol": false },
+    "arancia_zest": { "nome": "Zest d'arancia", "colore": "#f5a623", "tipo": "guarnizione", "alcol": false },
+    "limone_fetta": { "nome": "Fetta di limone", "colore": "#f0e878", "tipo": "guarnizione", "alcol": false },
+    "limone_zest": { "nome": "Zest di limone", "colore": "#f0e878", "tipo": "guarnizione", "alcol": false },
+    "lime_fetta": { "nome": "Fetta di lime", "colore": "#8ac850", "tipo": "guarnizione", "alcol": false },
+    "lime_spicchio": { "nome": "Spicchio di lime", "colore": "#8ac850", "tipo": "guarnizione", "alcol": false },
+    "lime_zest": { "nome": "Zest di lime", "colore": "#8ac850", "tipo": "guarnizione", "alcol": false },
+    "ciliegia": { "nome": "Ciliegia maraschino", "colore": "#a81830", "tipo": "guarnizione", "alcol": false },
+    "oliva": { "nome": "Oliva verde", "colore": "#8a9a3a", "tipo": "guarnizione", "alcol": false },
+    "sedano": { "nome": "Gambo di sedano", "colore": "#a8c878", "tipo": "guarnizione", "alcol": false },
+    "ananas_fetta": { "nome": "Fetta d'ananas", "colore": "#f5d76e", "tipo": "guarnizione", "alcol": false },
+    "caffe_chicchi": { "nome": "Chicchi di caffè", "colore": "#3a2410", "tipo": "guarnizione", "alcol": false },
+    "menta_rametto": { "nome": "Rametto di menta", "colore": "#3a8a3a", "tipo": "guarnizione", "alcol": false }
+  },
+  "ricette": [
+    {
+      "id": "negroni", "nome": "Negroni", "categoria": "IBA", "alcol": "si", "tipologia": "aperitivo", "tecnica": "build",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "gin", "q": 30, "unita": "ml" },
+        { "id": "bitter_campari", "q": 30, "unita": "ml" },
+        { "id": "vermouth_rosso", "q": 30, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Mezza fetta d'arancia", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'old fashioned di cubetti.", "perche": "Il bicchiere freddo e pieno di ghiaccio mantiene il drink freddo senza annacquarlo troppo in fretta." },
+        { "tipo": "versa", "ing": "gin", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di gin." },
+        { "tipo": "versa", "ing": "bitter_campari", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di bitter Campari." },
+        { "tipo": "versa", "ing": "vermouth_rosso", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di vermouth rosso dolce." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente con il bar spoon.", "perche": "Un cocktail di soli spiriti si mescola, non si shakera: raffredda e diluisce restando limpido." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con mezza fetta d'arancia." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/negroni/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "Tre parti uguali: 30/30/30."
+    },
+    {
+      "id": "americano", "nome": "Americano", "categoria": "IBA", "alcol": "si", "tipologia": "aperitivo", "tecnica": "build",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "bitter_campari", "q": 30, "unita": "ml" },
+        { "id": "vermouth_rosso", "q": 30, "unita": "ml" },
+        { "id": "soda", "q": null, "unita": "spruzzo", "nota": "un spruzzo (splash)" }
+      ],
+      "guarnizione": { "testo": "Mezza fetta d'arancia e zest di limone", "elementi": ["arancia_fetta", "limone_zest"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'old fashioned di cubetti." },
+        { "tipo": "versa", "ing": "bitter_campari", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di bitter Campari." },
+        { "tipo": "versa", "ing": "vermouth_rosso", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di vermouth rosso." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "spruzzo", "dove": "bicchiere", "testo": "Aggiungi un spruzzo di soda water." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente.", "perche": "Basta poco: la soda va incorporata senza perdere le bollicine." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con mezza fetta d'arancia." },
+        { "tipo": "guarnisci", "ing": "limone_zest", "testo": "Aggiungi uno zest di limone." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/americano/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "mojito", "nome": "Mojito", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "muddle",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "muddler", "bar_spoon"],
+      "ingredienti": [
+        { "id": "rum_bianco", "q": 45, "unita": "ml" },
+        { "id": "lime_succo", "q": 20, "unita": "ml" },
+        { "id": "menta", "q": 6, "unita": "rametti" },
+        { "id": "zucchero_semolato", "q": 2, "unita": "cucchiaino", "nota": "zucchero di canna bianco" },
+        { "id": "soda", "q": null, "unita": "colmare" }
+      ],
+      "guarnizione": { "testo": "Rametto di menta e fetta di lime", "elementi": ["menta_rametto", "lime_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "lime_succo", "q": 20, "unita": "ml", "dove": "bicchiere", "testo": "Versa 20 ml di succo di lime nel bicchiere." },
+        { "tipo": "versa", "ing": "zucchero_semolato", "q": 2, "unita": "cucchiaino", "dove": "bicchiere", "testo": "Aggiungi 2 cucchiaini di zucchero di canna bianco." },
+        { "tipo": "versa", "ing": "menta", "q": 6, "unita": "rametti", "dove": "bicchiere", "testo": "Metti 6 rametti di menta nel bicchiere." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta delicatamente menta, zucchero e lime.", "perche": "Premi leggeri: la menta deve rilasciare gli oli profumati, non le parti amare delle nervature." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "spruzzo", "dove": "bicchiere", "testo": "Aggiungi un spruzzo di soda." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "versa", "ing": "rum_bianco", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di rum bianco cubano." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con soda water." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente per incorporare tutto.", "perche": "Solleva il composto dal fondo: lime e menta devono distribuirsi nel drink." },
+        { "tipo": "guarnisci", "ing": "menta_rametto", "testo": "Guarnisci con un rametto di menta." },
+        { "tipo": "guarnisci", "ing": "lime_fetta", "testo": "Aggiungi una fetta di lime." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/mojito/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La menta si pesta prima del ghiaccio: pestare sul ghiaccio rompe le foglie in modo irregolare."
+    },
+    {
+      "id": "daiquiri", "nome": "Daiquiri", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "shake",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer", "bar_spoon"],
+      "ingredienti": [
+        { "id": "rum_bianco", "q": 60, "unita": "ml" },
+        { "id": "lime_succo", "q": 20, "unita": "ml" },
+        { "id": "zucchero_semolato", "q": 2, "unita": "cucchiaino", "nota": "superfine, 2 bar spoon" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "rum_bianco", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di rum bianco nello shaker." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 20, "unita": "ml", "dove": "shaker", "testo": "Versa 20 ml di succo di lime." },
+        { "tipo": "versa", "ing": "zucchero_semolato", "q": 2, "unita": "cucchiaino", "dove": "shaker", "testo": "Aggiungi 2 cucchiaini da bar di zucchero superfine." },
+        { "tipo": "mescola", "dove": "shaker", "rilevante": true, "testo": "Mescola bene per sciogliere lo zucchero.", "perche": "Lo zucchero va sciolto prima del ghiaccio: a freddo non si scioglie più." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera con energia.", "perche": "Lo shake raffredda, diluisce e aerа il drink: un sour vuole texture viva." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa cocktail raffreddata.", "perche": "Lo strainer trattiene il ghiaccio: il daiquiri si serve liscio, senza ghiaccio." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/daiquiri/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "margarita", "nome": "Margarita", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "shake",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "tequila", "q": 50, "unita": "ml" },
+        { "id": "triple_sec", "q": 20, "unita": "ml" },
+        { "id": "lime_succo", "q": 15, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Mezzo bordo di sale (opzionale)", "elementi": ["sale"] },
+      "passi": [
+        { "tipo": "versa", "ing": "tequila", "q": 50, "unita": "ml", "dove": "shaker", "testo": "Versa 50 ml di tequila 100% agave nello shaker." },
+        { "tipo": "versa", "ing": "triple_sec", "q": 20, "unita": "ml", "dove": "shaker", "testo": "Versa 20 ml di triple sec." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di lime fresco." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera con energia." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa raffreddata." },
+        { "tipo": "guarnisci", "ing": "sale", "testo": "Completa con mezzo bordo di sale (opzionale).", "perche": "Il sale su metà bordo lascia allo studente la scelta: sip salato o sip dolce." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/margarita/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "espresso-martini", "nome": "Espresso Martini", "categoria": "IBA", "alcol": "si", "tipologia": "caffetteria", "tecnica": "shake",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "vodka", "q": 50, "unita": "ml" },
+        { "id": "kahlua", "q": 30, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 10, "unita": "ml" },
+        { "id": "espresso", "q": 1, "unita": "tazza", "nota": "1 espresso forte" }
+      ],
+      "guarnizione": { "testo": "3 chicchi di caffè", "elementi": ["caffe_chicchi"] },
+      "passi": [
+        { "tipo": "versa", "ing": "vodka", "q": 50, "unita": "ml", "dove": "shaker", "testo": "Versa 50 ml di vodka nello shaker." },
+        { "tipo": "versa", "ing": "kahlua", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di Kahlúa." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 10, "unita": "ml", "dove": "shaker", "testo": "Versa 10 ml di sciroppo di zucchero." },
+        { "tipo": "versa", "ing": "espresso", "q": 1, "unita": "tazza", "dove": "shaker", "testo": "Aggiungi 1 espresso forte." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera molto energicamente.", "perche": "Lo shake vigoroso monta la crema del caffè: è la firma del drink." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa raffreddata." },
+        { "tipo": "guarnisci", "ing": "caffe_chicchi", "testo": "Adagia 3 chicchi di caffè sulla crema." }
+      ],
+      "fonte": { "nome": "IBA — New Era Drinks", "url": "https://iba-world.com/iba-cocktail/espresso-martini/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "whiskey-sour", "nome": "Whiskey Sour", "categoria": "IBA", "alcol": "si", "tipologia": "sour", "tecnica": "shake",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "bourbon", "q": 45, "unita": "ml" },
+        { "id": "limone_succo", "q": 25, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 20, "unita": "ml" },
+        { "id": "uovo_albume", "q": null, "unita": "gocce", "nota": "qualche goccia, opzionale" }
+      ],
+      "guarnizione": { "testo": "Mezza fetta d'arancia e ciliegia maraschino (zest d'arancia opzionale)", "elementi": ["arancia_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "bourbon", "q": 45, "unita": "ml", "dove": "shaker", "testo": "Versa 45 ml di bourbon nello shaker." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 25, "unita": "ml", "dove": "shaker", "testo": "Versa 25 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 20, "unita": "ml", "dove": "shaker", "testo": "Versa 20 ml di sciroppo di zucchero." },
+        { "tipo": "versa", "ing": "uovo_albume", "q": null, "unita": "gocce", "dove": "shaker", "testo": "Aggiungi qualche goccia di albume (opzionale)." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Riempi lo shaker di cubetti." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera bene; con l'albume, shakera più forte.", "perche": "L'albume monta solo con agitazione intensa: sviluppa la schiuma setosa." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel bicchiere (cobbler, o old fashioned con ghiaccio se 'on the rocks')." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con mezza fetta d'arancia." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi una ciliegia maraschino." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/whiskey-sour/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La scheda IBA indica cobbler glass; qui old fashioned, come nella versione on the rocks della scheda."
+    },
+    {
+      "id": "dry-martini", "nome": "Dry Martini", "categoria": "IBA", "alcol": "si", "tipologia": "aperitivo", "tecnica": "stir",
+      "bicchiere": "martini", "ghiaccio": { "tipo": "cubetti", "dove": "mixing" },
+      "strumenti": ["jigger", "mixing_glass", "bar_spoon", "strainer"],
+      "ingredienti": [
+        { "id": "gin", "q": 60, "unita": "ml" },
+        { "id": "vermouth_dry", "q": 10, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Oli spremuti dallo zest di limone, oppure oliva verde su richiesta", "elementi": ["limone_zest"] },
+      "passi": [
+        { "tipo": "versa", "ing": "gin", "q": 60, "unita": "ml", "dove": "mixing", "testo": "Versa 60 ml di gin nel mixing glass." },
+        { "tipo": "versa", "ing": "vermouth_dry", "q": 10, "unita": "ml", "dove": "mixing", "testo": "Versa 10 ml di vermouth dry." },
+        { "tipo": "ghiaccio", "dove": "mixing", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nel mixing glass." },
+        { "tipo": "mescola", "dove": "mixing", "rilevante": true, "testo": "Mescola bene con il bar spoon.", "perche": "Soli spiriti: lo stir raffredda e diluisce senza aerare. Il martini deve essere limpido e setoso, mai torbido." },
+        { "tipo": "filtra", "da": "mixing", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa Martini raffreddata." },
+        { "tipo": "guarnisci", "ing": "limone_zest", "testo": "Spremi gli oli dello zest di limone sulla superficie (o oliva verde su richiesta)." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/dry-martini/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "manhattan", "nome": "Manhattan", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "stir",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "mixing" },
+      "strumenti": ["jigger", "mixing_glass", "bar_spoon", "strainer"],
+      "ingredienti": [
+        { "id": "rye", "q": 50, "unita": "ml" },
+        { "id": "vermouth_rosso", "q": 20, "unita": "ml" },
+        { "id": "angostura", "q": 1, "unita": "spruzzo" }
+      ],
+      "guarnizione": { "testo": "Ciliegia da cocktail", "elementi": ["ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "rye", "q": 50, "unita": "ml", "dove": "mixing", "testo": "Versa 50 ml di rye whiskey nel mixing glass." },
+        { "tipo": "versa", "ing": "vermouth_rosso", "q": 20, "unita": "ml", "dove": "mixing", "testo": "Versa 20 ml di vermouth rosso." },
+        { "tipo": "versa", "ing": "angostura", "q": 1, "unita": "spruzzo", "dove": "mixing", "testo": "Aggiungi 1 spruzzo (dash) di Angostura." },
+        { "tipo": "ghiaccio", "dove": "mixing", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nel mixing glass." },
+        { "tipo": "mescola", "dove": "mixing", "rilevante": true, "testo": "Mescola bene con il bar spoon.", "perche": "Stir, non shake: il Manhattan resta limpido e vellutato." },
+        { "tipo": "filtra", "da": "mixing", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa raffreddata." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Guarnisci con una ciliegia da cocktail." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/manhattan/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "old-fashioned", "nome": "Old Fashioned", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "build",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "muddler", "bar_spoon"],
+      "ingredienti": [
+        { "id": "bourbon", "q": 45, "unita": "ml", "nota": "bourbon o rye" },
+        { "id": "zucchero_cubetti", "q": 1, "unita": "pezzi" },
+        { "id": "angostura", "q": null, "unita": "spruzzo", "nota": "qualche spruzzo" },
+        { "id": "acqua", "q": null, "unita": "spruzzo", "nota": "qualche spruzzo" }
+      ],
+      "guarnizione": { "testo": "Fetta o zest d'arancia e ciliegia da cocktail", "elementi": ["arancia_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "zucchero_cubetti", "q": 1, "unita": "pezzi", "dove": "bicchiere", "testo": "Metti una zolletta di zucchero nell'old fashioned." },
+        { "tipo": "versa", "ing": "angostura", "q": null, "unita": "spruzzo", "dove": "bicchiere", "rilevante": true, "testo": "Imbevi la zolletta con qualche spruzzo di Angostura.", "perche": "Il bitter va sulla zolletta prima di scioglierla: si distribuisce nello sciroppo." },
+        { "tipo": "versa", "ing": "acqua", "q": null, "unita": "spruzzo", "dove": "bicchiere", "testo": "Aggiungi qualche spruzzo d'acqua." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta fino a sciogliere la zolletta.", "perche": "Zucchero sciolto = niente granelli sul fondo. Si forma uno sciroppo con il bitter." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "versa", "ing": "bourbon", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di bourbon (o rye)." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con fetta o zest d'arancia." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi una ciliegia da cocktail." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/old-fashioned/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "spritz", "nome": "Spritz Veneziano", "categoria": "IBA", "alcol": "si", "tipologia": "aperitivo", "tecnica": "build",
+      "bicchiere": "calice_vino", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "prosecco", "q": 90, "unita": "ml" },
+        { "id": "aperol", "q": 60, "unita": "ml" },
+        { "id": "soda", "q": null, "unita": "spruzzo", "nota": "un spruzzo" }
+      ],
+      "guarnizione": { "testo": "Fetta d'arancia", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il calice da vino di cubetti." },
+        { "tipo": "versa", "ing": "prosecco", "q": 90, "unita": "ml", "dove": "bicchiere", "testo": "Versa 90 ml di Prosecco." },
+        { "tipo": "versa", "ing": "aperol", "q": 60, "unita": "ml", "dove": "bicchiere", "testo": "Versa 60 ml di Aperol." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "spruzzo", "dove": "bicchiere", "testo": "Aggiungi un spruzzo di soda." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente.", "perche": "Un giro leggero: bollicine intatte, colore uniforme." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con una fetta d'arancia." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/spritz/", "editore": "International Bartenders Association" },
+      "variante": "La scheda IBA ammette versioni con Campari, Cynar o Select al posto dell'Aperol.",
+      "note": null
+    },
+    {
+      "id": "bellini", "nome": "Bellini", "categoria": "IBA", "alcol": "si", "tipologia": "fizz", "tecnica": "stir",
+      "bicchiere": "flute", "ghiaccio": { "tipo": "cubetti", "dove": "mixing" },
+      "strumenti": ["jigger", "mixing_glass", "bar_spoon"],
+      "ingredienti": [
+        { "id": "prosecco", "q": 100, "unita": "ml" },
+        { "id": "pesca_purea", "q": 50, "unita": "ml", "nota": "pesca bianca" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "pesca_purea", "q": 50, "unita": "ml", "dove": "mixing", "testo": "Versa 50 ml di purea di pesca bianca nel mixing glass." },
+        { "tipo": "ghiaccio", "dove": "mixing", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nel mixing glass." },
+        { "tipo": "versa", "ing": "prosecco", "q": 100, "unita": "ml", "dove": "mixing", "testo": "Aggiungi 100 ml di Prosecco." },
+        { "tipo": "mescola", "dove": "mixing", "rilevante": true, "testo": "Mescola delicatamente.", "perche": "La purea è densa: va incorporata piano, senza rompere le bollicine." },
+        { "tipo": "travasa", "da": "mixing", "verso": "bicchiere", "testo": "Versa nel flute raffreddato.", "perche": "Il Bellini IBA si prepara nel mixing glass e si versa nel flute: niente strainer, la purea resta nel drink." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/bellini/", "editore": "International Bartenders Association" },
+      "variante": "Varianti IBA: Puccini (succo di mandarino), Rossini (purea di fragola), Tintoretto (succo di melograno).",
+      "note": "Molti bar lo preparano direttamente nel flute; qui si segue il metodo della scheda IBA (mixing glass)."
+    },
+    {
+      "id": "mimosa", "nome": "Mimosa", "categoria": "IBA", "alcol": "si", "tipologia": "fizz", "tecnica": "build",
+      "bicchiere": "flute", "ghiaccio": { "tipo": "nessuno", "dove": null },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "arancia_succo", "q": 75, "unita": "ml" },
+        { "id": "prosecco", "q": 75, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Zest d'arancia (opzionale)", "elementi": ["arancia_zest"] },
+      "passi": [
+        { "tipo": "versa", "ing": "arancia_succo", "q": 75, "unita": "ml", "dove": "bicchiere", "testo": "Versa 75 ml di succo d'arancia nel flute." },
+        { "tipo": "versa", "ing": "prosecco", "q": 75, "unita": "ml", "dove": "bicchiere", "testo": "Versa delicatamente 75 ml di Prosecco.", "perche": "Versare piano limita la schiuma e preserva il perlage." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." },
+        { "tipo": "guarnisci", "ing": "arancia_zest", "testo": "Guarnisci con zest d'arancia (opzionale)." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/mimosa/", "editore": "International Bartenders Association" },
+      "variante": "Noto anche come Buck's Fizz.",
+      "note": null
+    },
+    {
+      "id": "cuba-libre", "nome": "Cuba Libre", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger"],
+      "ingredienti": [
+        { "id": "rum_bianco", "q": 50, "unita": "ml" },
+        { "id": "cola", "q": 120, "unita": "ml" },
+        { "id": "lime_succo", "q": 10, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Spicchio di lime", "elementi": ["lime_spicchio"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "rum_bianco", "q": 50, "unita": "ml", "dove": "bicchiere", "testo": "Versa 50 ml di rum bianco." },
+        { "tipo": "versa", "ing": "cola", "q": 120, "unita": "ml", "dove": "bicchiere", "testo": "Versa 120 ml di cola." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 10, "unita": "ml", "dove": "bicchiere", "testo": "Versa 10 ml di succo di lime fresco." },
+        { "tipo": "guarnisci", "ing": "lime_spicchio", "testo": "Guarnisci con uno spicchio di lime." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/cuba-libre/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "Il lime è ciò che distingue un Cuba Libre da un rum e cola."
+    },
+    {
+      "id": "moscow-mule", "nome": "Moscow Mule", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "mug", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere", "nota": "La scheda IBA non specifica il ghiaccio; il servizio classico è con cubetti." },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "vodka", "q": 45, "unita": "ml" },
+        { "id": "ginger_beer", "q": 120, "unita": "ml" },
+        { "id": "lime_succo", "q": 10, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Fetta di lime", "elementi": ["lime_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi la mule cup di cubetti." },
+        { "tipo": "versa", "ing": "vodka", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di vodka." },
+        { "tipo": "versa", "ing": "ginger_beer", "q": 120, "unita": "ml", "dove": "bicchiere", "testo": "Versa 120 ml di ginger beer." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 10, "unita": "ml", "dove": "bicchiere", "testo": "Aggiungi 10 ml di succo di lime." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente per incorporare." },
+        { "tipo": "guarnisci", "ing": "lime_fetta", "testo": "Guarnisci con una fetta di lime." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/moscow-mule/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La scheda IBA indica vodka Smirnoff; qui vodka generica."
+    },
+    {
+      "id": "long-island-iced-tea", "nome": "Long Island Iced Tea", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "vodka", "q": 15, "unita": "ml" },
+        { "id": "tequila", "q": 15, "unita": "ml" },
+        { "id": "rum_bianco", "q": 15, "unita": "ml" },
+        { "id": "gin", "q": 15, "unita": "ml" },
+        { "id": "cointreau", "q": 15, "unita": "ml" },
+        { "id": "limone_succo", "q": 25, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 30, "unita": "ml" },
+        { "id": "cola", "q": null, "unita": "colmare", "nota": "top with cola" }
+      ],
+      "guarnizione": { "testo": "Fetta di limone (opzionale)", "elementi": ["limone_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "vodka", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di vodka." },
+        { "tipo": "versa", "ing": "tequila", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di tequila." },
+        { "tipo": "versa", "ing": "rum_bianco", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di rum bianco." },
+        { "tipo": "versa", "ing": "gin", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di gin." },
+        { "tipo": "versa", "ing": "cointreau", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di Cointreau." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 25, "unita": "ml", "dove": "bicchiere", "testo": "Versa 25 ml di succo di limone." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di sciroppo di zucchero." },
+        { "tipo": "versa", "ing": "cola", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con cola." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con fetta di limone (opzionale)." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/long-island-iced-tea/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La scheda IBA usa il build diretto nel bicchiere; molte scuole shakerano gli ingredienti base. Qui si segue IBA."
+    },
+    {
+      "id": "pina-colada", "nome": "Piña Colada", "categoria": "IBA", "alcol": "si", "tipologia": "tropical", "tecnica": "blend",
+      "bicchiere": "hurricane", "ghiaccio": { "tipo": "cubetti", "dove": "blender" },
+      "strumenti": ["jigger", "blender"],
+      "ingredienti": [
+        { "id": "rum_bianco", "q": 50, "unita": "ml" },
+        { "id": "crema_cocco", "q": 30, "unita": "ml" },
+        { "id": "ananas_succo", "q": 50, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Fetta d'ananas e ciliegia da cocktail", "elementi": ["ananas_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "rum_bianco", "q": 50, "unita": "ml", "dove": "blender", "testo": "Versa 50 ml di rum bianco nel frullatore." },
+        { "tipo": "versa", "ing": "crema_cocco", "q": 30, "unita": "ml", "dove": "blender", "testo": "Aggiungi 30 ml di crema di cocco." },
+        { "tipo": "versa", "ing": "ananas_succo", "q": 50, "unita": "ml", "dove": "blender", "testo": "Versa 50 ml di succo d'ananas fresco." },
+        { "tipo": "ghiaccio", "dove": "blender", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nel frullatore." },
+        { "tipo": "frulla", "dove": "blender", "rilevante": true, "testo": "Frulla fino a consistenza liscia e cremosa.", "perche": "Il blend emulsiona la crema di cocco e trita il ghiaccio: texture da frozen, non da shaker." },
+        { "tipo": "travasa", "da": "blender", "verso": "bicchiere", "testo": "Versa nel calice grande e servi con cannucce." },
+        { "tipo": "guarnisci", "ing": "ananas_fetta", "testo": "Guarnisci con una fetta d'ananas." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi una ciliegia da cocktail." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/pina-colada/", "editore": "International Bartenders Association" },
+      "variante": "La scheda nota che storicamente si aggiungevano poche gocce di lime a piacere; 4 fette d'ananas fresco possono sostituire il succo.",
+      "note": null
+    },
+    {
+      "id": "tequila-sunrise", "nome": "Tequila Sunrise", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger"],
+      "ingredienti": [
+        { "id": "tequila", "q": 45, "unita": "ml" },
+        { "id": "arancia_succo", "q": 90, "unita": "ml" },
+        { "id": "granatina", "q": 15, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Mezza fetta d'arancia o zest", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "tequila", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di tequila." },
+        { "tipo": "versa", "ing": "arancia_succo", "q": 90, "unita": "ml", "dove": "bicchiere", "testo": "Versa 90 ml di succo d'arancia fresco." },
+        { "tipo": "versa", "ing": "granatina", "q": 15, "unita": "ml", "dove": "bicchiere", "rilevante": true, "testo": "Versa 15 ml di granatina lentamente: non mescolare.", "perche": "La granatina è densa e scende sul fondo: crea la sfumatura 'alba'. Mescolare la rovinerebbe." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con mezza fetta d'arancia o zest." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/tequila-sunrise/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "mai-tai", "nome": "Mai Tai", "categoria": "IBA", "alcol": "si", "tipologia": "tropical", "tecnica": "shake",
+      "bicchiere": "double_rocks", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "rum_ambrato", "q": 30, "unita": "ml" },
+        { "id": "rum_martinica", "q": 30, "unita": "ml" },
+        { "id": "orange_curacao", "q": 15, "unita": "ml" },
+        { "id": "orgeat", "q": 15, "unita": "ml" },
+        { "id": "lime_succo", "q": 30, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 7.5, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Lancia d'ananas, foglie di menta e zest di lime", "elementi": ["ananas_fetta", "menta_rametto", "lime_zest"] },
+      "passi": [
+        { "tipo": "versa", "ing": "rum_ambrato", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di rum ambrato giamaicano nello shaker." },
+        { "tipo": "versa", "ing": "rum_martinica", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di rum di melassa Martinica." },
+        { "tipo": "versa", "ing": "orange_curacao", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di orange curaçao." },
+        { "tipo": "versa", "ing": "orgeat", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di sciroppo d'orgeat." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di succo di lime fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 7.5, "unita": "ml", "dove": "shaker", "testo": "Versa 7,5 ml di sciroppo di zucchero." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera con energia." },
+        { "tipo": "travasa", "da": "shaker", "verso": "bicchiere", "testo": "Versa nel double rocks (o highball).", "perche": "La scheda IBA dice 'pour': il Mai Tai si versa con il suo ghiaccio, non si filtra liscio." },
+        { "tipo": "guarnisci", "ing": "ananas_fetta", "testo": "Guarnisci con lancia d'ananas." },
+        { "tipo": "guarnisci", "ing": "menta_rametto", "testo": "Aggiungi foglie di menta." },
+        { "tipo": "guarnisci", "ing": "lime_zest", "testo": "Completa con zest di lime." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/mai-tai/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La scheda precisa: il rum Martinica di Trader Vic era un rum di melassa 'rummy', non un agricole."
+    },
+    {
+      "id": "cosmopolitan", "nome": "Cosmopolitan", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "shake",
+      "bicchiere": "martini", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "vodka_citron", "q": 40, "unita": "ml" },
+        { "id": "cointreau", "q": 15, "unita": "ml" },
+        { "id": "lime_succo", "q": 15, "unita": "ml" },
+        { "id": "mirtillo_succo", "q": 30, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Zest di limone", "elementi": ["limone_zest"] },
+      "passi": [
+        { "tipo": "versa", "ing": "vodka_citron", "q": 40, "unita": "ml", "dove": "shaker", "testo": "Versa 40 ml di vodka citron nello shaker." },
+        { "tipo": "versa", "ing": "cointreau", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di Cointreau." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di lime fresco." },
+        { "tipo": "versa", "ing": "mirtillo_succo", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di succo di mirtillo rosso." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Riempi lo shaker di cubetti." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera bene." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa cocktail grande raffreddata." },
+        { "tipo": "guarnisci", "ing": "limone_zest", "testo": "Guarnisci con zest di limone." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/cosmopolitan/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "caipirinha", "nome": "Caipirinha", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "muddle",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "tritato", "dove": "bicchiere" },
+      "strumenti": ["jigger", "muddler", "bar_spoon"],
+      "ingredienti": [
+        { "id": "cachaca", "q": 60, "unita": "ml" },
+        { "id": "lime_spicchi", "q": 1, "unita": "pezzi", "nota": "1 lime tagliato a spicchi piccoli" },
+        { "id": "zucchero_semolato", "q": 4, "unita": "cucchiaino", "nota": "zucchero di canna bianco" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "lime_spicchi", "q": 1, "unita": "pezzi", "dove": "bicchiere", "testo": "Metti nel bicchiere 1 lime tagliato a spicchi piccoli." },
+        { "tipo": "versa", "ing": "zucchero_semolato", "q": 4, "unita": "cucchiaino", "dove": "bicchiere", "testo": "Aggiungi 4 cucchiaini di zucchero di canna bianco." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta delicatamente lime e zucchero.", "perche": "Estrai il succo e gli oli della buccia senza sprigionare l'amaro dell'albedo." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "tritato", "testo": "Riempi il bicchiere di ghiaccio tritato.", "perche": "Il cracked ice raffredda in fretta e diluisce il giusto: la caipirinha vuole ghiaccio tritato, non cubetti." },
+        { "tipo": "versa", "ing": "cachaca", "q": 60, "unita": "ml", "dove": "bicchiere", "testo": "Versa 60 ml di cachaça." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente per incorporare." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/caipirinha/", "editore": "International Bartenders Association" },
+      "variante": "Varianti IBA: Caipiroska (vodka), Caipirissima (rum), Caipirão (Licor Beirão).",
+      "note": null
+    },
+    {
+      "id": "bloody-mary", "nome": "Bloody Mary", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "stir",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "cubetti", "dove": "mixing" },
+      "strumenti": ["jigger", "mixing_glass", "bar_spoon"],
+      "ingredienti": [
+        { "id": "vodka", "q": 45, "unita": "ml" },
+        { "id": "pomodoro_succo", "q": 90, "unita": "ml" },
+        { "id": "limone_succo", "q": 15, "unita": "ml" },
+        { "id": "worcestershire", "q": 2, "unita": "spruzzo" },
+        { "id": "tabasco", "q": null, "unita": "a_piacere" },
+        { "id": "sale_sedano", "q": null, "unita": "a_piacere" },
+        { "id": "pepe", "q": null, "unita": "a_piacere" }
+      ],
+      "guarnizione": { "testo": "Gambo di sedano, spicchio di limone (opzionale)", "elementi": ["sedano", "limone_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "vodka", "q": 45, "unita": "ml", "dove": "mixing", "testo": "Versa 45 ml di vodka nel mixing glass." },
+        { "tipo": "versa", "ing": "pomodoro_succo", "q": 90, "unita": "ml", "dove": "mixing", "testo": "Versa 90 ml di succo di pomodoro." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 15, "unita": "ml", "dove": "mixing", "testo": "Versa 15 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "worcestershire", "q": 2, "unita": "spruzzo", "dove": "mixing", "testo": "Aggiungi 2 spruzzi di salsa Worcestershire." },
+        { "tipo": "versa", "ing": "tabasco", "q": null, "unita": "a_piacere", "dove": "mixing", "testo": "Tabasco a piacere." },
+        { "tipo": "versa", "ing": "sale_sedano", "q": null, "unita": "a_piacere", "dove": "mixing", "testo": "Sale al sedano a piacere." },
+        { "tipo": "versa", "ing": "pepe", "q": null, "unita": "a_piacere", "dove": "mixing", "testo": "Pepe a piacere." },
+        { "tipo": "ghiaccio", "dove": "mixing", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nel mixing glass." },
+        { "tipo": "mescola", "dove": "mixing", "rilevante": true, "testo": "Mescola delicatamente tutti gli ingredienti.", "perche": "Il pomodoro è denso: mescolare (o rollare) lo amalgama senza montarlo." },
+        { "tipo": "travasa", "da": "mixing", "verso": "bicchiere", "testo": "Versa nel rocks glass (highball se servito con ghiaccio)." },
+        { "tipo": "guarnisci", "ing": "sedano", "testo": "Guarnisci con un gambo di sedano." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Spicchio di limone (opzionale)." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/bloody-mary/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "Allergeni: Worcestershire (pesce, glutine), sedano."
+    },
+    {
+      "id": "irish-coffee", "nome": "Irish Coffee", "categoria": "IBA", "alcol": "si", "tipologia": "caffetteria", "tecnica": "layer",
+      "bicchiere": "irish", "ghiaccio": { "tipo": "nessuno", "dove": null },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "irish_whiskey", "q": 50, "unita": "ml" },
+        { "id": "caffe_caldo", "q": 120, "unita": "ml" },
+        { "id": "panna", "q": 50, "unita": "ml", "nota": "fredda, densa" },
+        { "id": "zucchero_semolato", "q": 1, "unita": "cucchiaino", "nota": "almeno 1 cucchiaino; sostituibile con sciroppo" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "scalda", "dove": "bicchiere", "testo": "Preriscalda l'Irish coffee glass.", "perche": "Un bicchiere caldo evita lo shock termico del caffè bollente e mantiene la temperatura." },
+        { "tipo": "versa", "ing": "caffe_caldo", "q": 120, "unita": "ml", "dove": "bicchiere", "testo": "Versa 120 ml di caffè caldo." },
+        { "tipo": "versa", "ing": "irish_whiskey", "q": 50, "unita": "ml", "dove": "bicchiere", "testo": "Aggiungi 50 ml di Irish whiskey." },
+        { "tipo": "versa", "ing": "zucchero_semolato", "q": 1, "unita": "cucchiaino", "dove": "bicchiere", "testo": "Aggiungi almeno 1 cucchiaino di zucchero." },
+        { "tipo": "mescola", "dove": "bicchiere", "rilevante": true, "testo": "Mescola finché lo zucchero è sciolto.", "perche": "Lo zucchero sciolto aumenta la densità del caffè: aiuta la panna a galleggiare." },
+        { "tipo": "galleggia", "ing": "panna", "q": 50, "unita": "ml", "dove": "bicchiere", "rilevante": true, "testo": "Versa 50 ml di panna fredda sul dorso del bar spoon, appena sopra la superficie.", "perche": "Il dorso del cucchiaio rompe la caduta: la panna resta in strato, senza mescolarsi. Si beve attraverso la panna." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/irish-coffee/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "dark-n-stormy", "nome": "Dark 'n' Stormy", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "goslings", "q": 60, "unita": "ml" },
+        { "id": "ginger_beer", "q": 100, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Spicchio o fetta di lime", "elementi": ["lime_spicchio"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "ginger_beer", "q": 100, "unita": "ml", "dove": "bicchiere", "testo": "Versa 100 ml di ginger beer." },
+        { "tipo": "galleggia", "ing": "goslings", "q": 60, "unita": "ml", "dove": "bicchiere", "rilevante": true, "testo": "Fai galleggiare 60 ml di rum scuro Goslings in superficie.", "perche": "Il rum scuro versato piano resta in alto: la 'tempesta' scura sopra la ginger beer è il segno del drink." },
+        { "tipo": "guarnisci", "ing": "lime_spicchio", "testo": "Guarnisci con spicchio o fetta di lime." }
+      ],
+      "fonte": { "nome": "IBA — New Era Drinks", "url": "https://iba-world.com/iba-cocktail/dark-n-stormy/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "La scheda IBA indica Goslings Rum (marchio registrato del drink)."
+    },
+    {
+      "id": "french-75", "nome": "French 75", "categoria": "IBA", "alcol": "si", "tipologia": "fizz", "tecnica": "shake",
+      "bicchiere": "flute", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer", "bar_spoon"],
+      "ingredienti": [
+        { "id": "gin", "q": 30, "unita": "ml" },
+        { "id": "limone_succo", "q": 15, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 15, "unita": "ml" },
+        { "id": "champagne", "q": 60, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "gin", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di gin nello shaker." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di sciroppo di zucchero." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera bene." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel flute Champagne." },
+        { "tipo": "versa", "ing": "champagne", "q": 60, "unita": "ml", "dove": "bicchiere", "rilevante": true, "testo": "Colma con 60 ml di Champagne.", "perche": "Lo Champagne non si shakera mai: si aggiunge dopo, per non perdere il perlage." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/french-75/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "sidecar", "nome": "Sidecar", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "shake",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "cognac", "q": 50, "unita": "ml" },
+        { "id": "triple_sec", "q": 20, "unita": "ml" },
+        { "id": "limone_succo", "q": 20, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "cognac", "q": 50, "unita": "ml", "dove": "shaker", "testo": "Versa 50 ml di cognac nello shaker." },
+        { "tipo": "versa", "ing": "triple_sec", "q": 20, "unita": "ml", "dove": "shaker", "testo": "Versa 20 ml di triple sec." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 20, "unita": "ml", "dove": "shaker", "testo": "Versa 20 ml di succo di limone fresco." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera bene." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nella coppa cocktail raffreddata." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/sidecar/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "john-collins", "nome": "John Collins", "categoria": "IBA", "alcol": "si", "tipologia": "fizz", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "gin", "q": 45, "unita": "ml" },
+        { "id": "limone_succo", "q": 30, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 15, "unita": "ml" },
+        { "id": "soda", "q": 60, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Fetta di limone e ciliegia maraschino", "elementi": ["limone_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "gin", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di gin." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 15, "unita": "ml", "dove": "bicchiere", "testo": "Versa 15 ml di sciroppo di zucchero." },
+        { "tipo": "versa", "ing": "soda", "q": 60, "unita": "ml", "dove": "bicchiere", "testo": "Aggiungi 60 ml di soda water." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con fetta di limone." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi una ciliegia maraschino." }
+      ],
+      "fonte": { "nome": "IBA — The Unforgettables", "url": "https://iba-world.com/iba-cocktail/john-collins/", "editore": "International Bartenders Association" },
+      "variante": "Con Old Tom gin diventa un Tom Collins (nota della scheda IBA).",
+      "note": null
+    },
+    {
+      "id": "sex-on-the-beach", "nome": "Sex on the Beach", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger"],
+      "ingredienti": [
+        { "id": "vodka", "q": 40, "unita": "ml" },
+        { "id": "peach_schnapps", "q": 20, "unita": "ml" },
+        { "id": "arancia_succo", "q": 40, "unita": "ml" },
+        { "id": "mirtillo_succo", "q": 40, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Mezza fetta d'arancia", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "vodka", "q": 40, "unita": "ml", "dove": "bicchiere", "testo": "Versa 40 ml di vodka." },
+        { "tipo": "versa", "ing": "peach_schnapps", "q": 20, "unita": "ml", "dove": "bicchiere", "testo": "Versa 20 ml di peach schnapps." },
+        { "tipo": "versa", "ing": "arancia_succo", "q": 40, "unita": "ml", "dove": "bicchiere", "testo": "Versa 40 ml di succo d'arancia fresco." },
+        { "tipo": "versa", "ing": "mirtillo_succo", "q": 40, "unita": "ml", "dove": "bicchiere", "testo": "Versa 40 ml di succo di mirtillo rosso." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con mezza fetta d'arancia." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/sex-on-the-beach/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "gin-basil-smash", "nome": "Gin Basil Smash", "categoria": "IBA", "alcol": "si", "tipologia": "short drink", "tecnica": "shake",
+      "bicchiere": "coupe", "ghiaccio": { "tipo": "cubetti", "dove": "shaker" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "gin", "q": 60, "unita": "ml" },
+        { "id": "limone_succo", "q": 22.5, "unita": "ml" },
+        { "id": "zucchero_sciroppo", "q": 22.5, "unita": "ml" },
+        { "id": "basilico", "q": 10, "unita": "foglie", "nota": "basilico italiano" }
+      ],
+      "guarnizione": { "testo": "Nessuna (scheda IBA)", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "basilico", "q": 10, "unita": "foglie", "dove": "shaker", "testo": "Metti 10 foglie di basilico italiano nello shaker." },
+        { "tipo": "versa", "ing": "gin", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di gin." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 22.5, "unita": "ml", "dove": "shaker", "testo": "Versa 22,5 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo", "q": 22.5, "unita": "ml", "dove": "shaker", "testo": "Versa 22,5 ml di sciroppo di zucchero." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera vigorosamente.", "perche": "Lo shake forte estrae il verde brillante del basilico e lo integra nel drink." },
+        { "tipo": "travasa", "da": "shaker", "verso": "bicchiere", "testo": "Versa nella coppa cocktail raffreddata.", "perche": "La scheda IBA dice 'pour': si versa nel bicchiere raffreddato." }
+      ],
+      "fonte": { "nome": "IBA — New Era Drinks", "url": "https://iba-world.com/iba-cocktail/gin-basil-smash/", "editore": "International Bartenders Association" },
+      "variante": null, "note": "Creato da Jörg Meyer (Le Lion, Amburgo, 2008)."
+    },
+    {
+      "id": "garibaldi", "nome": "Garibaldi", "categoria": "IBA", "alcol": "si", "tipologia": "aperitivo", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger"],
+      "ingredienti": [
+        { "id": "bitter_campari", "q": 45, "unita": "ml" },
+        { "id": "arancia_succo", "q": 120, "unita": "ml", "nota": "spremuto fresco" }
+      ],
+      "guarnizione": { "testo": "Spicchio d'arancia", "elementi": ["arancia_spicchio"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi l'highball di cubetti." },
+        { "tipo": "versa", "ing": "bitter_campari", "q": 45, "unita": "ml", "dove": "bicchiere", "testo": "Versa 45 ml di bitter Campari." },
+        { "tipo": "versa", "ing": "arancia_succo", "q": 120, "unita": "ml", "dove": "bicchiere", "testo": "Versa 120 ml di succo d'arancia fresco.", "perche": "Al bar si ossigena il succo (fluffy) per una texture vellutata: qui si versa e basta, come da scheda." },
+        { "tipo": "guarnisci", "ing": "arancia_spicchio", "testo": "Guarnisci con uno spicchio d'arancia." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/garibaldi/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "paloma", "nome": "Paloma", "categoria": "IBA", "alcol": "si", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "tequila", "q": 50, "unita": "ml" },
+        { "id": "lime_succo", "q": 5, "unita": "ml" },
+        { "id": "sale", "q": null, "unita": "qb", "nota": "un pizzico" },
+        { "id": "soda_pompelmo", "q": 100, "unita": "ml", "nota": "soda al pompelmo rosa" }
+      ],
+      "guarnizione": { "testo": "Fetta di lime", "elementi": ["lime_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "tequila", "q": 50, "unita": "ml", "dove": "bicchiere", "testo": "Versa 50 ml di tequila nell'highball." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 5, "unita": "ml", "dove": "bicchiere", "testo": "Spremi 5 ml di succo di lime." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti." },
+        { "tipo": "versa", "ing": "sale", "q": null, "unita": "qb", "dove": "bicchiere", "testo": "Aggiungi un pizzico di sale." },
+        { "tipo": "versa", "ing": "soda_pompelmo", "q": 100, "unita": "ml", "dove": "bicchiere", "testo": "Colma con 100 ml di soda al pompelmo rosa." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola delicatamente." },
+        { "tipo": "guarnisci", "ing": "lime_fetta", "testo": "Guarnisci con una fetta di lime." }
+      ],
+      "fonte": { "nome": "IBA — Contemporary Classics", "url": "https://iba-world.com/iba-cocktail/paloma/", "editore": "International Bartenders Association" },
+      "variante": null, "note": null
+    },
+    {
+      "id": "shirley-temple", "nome": "Shirley Temple", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger"],
+      "ingredienti": [
+        { "id": "granatina", "q": 7.5, "unita": "ml" },
+        { "id": "limone_succo", "q": 10, "unita": "ml" },
+        { "id": "ginger_ale", "q": 165, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Ruota di limone e ciliegia maraschino su stecchino ('a vela')", "elementi": ["limone_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "granatina", "q": 7.5, "unita": "ml", "dove": "bicchiere", "testo": "Versa 7,5 ml di granatina nel bicchiere raffreddato." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 10, "unita": "ml", "dove": "bicchiere", "testo": "Versa 10 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "ginger_ale", "q": 165, "unita": "ml", "dove": "bicchiere", "testo": "Versa 165 ml di ginger ale." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con ruota di limone." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi la ciliegia maraschino (a vela con il limone)." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/1817/shirley-temple", "editore": "Difford's Guide" },
+      "variante": "Versione Difford's: aggiunge 10 ml di limone alla ricetta classica (solo ginger ale e granatina).",
+      "note": "Dedicato all'attrice bambina Shirley Temple: il mocktail più famoso del mondo."
+    },
+    {
+      "id": "virgin-mojito", "nome": "Virgin Mojito", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "muddle",
+      "bicchiere": "tumbler_alto", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "muddler", "bar_spoon"],
+      "ingredienti": [
+        { "id": "lime_spicchi", "q": 1, "unita": "pezzi", "nota": "1 lime a spicchi (4-5), uno riservato per guarnire" },
+        { "id": "miele_sciroppo", "q": 30, "unita": "ml", "nota": "altro a piacere; miele diluito 2-3:1" },
+        { "id": "menta", "q": null, "unita": "qb", "nota": "10-15 foglie" },
+        { "id": "soda", "q": null, "unita": "colmare", "nota": "120-180 ml" }
+      ],
+      "guarnizione": { "testo": "Spicchio di lime riservato e rametto di menta", "elementi": ["lime_spicchio", "menta_rametto"] },
+      "passi": [
+        { "tipo": "versa", "ing": "lime_spicchi", "q": 1, "unita": "pezzi", "dove": "bicchiere", "testo": "Metti gli spicchi di lime nel tumbler (uno riservato per la guarnizione)." },
+        { "tipo": "versa", "ing": "miele_sciroppo", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Aggiungi 30 ml di sciroppo di miele." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta bene lime e sciroppo per rilasciare tutto il succo.", "perche": "Senza rum, il sapore vive tutto qui: estrai bene succo e oli del lime." },
+        { "tipo": "versa", "ing": "menta", "q": null, "unita": "qb", "dove": "bicchiere", "testo": "Strappa 10-15 foglie di menta e aggiungile." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta delicatamente la menta.", "perche": "La menta si pesta dopo il lime e con pressione leggera: niente amaro." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con acqua frizzante o soda." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola bene per incorporare lime e menta nel ghiaccio." },
+        { "tipo": "guarnisci", "ing": "lime_spicchio", "testo": "Guarnisci con lo spicchio di lime riservato." },
+        { "tipo": "guarnisci", "ing": "menta_rametto", "testo": "Aggiungi un rametto di menta." }
+      ],
+      "fonte": { "nome": "The Spruce Eats", "url": "https://www.thespruceeats.com/virgin-mojito-recipe-5092273", "editore": "The Spruce Eats (Colleen Graham)" },
+      "variante": "Variante di Colleen Graham: sciroppo di miele al posto dello zucchero del mojito classico; la fonte ammette simple syrup o ~2 cucchiaini di zucchero.",
+      "note": null
+    },
+    {
+      "id": "virgin-colada", "nome": "Virgin Piña Colada", "categoria": "Professionale", "alcol": "no", "tipologia": "tropical", "tecnica": "blend",
+      "bicchiere": "tumbler_alto", "ghiaccio": { "tipo": "cubetti", "dove": "blender", "nota": "frullati nel drink" },
+      "strumenti": ["jigger", "blender"],
+      "ingredienti": [
+        { "id": "ananas_congelato", "q": 360, "unita": "ml", "nota": "volume approssimato di pezzi (1 cup e 1/2); ricetta per 2-3 porzioni" },
+        { "id": "ananas_succo", "q": 180, "unita": "ml", "nota": "non zuccherato" },
+        { "id": "latte_cocco", "q": 180, "unita": "ml", "nota": "non zuccherato, lattina ben agitata" },
+        { "id": "zucchero_canna", "q": null, "unita": "a_piacere", "nota": "1-3 cucchiai, opzionale: assaggiare" }
+      ],
+      "guarnizione": { "testo": "Spicchi d'ananas fresco e/o ciliegie maraschino", "elementi": ["ananas_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "ananas_congelato", "q": 360, "unita": "ml", "dove": "blender", "testo": "Metti l'ananas congelato a pezzi nel frullatore." },
+        { "tipo": "ghiaccio", "dove": "blender", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi il ghiaccio (circa 60 ml di volume).", "perche": "Ananas congelato + poco ghiaccio: texture densa senza annacquare." },
+        { "tipo": "versa", "ing": "ananas_succo", "q": 180, "unita": "ml", "dove": "blender", "testo": "Versa 180 ml di succo d'ananas." },
+        { "tipo": "versa", "ing": "latte_cocco", "q": 180, "unita": "ml", "dove": "blender", "testo": "Versa 180 ml di latte di cocco." },
+        { "tipo": "versa", "ing": "zucchero_canna", "q": null, "unita": "a_piacere", "dove": "blender", "testo": "Zucchero di canna a piacere (1-3 cucchiai), se lo usi." },
+        { "tipo": "frulla", "dove": "blender", "rilevante": true, "testo": "Frulla fino a consistenza liscia; assaggia e correggi lo zucchero.", "perche": "Il blend sostituisce lo shake: emulsiona il cocco e rende il drink cremoso." },
+        { "tipo": "travasa", "da": "blender", "verso": "bicchiere", "testo": "Versa nei bicchiere raffreddati." },
+        { "tipo": "guarnisci", "ing": "ananas_fetta", "testo": "Guarnisci con spicchi d'ananas fresco." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi ciliegie maraschino (opzionale)." }
+      ],
+      "fonte": { "nome": "The Spruce Eats", "url": "https://www.thespruceeats.com/virgin-pina-colada-recipe-2097115", "editore": "The Spruce Eats (Stephanie Gallagher)" },
+      "variante": "Variante di Stephanie Gallagher: senza rum, latte di cocco non zuccherato al posto della cream of coconut, ananas congelato al posto di molto ghiaccio. Resa 2-3 drink.",
+      "note": "Le dosi in ml dei pezzi d'ananas sono un volume approssimato (cups convertite)."
+    },
+    {
+      "id": "cinderella", "nome": "Cinderella", "categoria": "Professionale", "alcol": "tracce", "tipologia": "long drink", "tecnica": "shake",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "arancia_succo", "q": 60, "unita": "ml" },
+        { "id": "ananas_succo", "q": 45, "unita": "ml" },
+        { "id": "limone_succo", "q": 22.5, "unita": "ml" },
+        { "id": "granatina", "q": 5, "unita": "ml" },
+        { "id": "angostura", "q": 3, "unita": "spruzzo", "nota": "3 dash: tracce d'alcol (~0,23%); ometterli per 0,0%" },
+        { "id": "soda", "q": null, "unita": "colmare" }
+      ],
+      "guarnizione": { "testo": "Ruota di limone", "elementi": ["limone_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "arancia_succo", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di succo d'arancia nello shaker." },
+        { "tipo": "versa", "ing": "ananas_succo", "q": 45, "unita": "ml", "dove": "shaker", "testo": "Versa 45 ml di succo d'ananas." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 22.5, "unita": "ml", "dove": "shaker", "testo": "Versa 22,5 ml di succo di limone." },
+        { "tipo": "versa", "ing": "granatina", "q": 5, "unita": "ml", "dove": "shaker", "testo": "Versa 5 ml di granatina." },
+        { "tipo": "versa", "ing": "angostura", "q": 3, "unita": "spruzzo", "dove": "shaker", "testo": "Aggiungi 3 spruzzi di Angostura (opzionali per 0,0%)." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera i primi 5 ingredienti con ghiaccio." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel bicchiere pieno di ghiaccio." },
+        { "tipo": "versa", "ing": "soda", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con soda water." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con la ruota di limone." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/435/cinderella", "editore": "Difford's Guide" },
+      "variante": "Versione Difford's con 3 dash di Angostura, etichettata 'alcohol-free' (max 0,5% alc/vol; calcolato 0,23%). Per 0,0% rigoroso omettere i bitter.",
+      "note": "Classificata 'tracce d'alcol' per onestà verso chi deve servire 0,0%."
+    },
+    {
+      "id": "arnold-palmer", "nome": "Arnold Palmer", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "shake",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "te_freddo", "q": 60, "unita": "ml" },
+        { "id": "limone_succo", "q": 37.5, "unita": "ml" },
+        { "id": "zucchero_sciroppo_rich", "q": 30, "unita": "ml" },
+        { "id": "soda", "q": 30, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Ruota di limone", "elementi": ["limone_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "te_freddo", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di tè nero freddo nello shaker." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 37.5, "unita": "ml", "dove": "shaker", "testo": "Versa 37,5 ml di succo di limone fresco." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo_rich", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di sciroppo di zucchero ricco (2:1)." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera tè, limone e sciroppo con ghiaccio." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel bicchiere versando contemporaneamente la soda.", "perche": "La soda entra mentre si filtra: si integra senza shakerarla (perderebbe le bollicine)." },
+        { "tipo": "versa", "ing": "soda", "q": 30, "unita": "ml", "dove": "bicchiere", "testo": "Versa 30 ml di soda water nel bicchiere." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con la ruota di limone." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/2142/arnold-palmer", "editore": "Difford's Guide" },
+      "variante": "Il classico è iced tea + lemonade pronta; la versione Difford's costruisce la lemonade da zero (limone, sciroppo ricco, soda).",
+      "note": "Dedicato al golfista Arnold Palmer."
+    },
+    {
+      "id": "roy-rogers", "nome": "Roy Rogers", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "build",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "bar_spoon"],
+      "ingredienti": [
+        { "id": "granatina", "q": 7.5, "unita": "ml" },
+        { "id": "cola", "q": null, "unita": "colmare" }
+      ],
+      "guarnizione": { "testo": "Spicchio di lime (Difford's); la versione più diffusa usa ciliegia maraschino", "elementi": ["lime_spicchio"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "versa", "ing": "granatina", "q": 7.5, "unita": "ml", "dove": "bicchiere", "testo": "Versa 7,5 ml di granatina." },
+        { "tipo": "versa", "ing": "cola", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con cola." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola." },
+        { "tipo": "guarnisci", "ing": "lime_spicchio", "testo": "Guarnisci con spicchio di lime. Servi con cannucce." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/1700/roy-rogers", "editore": "Difford's Guide" },
+      "variante": "Difford's guarnisce con lime; la versione più diffusa (es. The Spruce Eats) usa ciliegia maraschino.",
+      "note": "Dedicato all'attore cowboy Roy Rogers."
+    },
+    {
+      "id": "virgin-mary", "nome": "Virgin Mary (Bloody Shame)", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "roll",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "pomodoro_succo", "q": 150, "unita": "ml" },
+        { "id": "limone_succo", "q": 15, "unita": "ml" },
+        { "id": "tabasco", "q": 8, "unita": "gocce" },
+        { "id": "worcestershire", "q": 4, "unita": "spruzzo" },
+        { "id": "rafano", "q": 0.5, "unita": "cucchiaino", "nota": "mezzo bar spoon" },
+        { "id": "sale_sedano", "q": null, "unita": "qb", "nota": "2 pizzichi" },
+        { "id": "pepe", "q": null, "unita": "qb", "nota": "2 macinate" }
+      ],
+      "guarnizione": { "testo": "Gambo di sedano", "elementi": ["sedano"] },
+      "passi": [
+        { "tipo": "versa", "ing": "pomodoro_succo", "q": 150, "unita": "ml", "dove": "shaker", "testo": "Versa 150 ml di succo di pomodoro nello shaker." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di limone." },
+        { "tipo": "versa", "ing": "tabasco", "q": 8, "unita": "gocce", "dove": "shaker", "testo": "Aggiungi 8 gocce di salsa piccante." },
+        { "tipo": "versa", "ing": "worcestershire", "q": 4, "unita": "spruzzo", "dove": "shaker", "testo": "Aggiungi 4 spruzzi di Worcestershire." },
+        { "tipo": "versa", "ing": "rafano", "q": 0.5, "unita": "cucchiaino", "dove": "shaker", "testo": "Aggiungi mezzo cucchiaino da bar di salsa di rafano." },
+        { "tipo": "versa", "ing": "sale_sedano", "q": null, "unita": "qb", "dove": "shaker", "testo": "2 pizzichi di sale al sedano." },
+        { "tipo": "versa", "ing": "pepe", "q": null, "unita": "qb", "dove": "shaker", "testo": "2 macinate di pepe nero." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "roll", "dove": "shaker", "rilevante": true, "testo": "Esegui un roll: travasa avanti e indietro tra i due tin.", "perche": "Il pomodoro è denso: il roll miscela senza montare schiuma, come chiede la fonte." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra finemente (fine strain) nel bicchiere." },
+        { "tipo": "guarnisci", "ing": "sedano", "testo": "Guarnisci con il gambo di sedano." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/252/virgin-mary-or-bloody-shame", "editore": "Difford's Guide" },
+      "variante": "Bloody Mary senza vodka, detta anche 'Bloody Shame'.",
+      "note": "Allergeni: Worcestershire (pesce, glutine), sedano."
+    },
+    {
+      "id": "pussyfoot", "nome": "Pussyfoot", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "shake",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "menta", "q": 7, "unita": "foglie" },
+        { "id": "arancia_succo", "q": 120, "unita": "ml" },
+        { "id": "limone_succo", "q": 15, "unita": "ml" },
+        { "id": "lime_succo", "q": 15, "unita": "ml" },
+        { "id": "granatina", "q": 15, "unita": "ml" },
+        { "id": "uovo_tuorlo", "q": 1, "unita": "pezzi", "nota": "1 tuorlo fresco" }
+      ],
+      "guarnizione": { "testo": "Fetta d'arancia", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "menta", "q": 7, "unita": "foglie", "dove": "shaker", "testo": "Metti 7 foglie di menta nello shaker." },
+        { "tipo": "versa", "ing": "arancia_succo", "q": 120, "unita": "ml", "dove": "shaker", "testo": "Versa 120 ml di succo d'arancia." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di limone." },
+        { "tipo": "versa", "ing": "lime_succo", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di succo di lime." },
+        { "tipo": "versa", "ing": "granatina", "q": 15, "unita": "ml", "dove": "shaker", "testo": "Versa 15 ml di granatina." },
+        { "tipo": "versa", "ing": "uovo_tuorlo", "q": 1, "unita": "pezzi", "dove": "shaker", "testo": "Aggiungi 1 tuorlo fresco." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera tutti gli ingredienti con ghiaccio." },
+        { "tipo": "filtra", "da": "shaker", "verso": "shaker", "rilevante": true, "testo": "Filtra di nuovo nello shaker (togli il ghiaccio).", "perche": "Si rimuove il ghiaccio esausto prima del dry shake." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Dry shake: shakera senza ghiaccio.", "perche": "Il secondo shake a secco monta la schiuma del tuorlo: texture vellutata." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra finemente nel bicchiere pieno di ghiaccio." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Guarnisci con la fetta d'arancia." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/1620/pussyfoot", "editore": "Difford's Guide" },
+      "variante": "Versione Difford's con lime e menta, senza ananas (alcune versioni italiane lo riportano).",
+      "note": "Creato nel 1920 da Robert Vermeire all'Embassy Club di Londra. Allergene: uovo."
+    },
+    {
+      "id": "bora-bora", "nome": "Bora Bora", "categoria": "Professionale", "alcol": "no", "tipologia": "tropical", "tecnica": "shake",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "ananas_succo", "q": 100, "unita": "ml" },
+        { "id": "passion_succo", "q": 60, "unita": "ml" },
+        { "id": "limone_succo", "q": 10, "unita": "ml" },
+        { "id": "granatina", "q": 10, "unita": "ml" }
+      ],
+      "guarnizione": { "testo": "Fetta d'ananas e ciliegia", "elementi": ["ananas_fetta", "ciliegia"] },
+      "passi": [
+        { "tipo": "versa", "ing": "ananas_succo", "q": 100, "unita": "ml", "dove": "shaker", "testo": "Versa 100 ml di succo d'ananas nello shaker." },
+        { "tipo": "versa", "ing": "passion_succo", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di succo di passion fruit." },
+        { "tipo": "versa", "ing": "limone_succo", "q": 10, "unita": "ml", "dove": "shaker", "testo": "Versa 10 ml di succo di limone." },
+        { "tipo": "versa", "ing": "granatina", "q": 10, "unita": "ml", "dove": "shaker", "testo": "Versa 10 ml di granatina." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera con ghiaccio (la fonte ammette anche il frullatore)." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere long drink di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel bicchiere con ghiaccio." },
+        { "tipo": "guarnisci", "ing": "ananas_fetta", "testo": "Guarnisci con una fetta d'ananas." },
+        { "tipo": "guarnisci", "ing": "ciliegia", "testo": "Aggiungi una ciliegia." }
+      ],
+      "fonte": { "nome": "WhatToDrink.com (fonte secondaria)", "url": "https://whattodrink.com/recipe/bora-bora/", "editore": "WhatToDrink.com" },
+      "variante": "Nessuna fonte professionale primaria copre il Bora Bora classico: dosi confermate da database secondario; altre versioni usano sciroppo di passion fruit.",
+      "note": "Fonte secondaria dichiarata: Difford's ha solo il diverso 'Bora Bora Brew'."
+    },
+    {
+      "id": "lemon-squash", "nome": "Lemon Squash (Real Lemonade)", "categoria": "Professionale", "alcol": "no", "tipologia": "fizz", "tecnica": "shake",
+      "bicchiere": "highball", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": ["jigger", "shaker", "strainer"],
+      "ingredienti": [
+        { "id": "limone_succo", "q": 60, "unita": "ml" },
+        { "id": "zucchero_sciroppo_rich", "q": 30, "unita": "ml" },
+        { "id": "soda", "q": 105, "unita": "ml", "nota": "fredda" }
+      ],
+      "guarnizione": { "testo": "Ruota di limone", "elementi": ["limone_fetta"] },
+      "passi": [
+        { "tipo": "versa", "ing": "limone_succo", "q": 60, "unita": "ml", "dove": "shaker", "testo": "Versa 60 ml di succo di limone nello shaker." },
+        { "tipo": "versa", "ing": "zucchero_sciroppo_rich", "q": 30, "unita": "ml", "dove": "shaker", "testo": "Versa 30 ml di sciroppo di zucchero ricco (2:1)." },
+        { "tipo": "ghiaccio", "dove": "shaker", "tipo_ghiaccio": "cubetti", "testo": "Aggiungi cubetti nello shaker." },
+        { "tipo": "shakera", "dove": "shaker", "rilevante": true, "testo": "Shakera limone e sciroppo con ghiaccio." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il bicchiere di cubetti." },
+        { "tipo": "filtra", "da": "shaker", "verso": "bicchiere", "rilevante": true, "testo": "Filtra nel bicchiere versando contemporaneamente la soda." },
+        { "tipo": "versa", "ing": "soda", "q": 105, "unita": "ml", "dove": "bicchiere", "testo": "Versa 105 ml di soda water fredda." },
+        { "tipo": "guarnisci", "ing": "limone_fetta", "testo": "Guarnisci con la ruota di limone." }
+      ],
+      "fonte": { "nome": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/1650/real-lemonade", "editore": "Difford's Guide" },
+      "variante": "Difford's la chiama 'Real Lemonade': la lemon squash / limonata alla soda costruita da zero, con sciroppo ricco 2:1.",
+      "note": "Il metodo della pagina contiene un refuso ('grapefruit soda'); la lista ingredienti corretta riporta soda water, qui seguita."
+    },
+    {
+      "id": "crodino", "nome": "Crodino Biondo", "categoria": "Professionale", "alcol": "no", "tipologia": "aperitivo", "tecnica": "build",
+      "bicchiere": "calice_vino", "ghiaccio": { "tipo": "cubetti", "dove": "bicchiere" },
+      "strumenti": [],
+      "ingredienti": [
+        { "id": "crodino", "q": 100, "unita": "ml", "nota": "1 bottiglietta da 10 cl" }
+      ],
+      "guarnizione": { "testo": "Fettina d'arancia", "elementi": ["arancia_fetta"] },
+      "passi": [
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "cubetti", "testo": "Riempi il calice da vino di cubetti." },
+        { "tipo": "versa", "ing": "crodino", "q": 100, "unita": "ml", "dove": "bicchiere", "testo": "Stappa la bottiglietta da 10 cl e versa il Crodino sul ghiaccio." },
+        { "tipo": "guarnisci", "ing": "arancia_fetta", "testo": "Aggiungi una fettina d'arancia. Servi subito, ben freddo." }
+      ],
+      "fonte": { "nome": "Crodino — sito ufficiale (Gruppo Campari)", "url": "https://www.crodino.com/it-it/crodino-biondo/", "editore": "Campari Group" },
+      "variante": "Esiste la variante Crodino Rosso (arancia rossa); al bar anche il formato XL da 17,5 cl.",
+      "note": "Perfect serve ufficiale: calice, ghiaccio, fettina d'arancia."
+    },
+    {
+      "id": "ipanema", "nome": "Ipanema", "categoria": "Professionale", "alcol": "no", "tipologia": "long drink", "tecnica": "muddle",
+      "bicchiere": "old_fashioned", "ghiaccio": { "tipo": "tritato", "dove": "bicchiere" },
+      "strumenti": ["muddler", "bar_spoon"],
+      "ingredienti": [
+        { "id": "lime_spicchi", "q": 1, "unita": "pezzi", "nota": "1 lime tagliato in 8 spicchi" },
+        { "id": "zucchero_canna", "q": 2, "unita": "cucchiaino", "nota": "2 bar spoon" },
+        { "id": "ginger_ale", "q": null, "unita": "colmare", "nota": "circa 120 ml" }
+      ],
+      "guarnizione": { "testo": "Nessuna nella fonte", "elementi": [] },
+      "passi": [
+        { "tipo": "versa", "ing": "lime_spicchi", "q": 1, "unita": "pezzi", "dove": "bicchiere", "testo": "Metti gli 8 spicchi di lime nel bicchiere." },
+        { "tipo": "versa", "ing": "zucchero_canna", "q": 2, "unita": "cucchiaino", "dove": "bicchiere", "testo": "Aggiungi 2 cucchiaini da bar di zucchero di canna." },
+        { "tipo": "muddle", "dove": "bicchiere", "rilevante": true, "testo": "Pesta lime e zucchero direttamente nel bicchiere.", "perche": "È una caipirinha analcolica: l'estrazione del lime è tutto il sapore." },
+        { "tipo": "ghiaccio", "dove": "bicchiere", "tipo_ghiaccio": "tritato", "testo": "Riempi il bicchiere di ghiaccio tritato." },
+        { "tipo": "versa", "ing": "ginger_ale", "q": null, "unita": "colmare", "dove": "bicchiere", "testo": "Colma con ginger ale (circa 120 ml)." },
+        { "tipo": "mescola", "dove": "bicchiere", "testo": "Mescola." }
+      ],
+      "fonte": { "nome": "Cocktailline (fonte secondaria)", "url": "https://cocktailline.de/en/cocktails/ipanema", "editore": "Cocktailline.de" },
+      "variante": "Caipirinha brasiliana analcolica: ginger ale al posto della cachaça. Alcune varianti aggiungono nettare di passion fruit; questa è la versione classica lime-zucchero-ginger ale.",
+      "note": "Fonte secondaria dichiarata: l' 'Ipanema' di Difford's è alcolica (cachaça e Licor 43)."
+    }
+  ]
+}
