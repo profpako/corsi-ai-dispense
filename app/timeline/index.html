@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridiani — Una linea del tempo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#101319;
+    --pannello:#181d29;
+    --carta:#edebe1;
+    --carta-2:#e2ded1;
+    --inchiostro:#16150f;
+    --lapis:#3b4bd8;
+    --ocra:#c9962e;
+    --salvia:#7d8c7a;
+    --ruggine:#a63a2b;
+    --linea:#2a3247;
+    --testo-chiaro:#eef0f4;
+    --testo-smorzato:#9aa3b5;
+    --raggio:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--fondo); color:var(--testo-chiaro);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--ocra); color:#111}
+
+  .copertina{
+    max-width:1120px; margin:0 auto; padding:56px 28px 10px;
+    display:grid; grid-template-columns:1.2fr .8fr; gap:36px; align-items:end;
+  }
+  @media (max-width:860px){ .copertina{grid-template-columns:1fr; padding-top:36px} }
+  .marchio{
+    display:flex; align-items:center; gap:10px;
+    font-size:14px; color:var(--testo-smorzato);
+  }
+  .marchio i{
+    width:26px; height:26px; border-radius:50%;
+    background:conic-gradient(from 40deg, var(--ocra), var(--ruggine), var(--lapis), var(--ocra));
+    display:inline-block; flex:none;
+  }
+  h1{
+    font-family:"Newsreader",Georgia,serif; font-weight:300;
+    font-size:clamp(44px,7vw,84px); line-height:.95; letter-spacing:-.02em;
+    margin:18px 0 12px;
+  }
+  h1 em{font-style:italic; font-weight:400; color:var(--ocra)}
+  .sottotitolo{
+    font-family:"Newsreader",Georgia,serif; font-size:19px; line-height:1.5;
+    color:#c9cfda; max-width:44ch; margin:0;
+  }
+  .nota-laterale{
+    border-left:1px solid var(--linea); padding-left:22px;
+    color:var(--testo-smorzato); font-size:14.5px; line-height:1.65;
+  }
+  .nota-laterale strong{color:var(--testo-chiaro); font-weight:600}
+  .contatore-grande{
+    font-family:"Newsreader",Georgia,serif; font-style:italic;
+    font-size:52px; color:var(--testo-chiaro); line-height:1;
+  }
+
+  .barra{
+    position:sticky; top:0; z-index:30;
+    background:rgba(16,19,25,.88); backdrop-filter:blur(14px);
+    border-top:1px solid var(--linea); border-bottom:1px solid var(--linea);
+    margin-top:30px;
+  }
+  .barra-interna{
+    max-width:1120px; margin:0 auto; padding:14px 28px;
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  }
+  .filtri{display:flex; flex-wrap:wrap; gap:8px}
+  .filtro{
+    appearance:none; border:1px solid var(--linea); background:transparent;
+    color:#c9cfda; font:inherit; font-size:14px; padding:8px 14px;
+    border-radius:999px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .filtro .punto{width:9px; height:9px; border-radius:50%; background:#555}
+  .filtro[data-cat="Politica"] .punto{background:var(--ruggine)}
+  .filtro[data-cat="Scienza"] .punto{background:var(--lapis)}
+  .filtro[data-cat="Arte"] .punto{background:var(--ocra)}
+  .filtro[data-cat="Filosofia"] .punto{background:var(--salvia)}
+  .filtro[data-cat="tutti"] .punto{background:#cfd5e0}
+  .filtro[aria-pressed="true"]{background:var(--testo-chiaro); color:#111; border-color:var(--testo-chiaro)}
+  .filtro:focus-visible, .cerca input:focus-visible, .scheda-btn:focus-visible, .export-btn:focus-visible{
+    outline:2px solid var(--ocra); outline-offset:2px;
+  }
+  .export-gruppo{display:flex; gap:8px; flex-wrap:wrap}
+  .export-btn{
+    appearance:none; font:inherit; font-size:14px; cursor:pointer;
+    border:1px solid var(--linea); background:#0b0e14; color:var(--testo-chiaro);
+    border-radius:999px; padding:8px 14px;
+  }
+  .export-btn:hover{border-color:var(--ocra); color:var(--ocra)}
+  .cerca{margin-left:auto; position:relative; flex:1 1 240px; max-width:340px; min-width:200px}
+  .cerca input{
+    width:100%; font:inherit; font-size:14px; color:var(--testo-chiaro);
+    background:#0b0e14; border:1px solid var(--linea); border-radius:999px;
+    padding:9px 14px 9px 38px;
+  }
+  .cerca svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.6}
+  .esito{font-size:13px; color:var(--testo-smorzato); width:100%; margin:2px 2px 0}
+
+  main{max-width:1120px; margin:0 auto; padding:34px 28px 90px}
+
+  .spina{position:relative; padding:10px 0 10px}
+  .spina::before{
+    content:""; position:absolute; top:0; bottom:0; left:19px; width:2px;
+    background:linear-gradient(var(--ocra), var(--linea) 18%, var(--linea) 85%, transparent);
+  }
+  @media (min-width:860px){
+    .spina::before{left:50%; transform:translateX(-50%)}
+  }
+  .voce{position:relative; margin:0 0 22px 56px}
+  @media (min-width:860px){
+    .voce{width:calc(50% - 44px); margin:0 0 30px}
+    .voce:nth-child(odd){margin-right:auto}
+    .voce:nth-child(even){margin-left:auto}
+  }
+  .nodo{
+    position:absolute; left:-46px; top:22px; width:20px; height:20px;
+    border-radius:50%; background:var(--fondo); border:2px solid var(--colore, var(--ocra));
+    box-shadow:0 0 0 5px rgba(255,255,255,.04);
+  }
+  @media (min-width:860px){
+    .voce:nth-child(odd) .nodo{left:auto; right:-55px}
+    .voce:nth-child(even) .nodo{left:-55px}
+  }
+  .scheda-btn{
+    width:100%; text-align:left; font:inherit; cursor:pointer;
+    background:var(--carta); color:var(--inchiostro);
+    border:none; border-radius:var(--raggio); padding:0; overflow:hidden;
+    border-top:5px solid var(--colore, var(--ocra));
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .scheda-btn:hover{transform:translateY(-3px); box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .scheda-corpo{padding:20px 22px 18px}
+  .data{
+    font-family:"Newsreader",Georgia,serif; font-style:italic;
+    font-size:30px; line-height:1; letter-spacing:-.01em;
+  }
+  .categoria{
+    display:inline-block; font-size:12.5px; letter-spacing:.02em;
+    background:#16150f; color:var(--carta); border-radius:999px;
+    padding:4px 11px; margin:12px 0 10px;
+  }
+  .titolo{font-size:19px; font-weight:600; line-height:1.25; margin:0 0 8px}
+  .riassunto{font-size:14.5px; line-height:1.6; color:#3c3a32; margin:0}
+  .apri{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px dashed #b9b4a3; margin-top:14px; padding-top:12px;
+    font-size:13.5px; color:#5c594d;
+  }
+  .apri span:last-child{
+    border:1px solid #16150f; border-radius:999px; padding:5px 12px; color:#16150f;
+  }
+  .scheda-btn:hover .apri span:last-child{background:#16150f; color:var(--carta)}
+
+  .vuoto{
+    display:none; text-align:center; color:var(--testo-smorzato);
+    border:1px dashed var(--linea); border-radius:var(--raggio);
+    padding:40px 24px; font-size:15px; line-height:1.6;
+  }
+  .vuoto.visibile{display:block}
+  .vuoto button{
+    font:inherit; margin-top:12px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--testo-smorzato); background:transparent; color:var(--testo-chiaro);
+    padding:8px 16px;
+  }
+
+  .velo{
+    position:fixed; inset:0; z-index:50; display:none;
+    background:rgba(6,8,12,.66); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .velo.aperto{display:flex}
+  .modale{
+    width:min(640px,100%); max-height:88vh; overflow:auto;
+    background:var(--carta); color:var(--inchiostro);
+    border-radius:18px; border-top:8px solid var(--colore, var(--ocra));
+  }
+  .modale-testa{padding:26px 28px 0; display:flex; gap:16px; align-items:flex-start}
+  .modale-testa div{flex:1}
+  .chiudi{
+    flex:none; width:38px; height:38px; border-radius:50%; cursor:pointer;
+    border:1px solid #16150f; background:transparent; font-size:17px; line-height:1;
+  }
+  .chiudi:hover{background:#16150f; color:var(--carta)}
+  .modale-data{font-family:"Newsreader",Georgia,serif; font-style:italic; font-size:clamp(34px,5vw,48px); line-height:1}
+  .modale-luogo{color:#5c594d; font-size:14px; margin-top:6px}
+  .modale-corpo{padding:16px 28px 28px}
+  .modale-corpo h2{font-size:24px; line-height:1.2; margin:8px 0 12px}
+  .modale-corpo p{font-size:15.5px; line-height:1.7; color:#2c2b25; margin:0 0 14px}
+  .tag-lista{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid #c9c4b2}
+  .tag{font-size:13px; background:#16150f; color:var(--carta); border-radius:999px; padding:5px 12px}
+  .tag.secondario{background:transparent; color:#16150f; border:1px solid #8f8a78}
+  .fatto{
+    background:#16150f; color:var(--carta); border-radius:12px;
+    padding:14px 16px; font-size:14px; line-height:1.6; margin-top:16px;
+  }
+  .fatto strong{color:var(--ocra)}
+
+  footer{border-top:1px solid var(--linea); color:var(--testo-smorzato); font-size:13px}
+  footer div{max-width:1120px; margin:0 auto; padding:18px 28px; display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .scheda-btn{transition:none}
+    .scheda-btn:hover{transform:none}
+  }
+
+  /* finestra export */
+  .pannello-export{
+    width:min(520px,100%); max-height:88vh; overflow:auto;
+    background:var(--pannello); color:var(--testo-chiaro);
+    border:1px solid var(--linea); border-radius:18px; padding:26px 28px;
+  }
+  .pannello-export h2{font-family:"Newsreader",Georgia,serif; font-weight:400; font-size:30px; margin:0 0 4px}
+  .pannello-export .sotto{color:var(--testo-smorzato); font-size:14px; margin:0 0 18px}
+  .gruppo-scelta{border:none; padding:0; margin:0 0 18px}
+  .gruppo-scelta legend{font-size:13px; color:var(--testo-smorzato); margin-bottom:8px; padding:0}
+  .scelte{display:flex; flex-wrap:wrap; gap:8px}
+  .scelte label{
+    border:1px solid var(--linea); border-radius:999px; padding:8px 14px;
+    font-size:14px; cursor:pointer; color:#c9cfda;
+  }
+  .scelte label:has(input:checked){background:var(--testo-chiaro); color:#111; border-color:var(--testo-chiaro)}
+  .scelte label:has(input:focus-visible){outline:2px solid var(--ocra); outline-offset:2px}
+  .scelte input{accent-color:var(--ocra); margin-right:6px}
+  .riga-check{display:flex; gap:10px; align-items:flex-start; font-size:14px; color:#c9cfda; margin-bottom:18px; cursor:pointer}
+  .riga-check input{margin-top:3px; accent-color:var(--ocra)}
+  .riepilogo{
+    background:#0b0e14; border:1px solid var(--linea); border-radius:12px;
+    padding:12px 16px; font-size:14px; margin-bottom:18px;
+  }
+  .riepilogo strong{color:var(--ocra)}
+  .azioni-export{display:flex; gap:10px; justify-content:flex-end}
+  .btn-primario{
+    font:inherit; font-size:14px; cursor:pointer; border:none; border-radius:999px;
+    background:var(--ocra); color:#111; padding:10px 22px; font-weight:600;
+  }
+  .btn-primario:hover{filter:brightness(1.1)}
+  .btn-secondario{
+    font:inherit; font-size:14px; cursor:pointer; border-radius:999px;
+    background:transparent; color:var(--testo-chiaro); border:1px solid var(--linea); padding:10px 20px;
+  }
+
+  /* foglio documento per PDF: invisibile a schermo, unico visibile in stampa */
+  #foglio{display:none}
+  #foglio .f-copertina{border-bottom:3px solid #111; padding-bottom:12px; margin-bottom:18px}
+  #foglio .f-marchio{font-size:10pt; color:#555}
+  #foglio h1{font-family:"Newsreader",Georgia,serif; font-weight:400; font-size:30pt; margin:6px 0 4px; color:#111}
+  #foglio .f-meta{font-size:10pt; color:#555}
+  #foglio .f-eventi-verticale .f-evento{margin-bottom:16px}
+  #foglio .f-eventi-orizzontale{column-count:2; column-gap:18px}
+  #foglio .f-eventi-orizzontale .f-evento{margin-bottom:14px}
+  #foglio .f-evento{
+    break-inside:avoid; border-left:3.5pt solid #111; padding:2px 0 2px 12px;
+  }
+  #foglio .f-data{font-family:"Newsreader",Georgia,serif; font-style:italic; font-size:16pt; color:#111}
+  #foglio .f-cat{font-size:9pt; color:#fff; background:#111; border-radius:20px; padding:1px 9px; display:inline-block; margin:5px 0}
+  #foglio h2{font-size:13pt; margin:4px 0 5px; color:#111}
+  #foglio .f-luogo{font-size:9.5pt; color:#555; margin-bottom:5px}
+  #foglio p{font-size:10pt; line-height:1.55; color:#222; margin:0 0 6px}
+  #foglio .f-tag{font-size:8.5pt; color:#555}
+  #foglio .f-piede{margin-top:20px; border-top:1px solid #999; padding-top:8px; font-size:8.5pt; color:#777}
+
+  /* palco nascosto per render PNG a blocchi */
+  #palco{position:fixed; left:-100000px; top:0; z-index:-1}
+  .slide{background:#edebe1; color:#16150f; padding:52px 56px; font-family:"Space Grotesk",system-ui,sans-serif}
+  .slide-verticale{width:1000px}
+  .slide-orizzontale{width:1600px}
+  .slide-testa{display:flex; justify-content:space-between; align-items:baseline; border-bottom:3px solid #16150f; padding-bottom:14px; margin-bottom:26px}
+  .slide-testa b{font-family:"Newsreader",Georgia,serif; font-weight:400; font-style:italic; font-size:34px}
+  .slide-testa span{font-size:15px; color:#5c594d}
+  .slide-griglia-verticale{display:grid; gap:20px}
+  .slide-griglia-orizzontale{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+  .slide-scheda{background:#f7f5ee; border:1px solid #c9c4b2; border-top:6px solid #c9962e; border-radius:12px; padding:22px 24px}
+  .slide-data{font-family:"Newsreader",Georgia,serif; font-style:italic; font-size:32px}
+  .slide-cat{display:inline-block; font-size:12px; background:#16150f; color:#edebe1; border-radius:999px; padding:3px 11px; margin:10px 0}
+  .slide-scheda h3{font-size:21px; margin:0 0 8px}
+  .slide-scheda p{font-size:15px; line-height:1.6; color:#3c3a32; margin:0 0 8px}
+  .slide-luogo{font-size:13px; color:#5c594d}
+
+  @media print{
+    body{background:#fff}
+    body > header.copertina, body > .barra, body > main,
+    body > footer, .velo, #palco{display:none !important}
+    #foglio{display:block !important}
+  }
+</style>
+</head>
+<body>
+
+<header class="copertina">
+  <div>
+    <span class="marchio"><i aria-hidden="true"></i> Archivio interattivo · otto snodi della storia</span>
+    <h1>Meridiani <em>del tempo</em></h1>
+    <p class="sottotitolo">Da Socrate a Picasso: una sola linea, quattro sguardi. Filtra per ambito, cerca una parola, apri ogni tappa per leggerne il contesto.</p>
+  </div>
+  <aside class="nota-laterale">
+    <div class="contatore-grande" id="contatore">VIII</div>
+    <p><strong>Come si usa.</strong> I pulsanti in alto filtrano Politica, Scienza, Arte e Filosofia. La ricerca incrocia titoli, luoghi e descrizioni. Ogni scheda si apre con data esatta, racconto e tag.</p>
+  </aside>
+</header>
+
+<div class="barra">
+  <div class="barra-interna" role="toolbar" aria-label="Filtri e ricerca">
+    <div class="filtri" id="filtri">
+      <button class="filtro" data-cat="tutti" aria-pressed="true"><span class="punto"></span>Tutti</button>
+      <button class="filtro" data-cat="Politica" aria-pressed="false"><span class="punto"></span>Politica</button>
+      <button class="filtro" data-cat="Scienza" aria-pressed="false"><span class="punto"></span>Scienza</button>
+      <button class="filtro" data-cat="Arte" aria-pressed="false"><span class="punto"></span>Arte</button>
+      <button class="filtro" data-cat="Filosofia" aria-pressed="false"><span class="punto"></span>Filosofia</button>
+    </div>
+    <label class="cerca">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="ricerca" type="search" placeholder="Cerca: es. Roma, rivoluzione, luce…" autocomplete="off">
+    </label>
+    <p class="esito" id="esito" aria-live="polite"></p>
+    <div class="export-gruppo" role="group" aria-label="Esporta">
+      <button class="export-btn" id="btn-export" type="button">Esporta</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="spina" id="linea" aria-label="Eventi in ordine cronologico"></section>
+  <div class="vuoto" id="vuoto">
+    Nessun evento corrisponde a questa combinazione.<br>Prova a cambiare categoria o a svuotare la ricerca.
+    <br><button id="azzera" type="button">Mostra tutto</button>
+  </div>
+</main>
+
+<div class="velo" id="velo">
+  <article class="modale" id="modale" role="dialog" aria-modal="true" aria-labelledby="m-titolo">
+    <div class="modale-testa">
+      <div>
+        <div class="modale-data" id="m-data"></div>
+        <div class="modale-luogo" id="m-luogo"></div>
+      </div>
+      <button class="chiudi" id="chiudi" type="button" aria-label="Chiudi scheda">✕</button>
+    </div>
+    <div class="modale-corpo">
+      <span class="categoria" id="m-cat"></span>
+      <h2 id="m-titolo"></h2>
+      <p id="m-testo"></p>
+      <p id="m-testo2"></p>
+      <div class="fatto" id="m-fatto"></div>
+      <div class="tag-lista" id="m-tag"></div>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div>
+    <span>Meridiani del tempo · file unico, senza dipendenze oltre ai caratteri</span>
+    <span id="firma">8 eventi · 4 categorie · ordinati dal più antico al più recente</span>
+    <span class="stampa-nascondi">Suggerimento: filtra o cerca prima di esportare, l'export riflette gli eventi visibili.</span>
+  </div>
+</footer>
+
+<div class="velo" id="velo-export">
+  <div class="pannello-export" role="dialog" aria-modal="true" aria-labelledby="exp-titolo">
+    <h2 id="exp-titolo">Esporta la timeline</h2>
+    <p class="sotto">Documento impaginato per il PDF, slide pronte per PowerPoint per le immagini.</p>
+    <fieldset class="gruppo-scelta">
+      <legend>Formato</legend>
+      <div class="scelte" id="sc-formato">
+        <label><input type="radio" name="formato" value="pdf" checked>Documento PDF</label>
+        <label><input type="radio" name="formato" value="png">Immagini PNG</label>
+      </div>
+    </fieldset>
+    <fieldset class="gruppo-scelta">
+      <legend>Orientamento</legend>
+      <div class="scelte" id="sc-orientamento">
+        <label><input type="radio" name="orientamento" value="verticale" checked>Verticale</label>
+        <label><input type="radio" name="orientamento" value="orizzontale">Orizzontale 16:9</label>
+      </div>
+    </fieldset>
+    <fieldset class="gruppo-scelta" id="gruppo-blocchi">
+      <legend>Suddivisione in blocchi</legend>
+      <div class="scelte" id="sc-blocchi">
+        <label><input type="radio" name="blocchi" value="1" checked>Blocco unico</label>
+        <label><input type="radio" name="blocchi" value="2">2 blocchi</label>
+        <label><input type="radio" name="blocchi" value="3">3 blocchi</label>
+        <label><input type="radio" name="blocchi" value="4">4 blocchi</label>
+      </div>
+    </fieldset>
+    <label class="riga-check"><input type="checkbox" id="exp-visibili" checked> Esporta solo gli eventi visibili (rispetta filtri e ricerca attivi)</label>
+    <p class="riepilogo" id="exp-riepilogo" aria-live="polite"></p>
+    <div class="azioni-export">
+      <button class="btn-secondario" id="exp-annulla" type="button">Annulla</button>
+      <button class="btn-primario" id="exp-genera" type="button">Genera</button>
+    </div>
+  </div>
+</div>
+
+<div id="foglio" aria-hidden="true"></div>
+<div id="palco" aria-hidden="true"></div>
+<style id="stile-pagina">@page{size:A4 portrait; margin:14mm}</style>
+
+<script>
+const EVENTI = [
+  {
+    ordine: -399, dataBreve: "399 a.C.", dataPrecisa: "maggio 399 a.C.",
+    luogo: "Atene, prigione di Stato",
+    titolo: "Il processo a Socrate",
+    categoria: "Filosofia",
+    riassunto: "Accusato di corrompere i giovani, il filosofo sceglie la cicuta invece dell'esilio.",
+    testo: "Socrate, settantenne, viene processato davanti a una giuria di 501 cittadini con le accuse di empietà e corruzione dei giovani. Rifiuta sia la fuga proposta dai discepoli sia una difesa conciliante: la sua Apologia, tramandata da Platone, trasforma il tribunale in una lezione sul vivere secondo esame.",
+    testo2: "La condanna a morte per cicuta apre la stagione della filosofia come responsabilità pubblica. Da qui nascono l'Accademia di Platone e, a catena, gran parte del pensiero occidentale.",
+    fatto: "Da ricordare: bevve la cicuta discutendo con gli amici dell'immortalità dell'anima.",
+    tag: ["Atene classica", "etica", "Platone", "processo"]
+  },
+  {
+    ordine: -44, dataBreve: "44 a.C.", dataPrecisa: "15 marzo 44 a.C., Idi di marzo",
+    luogo: "Roma, Curia di Pompeo",
+    titolo: "L'assassinio di Giulio Cesare",
+    categoria: "Politica",
+    riassunto: "Ventitré coltellate in Senato chiudono la Repubblica e aprono l'età degli imperatori.",
+    testo: "Cesare, dittatore perpetuo dopo la guerra civile, viene ucciso da un gruppo di circa sessanta congiurati guidati da Bruto e Cassio. Speravano di restaurare la Repubblica; ottennero l'opposto: il caos, il secondo triumvirato e infine il principato di Augusto.",
+    testo2: "Le Idi di marzo restano il prototipo del tirannicidio politico: un gesto che voleva salvare le istituzioni e invece ne certificò la fine.",
+    fatto: "Da ricordare: secondo Svetonio le ultime parole non furono «Tu quoque», ma un sorpreso «Anche tu, figlio?».",
+    tag: ["Roma antica", "repubblica", "congiura", "potere"]
+  },
+  {
+    ordine: 1504, dataBreve: "1504", dataPrecisa: "1503 – 1506 (Louvre, Parigi)",
+    luogo: "Firenze, bottega di Leonardo",
+    titolo: "Leonardo dipinge la Gioconda",
+    categoria: "Arte",
+    riassunto: "Un ritratto privato diventa, con sfumato e sorriso, l'immagine più guardata del mondo.",
+    testo: "Lisa del Giocondo posa per Leonardo, che porta il ritratto con sé per anni, ritoccandolo fino alla morte. Lo sfumato cancella i contorni, la prospettiva aerea dissolve le montagne dietro di lei: la pittura non descrive più, respira.",
+    testo2: "Rubata nel 1911 e ritrovata nel 1913, la Gioconda diventa icona globale proprio nel Novecento, tra fotografia, cinema e riproduzioni infinite.",
+    fatto: "Da ricordare: non ha sopracciglia né ciglia, dettaglio perso nei restauri e nei secoli.",
+    tag: ["Rinascimento", "ritratto", "sfumato", "Leonardo da Vinci"]
+  },
+  {
+    ordine: 1543, dataBreve: "1543", dataPrecisa: "24 maggio 1543",
+    luogo: "Frombork, Prussia (oggi Polonia)",
+    titolo: "Copernico e il Sole al centro",
+    categoria: "Scienza",
+    riassunto: "Il De revolutionibus sposta la Terra dal centro dell'universo e avvia la rivoluzione scientifica.",
+    testo: "Niccolò Copernico pubblica il De revolutionibus orbium coelestium nell'anno della morte. Il modello eliocentrico spiega con eleganza i moti retrogradi dei pianeti, riducendo gli epicicli tolemaici a un'illusione prospettica di una Terra in movimento.",
+    testo2: "Keplero, Galileo e Newton completeranno il quadro: l'universo diventa leggibile con la matematica, non più con l'autorità degli antichi.",
+    fatto: "Da ricordare: il libro uscì mentre l'autore era in fin di vita; la leggenda vuole che ne sfogliò una copia il giorno stesso della morte.",
+    tag: ["astronomia", "eliocentrismo", "rivoluzione scientifica"]
+  },
+  {
+    ordine: 1781, dataBreve: "1781", dataPrecisa: "maggio 1781, prima edizione",
+    luogo: "Königsberg, Prussia",
+    titolo: "Kant e la Critica della ragion pura",
+    categoria: "Filosofia",
+    riassunto: "La ragione scopre i propri confini: nasce la filosofia critica e l'idea moderna di limite.",
+    testo: "Immanuel Kant risponde a razionalisti ed empiristi con una mossa nuova: non è la mente a conformarsi alle cose, sono i fenomeni a conformarsi alle strutture della mente, spazio e tempo. Di Dio, anima e mondo come totalità si può pensare, ma non avere scienza.",
+    testo2: "Il criticismo fonda l'autonomia morale e prepara idealismo tedesco e filosofia contemporanea: sapere dove la ragione deve fermarsi è già una forma di libertà.",
+    fatto: "Da ricordare: Kant usciva a passeggio con tale regolarità che i vicini regolavano gli orologi.",
+    tag: ["illuminismo", "epistemologia", "etica", "criticismo"]
+  },
+  {
+    ordine: 1789, dataBreve: "1789", dataPrecisa: "14 luglio 1789",
+    luogo: "Parigi, Bastiglia",
+    titolo: "La presa della Bastiglia",
+    categoria: "Politica",
+    riassunto: "La fortezza reale cade in un giorno: comincia la Rivoluzione francese.",
+    testo: "In cerca di polvere da sparo e simbolo dell'arbitrio regio, i parigini assaltano la Bastiglia, difesa da una piccola guarnigione. Il governatore de Launay viene linciato. Luigi XVI annota sul diario «Rien»; è invece l'inizio della fine dell'assolutismo.",
+    testo2: "Dalla Dichiarazione dei diritti dell'uomo alla Repubblica, dal Terrore a Napoleone: il 14 luglio resta la festa nazionale francese e il simbolo moderno di ogni rivolta per la cittadinanza.",
+    fatto: "Da ricordare: dentro la fortezza c'erano solo sette prigionieri, ma milioni di significati.",
+    tag: ["rivoluzione", "diritti", "Francia", "modernità"]
+  },
+  {
+    ordine: 1905, dataBreve: "1905", dataPrecisa: "marzo – settembre 1905",
+    luogo: "Berna, Ufficio brevetti",
+    titolo: "L'annus mirabilis di Einstein",
+    categoria: "Scienza",
+    riassunto: "Un impiegato ventiseienne pubblica quattro articoli che riscrivono spazio, tempo e materia.",
+    testo: "Albert Einstein, tecnico all'Ufficio brevetti di Berna, pubblica su Annalen der Physik l'effetto fotoelettrico (i quanti di luce), il moto browniano (prova degli atomi), la relatività speciale e l'equivalenza massa-energia, E = mc².",
+    testo2: "Tempo e simultaneità diventano relativi all'osservatore. Dieci anni dopo la relatività generale farà della gravità una curvatura dello spaziotempo.",
+    fatto: "Da ricordare: il Nobel del 1921 arrivò per l'effetto fotoelettrico, non per la relatività.",
+    tag: ["fisica", "relatività", "quanti", "Novecento"]
+  },
+  {
+    ordine: 1937, dataBreve: "1937", dataPrecisa: "giugno 1937, Esposizione di Parigi",
+    luogo: "Parigi, padiglione spagnolo / Guernica",
+    titolo: "Picasso dipinge Guernica",
+    categoria: "Arte",
+    riassunto: "Il bombardamento di una cittadina basca diventa un manifesto universale contro la guerra.",
+    testo: "Il 26 aprile 1937 l'aviazione nazista rade al suolo Guernica. Picasso, a Parigi, risponde con una tela di otto metri in bianco, nero e grigio: toro, cavallo ferito, madre col figlio morto, lampada-occhio. Nessun sangue, eppure tutto sanguina.",
+    testo2: "Esposta in tournée per raccogliere fondi repubblicani, oggi è al Reina Sofía di Madrid: la prova che l'arte può tenere memoria dove la cronaca viene censurata.",
+    fatto: "Da ricordare: a un ufficiale che chiese «l'ha fatto lei questo orrore?», Picasso rispose «No, l'avete fatto voi».",
+    tag: ["guerra civile spagnola", "cubismo", "memoria", "Pablo Picasso"]
+  }
+];
+
+const COLORI = { Politica: "#a63a2b", Scienza: "#3b4bd8", Arte: "#c9962e", Filosofia: "#7d8c7a" };
+
+const linea = document.getElementById("linea");
+const filtri = document.getElementById("filtri");
+const ricerca = document.getElementById("ricerca");
+const esito = document.getElementById("esito");
+const vuoto = document.getElementById("vuoto");
+const velo = document.getElementById("velo");
+const modale = document.getElementById("modale");
+let categoriaAttiva = "tutti";
+let ultimoFocus = null;
+
+function romani(n){
+  const t = [[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];
+  let s = "";
+  for (const [v,r] of t){ while(n>=v){ s+=r; n-=v; } }
+  return s || "—";
+}
+
+function filtra(){
+  const q = ricerca.value.trim().toLowerCase();
+  return EVENTI
+    .slice().sort((a,b)=>a.ordine-b.ordine)
+    .filter(e => categoriaAttiva==="tutti" || e.categoria===categoriaAttiva)
+    .filter(e => !q || (e.titolo+" "+e.luogo+" "+e.riassunto+" "+e.testo+" "+e.tag.join(" ")).toLowerCase().includes(q));
+}
+
+function disegna(){
+  const lista = filtra();
+  linea.innerHTML = "";
+  document.getElementById("contatore").textContent = romani(lista.length);
+  esito.textContent = lista.length
+    ? lista.length + (lista.length===1 ? " evento visibile" : " eventi visibili") + (categoriaAttiva!=="tutti" ? ", categoria " + categoriaAttiva : "") + (ricerca.value.trim() ? ", ricerca «" + ricerca.value.trim() + "»" : "")
+    : "";
+  vuoto.classList.toggle("visibile", lista.length===0);
+
+  lista.forEach(e => {
+    const art = document.createElement("article");
+    art.className = "voce";
+    art.style.setProperty("--colore", COLORI[e.categoria]);
+    art.innerHTML =
+      '<span class="nodo" aria-hidden="true"></span>' +
+      '<button type="button" class="scheda-btn" aria-haspopup="dialog">' +
+        '<span class="scheda-corpo" style="display:block">' +
+          '<span class="data">' + e.dataBreve + '</span><br>' +
+          '<span class="categoria">' + e.categoria + '</span>' +
+          '<span class="titolo" style="display:block">' + e.titolo + '</span>' +
+          '<span class="riassunto">' + e.riassunto + '</span>' +
+          '<span class="apri"><span>' + e.luogo + '</span><span>Apri scheda</span></span>' +
+        '</span>' +
+      '</button>';
+    art.querySelector("button").addEventListener("click", () => apri(e));
+    linea.appendChild(art);
+  });
+}
+
+function apri(e){
+  ultimoFocus = document.activeElement;
+  modale.style.setProperty("--colore", COLORI[e.categoria]);
+  document.getElementById("m-data").textContent = e.dataBreve;
+  document.getElementById("m-luogo").textContent = e.dataPrecisa + " · " + e.luogo;
+  document.getElementById("m-cat").textContent = e.categoria;
+  document.getElementById("m-titolo").textContent = e.titolo;
+  document.getElementById("m-testo").textContent = e.testo;
+  document.getElementById("m-testo2").textContent = e.testo2;
+  document.getElementById("m-fatto").innerHTML = "";
+  const s = document.createElement("strong"); s.textContent = "Dettaglio. ";
+  document.getElementById("m-fatto").append(s, document.createTextNode(e.fatto));
+  const tl = document.getElementById("m-tag");
+  tl.innerHTML = "";
+  e.tag.forEach((t,i) => {
+    const b = document.createElement("span");
+    b.className = "tag" + (i>1 ? " secondario" : "");
+    b.textContent = t;
+    tl.appendChild(b);
+  });
+  velo.classList.add("aperto");
+  document.body.style.overflow = "hidden";
+  document.getElementById("chiudi").focus();
+}
+
+function chiudi(){
+  velo.classList.remove("aperto");
+  document.body.style.overflow = "";
+  if (ultimoFocus) ultimoFocus.focus();
+}
+
+filtri.addEventListener("click", (ev) => {
+  const b = ev.target.closest(".filtro");
+  if(!b) return;
+  categoriaAttiva = b.dataset.cat;
+  filtri.querySelectorAll(".filtro").forEach(x => x.setAttribute("aria-pressed", String(x===b)));
+  disegna();
+});
+ricerca.addEventListener("input", disegna);
+document.getElementById("azzera").addEventListener("click", () => {
+  categoriaAttiva = "tutti"; ricerca.value = "";
+  filtri.querySelectorAll(".filtro").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.cat==="tutti")));
+  disegna();
+});
+document.getElementById("chiudi").addEventListener("click", chiudi);
+velo.addEventListener("click", (ev) => { if(ev.target===velo) chiudi(); });
+document.addEventListener("keydown", (ev) => {
+  if(ev.key==="Escape" && velo.classList.contains("aperto")) chiudi();
+});
+
+document.getElementById("btn-export").addEventListener("click", apriExport);
+document.getElementById("exp-annulla").addEventListener("click", chiudiExport);
+document.getElementById("velo-export").addEventListener("click", (ev) => {
+  if (ev.target === document.getElementById("velo-export")) chiudiExport();
+});
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape" && document.getElementById("velo-export").classList.contains("aperto")) chiudiExport();
+});
+document.querySelectorAll("#velo-export input").forEach(i => i.addEventListener("change", riepilogoExport));
+document.getElementById("exp-genera").addEventListener("click", generaExport);
+
+const veloExport = document.getElementById("velo-export");
+
+function apriExport(){
+  ultimoFocus = document.activeElement;
+  riepilogoExport();
+  veloExport.classList.add("aperto");
+  document.body.style.overflow = "hidden";
+  document.getElementById("exp-genera").focus();
+}
+
+function chiudiExport(){
+  veloExport.classList.remove("aperto");
+  document.body.style.overflow = "";
+  if (ultimoFocus) ultimoFocus.focus();
+}
+
+function scelta(nome){
+  const el = document.querySelector('#velo-export input[name="' + nome + '"]:checked');
+  return el ? el.value : null;
+}
+
+function eventiExport(){
+  if (document.getElementById("exp-visibili").checked) return filtra();
+  return EVENTI.slice().sort((a,b) => a.ordine - b.ordine);
+}
+
+function inBlocchi(lista, n){
+  const out = []; const base = Math.floor(lista.length / n); let resto = lista.length % n;
+  let i = 0;
+  for (let b = 0; b < n && i < lista.length; b++){
+    const dim = base + (resto > 0 ? 1 : 0);
+    if (resto > 0) resto--;
+    out.push(lista.slice(i, i + dim)); i += dim;
+  }
+  return out.filter(b => b.length);
+}
+
+function riepilogoExport(){
+  const lista = eventiExport();
+  const formato = scelta("formato");
+  const orientamento = scelta("orientamento");
+  const n = formato === "png" ? parseInt(scelta("blocchi"), 10) : 1;
+  document.getElementById("gruppo-blocchi").style.display = formato === "png" ? "" : "none";
+  const pezzi = formato === "png" ? inBlocchi(lista, n) : [lista];
+  const dettagli = pezzi.map(p => p.length).join(" + ");
+  const cosa = formato === "png"
+    ? pezzi.length + (pezzi.length === 1 ? " immagine " : " immagini ") + orientamento + " (" + dettagli + " eventi)"
+    : "documento " + orientamento + " da " + lista.length + " eventi";
+  document.getElementById("exp-riepilogo").innerHTML =
+    lista.length === 0 ? "Nessun evento da esportare con questi filtri."
+    : "Pronto: <strong>" + lista.length + " eventi</strong> in " + cosa + ".";
+}
+
+function intestazioneFiltri(){
+  const parti = [];
+  if (categoriaAttiva !== "tutti") parti.push("categoria " + categoriaAttiva);
+  if (ricerca.value.trim()) parti.push("ricerca «" + ricerca.value.trim() + "»");
+  return parti.length ? "Selezione: " + parti.join(", ") : "Tutti gli eventi in ordine cronologico";
+}
+
+function costruisciFoglio(lista, orientamento){
+  const oggi = new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  const eventi = lista.map(e =>
+    '<section class="f-evento" style="border-color:' + COLORI[e.categoria] + '">' +
+      '<div class="f-data">' + e.dataBreve + '</div>' +
+      '<span class="f-cat">' + e.categoria + '</span>' +
+      '<h2>' + e.titolo + '</h2>' +
+      '<div class="f-luogo">' + e.dataPrecisa + " · " + e.luogo + '</div>' +
+      '<p>' + e.testo + '</p><p>' + e.testo2 + '</p>' +
+      '<div class="f-tag">Tag: ' + e.tag.join(", ") + '</div>' +
+    '</section>'
+  ).join("");
+  document.getElementById("foglio").innerHTML =
+    '<div class="f-copertina"><div class="f-marchio">Meridiani del tempo · ' + oggi + '</div>' +
+    '<h1>Linea del tempo</h1><div class="f-meta">' + intestazioneFiltri() + '</div></div>' +
+    '<div class="f-eventi-' + orientamento + '">' + eventi + '</div>' +
+    '<div class="f-piede">Meridiani del tempo · ' + lista.length + ' eventi · esportato il ' + oggi + '</div>';
+  document.getElementById("stile-pagina").textContent =
+    "@page{size:A4 " + (orientamento === "orizzontale" ? "landscape" : "portrait") + "; margin:14mm}";
+}
+
+function costruisciPalco(pezzi, orientamento){
+  const palco = document.getElementById("palco");
+  palco.innerHTML = "";
+  pezzi.forEach((blocco, i) => {
+    const slide = document.createElement("div");
+    slide.className = "slide slide-" + orientamento;
+    const schede = blocco.map(e =>
+      '<div class="slide-scheda" style="border-top-color:' + COLORI[e.categoria] + '">' +
+        '<div class="slide-data">' + e.dataBreve + '</div>' +
+        '<span class="slide-cat">' + e.categoria + '</span>' +
+        '<h3>' + e.titolo + '</h3>' +
+        '<div class="slide-luogo">' + e.dataPrecisa + " · " + e.luogo + '</div>' +
+        '<p>' + e.riassunto + '</p>' +
+      '</div>'
+    ).join("");
+    slide.innerHTML =
+      '<div class="slide-testa"><b>Meridiani del tempo</b><span>Blocco ' + (i + 1) + ' di ' + pezzi.length + '</span></div>' +
+      '<div class="slide-griglia-' + orientamento + '">' + schede + '</div>';
+    palco.appendChild(slide);
+  });
+  return Array.from(palco.children);
+}
+
+function caricaHtml2Canvas(){
+  if (window.html2canvas) return Promise.resolve(window.html2canvas);
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    s.onload = () => resolve(window.html2canvas);
+    s.onerror = () => reject(new Error("libreria non caricata"));
+    document.head.appendChild(s);
+  });
+}
+
+async function generaExport(){
+  const lista = eventiExport();
+  if (!lista.length) return;
+  const formato = scelta("formato");
+  const orientamento = scelta("orientamento");
+
+  if (formato === "pdf"){
+    costruisciFoglio(lista, orientamento);
+    chiudiExport();
+    setTimeout(() => window.print(), 60);
+    return;
+  }
+
+  const msg = document.getElementById("exp-riepilogo");
+  msg.textContent = "Generazione immagini in corso…";
+  try {
+    const html2canvas = await caricaHtml2Canvas();
+    const pezzi = inBlocchi(lista, parseInt(scelta("blocchi"), 10));
+    const slides = costruisciPalco(pezzi, orientamento);
+    const sigla = orientamento === "orizzontale" ? "O" : "V";
+    for (let i = 0; i < slides.length; i++){
+      const canvas = await html2canvas(slides[i], { backgroundColor: "#edebe1", scale: 2 });
+      const a = document.createElement("a");
+      a.download = "meridiani-" + sigla + "-" + String(i + 1).padStart(2, "0") + ".png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      await new Promise(r => setTimeout(r, 500));
+    }
+    msg.textContent = "Scaricate " + slides.length + " immagini (meridiani-" + sigla + "-NN.png).";
+  } catch (err) {
+    msg.textContent = "Export non riuscito (serve connessione). Riprova o usa il PDF.";
+  }
+}
+
+disegna();
+costruisciFoglio(EVENTI.slice().sort((a,b) => a.ordine - b.ordine), "verticale");
+
+disegna();
+</script>
+</body>
+</html>

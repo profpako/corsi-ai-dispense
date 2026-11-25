@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ius Interattivo — Analisi di Casi Giuridici</title>
+<style>
+:root{
+  --bg:#0f172a; --bg2:#1e293b; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+  --accent:#b45309; --accent2:#0f766e; --line:#e2e8f0; --ok:#15803d; --ko:#b91c1c; --warn:#a16207;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;background:#f1f5f9;color:var(--ink);line-height:1.6}
+.topbar{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#0f766e 100%);color:#fff;padding:28px 20px 34px;text-align:center}
+.topbar h1{margin:0;font-size:clamp(1.6rem,4vw,2.6rem);letter-spacing:.5px}
+.topbar h1 span{color:#fbbf24}
+.topbar p{margin:10px auto 0;max-width:760px;opacity:.9;font-family:system-ui,sans-serif;font-size:.98rem}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;font-family:system-ui,sans-serif}
+.badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:.8rem}
+.wrap{max-width:980px;margin:-18px auto 60px;padding:0 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(15,23,42,.12);border:1px solid var(--line);overflow:hidden}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:14px 18px;background:#fff;border-bottom:1px solid var(--line);font-family:system-ui,sans-serif;font-size:.85rem;position:sticky;top:0;z-index:5}
+.progress{flex:1;min-width:180px;height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#f59e0b);transition:width .4s}
+.score{font-weight:700;background:#0f172a;color:#fbbf24;padding:4px 12px;border-radius:999px}
+.screen{padding:26px}
+@media(min-width:700px){.screen{padding:36px}}
+h2{margin:0 0 8px;font-size:1.6rem}
+.sub{color:var(--muted);font-family:system-ui,sans-serif;font-size:.92rem;margin-bottom:16px}
+.facts{background:#fffbeb;border:1px solid #fde68a;border-left:6px solid var(--accent);border-radius:12px;padding:16px 18px;margin:16px 0}
+.facts h3,.qbox h3{margin:0 0 8px;font-family:system-ui,sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.qbox{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin:18px 0}
+.qbox p.q{font-size:1.15rem;font-weight:bold;margin:0 0 6px}
+.options{display:grid;gap:12px;margin:16px 0}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;font-size:1rem;font-family:Georgia,serif;transition:.15s}
+.opt:hover{border-color:var(--accent);background:#fffbeb;transform:translateY(-1px)}
+.opt small{display:block;font-family:system-ui,sans-serif;color:var(--muted);margin-top:4px}
+.opt:disabled{cursor:default;opacity:.95}
+.opt.picked-correct{border-color:var(--ok);background:#f0fdf4}
+.opt.picked-wrong{border-color:var(--ko);background:#fef2f2}
+.opt.dim{opacity:.6}
+.feedback{border-radius:12px;padding:18px;margin:16px 0;font-family:system-ui,sans-serif;display:none}
+.feedback.show{display:block;animation:pop .25s ease}
+.feedback.ok{background:#f0fdf4;border:1px solid #86efac}
+.feedback.ko{background:#fef2f2;border:1px solid #fca5a5}
+.feedback.mid{background:#eff6ff;border:1px solid #93c5fd}
+.feedback h4{margin:0 0 6px}
+.articles{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.art{background:#0f172a;color:#fff;font-size:.78rem;padding:5px 10px;border-radius:8px;border:1px solid #334155}
+.art b{color:#fbbf24}
+.conseq{background:rgba(255,255,255,.7);border:1px dashed #94a3b8;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:.9rem}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+button.btn{font-family:system-ui,sans-serif;font-weight:700;border:0;border-radius:10px;padding:12px 20px;cursor:pointer;font-size:.95rem}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#1e293b}
+.btn-gold{background:#f59e0b;color:#0f172a}
+.btn-ghost{background:#fff;border:1px solid var(--line)}
+.cases{display:grid;gap:16px;margin:18px 0}
+@media(min-width:720px){.cases{grid-template-columns:1fr 1fr 1fr}}
+.case-card{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:10px}
+.case-card h3{margin:0;font-size:1.15rem}
+.tag{font-family:system-ui,sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:999px;display:inline-block;width:fit-content}
+.t-civile{background:#dcfce7;color:#166534}.t-contr{background:#dbeafe;color:#1e40af}.t-etico{background:#fae8ff;color:#86198f}
+.case-card p{font-family:system-ui,sans-serif;font-size:.88rem;color:#475569;margin:0}
+.case-meta{font-family:system-ui,sans-serif;font-size:.78rem;color:var(--muted)}
+.verdict{background:linear-gradient(180deg,#0f172a,#1e293b);color:#fff;border-radius:14px;padding:24px;margin:16px 0}
+.verdict h3{margin-top:0;color:#fbbf24}
+.timeline{font-family:system-ui,sans-serif;font-size:.85rem;margin:14px 0;border-left:3px solid var(--line);padding-left:14px;display:grid;gap:10px}
+.timeline div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.glossary{display:grid;gap:8px;font-family:system-ui,sans-serif;font-size:.85rem;margin-top:12px}
+.glossary details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+footer{text-align:center;color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;padding:20px}
+.kbd{font-family:system-ui,sans-serif;background:#0f172a;color:#fff;border-radius:6px;padding:1px 7px;font-size:.8rem}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <h1>⚖️ <span>Ius</span> Interattivo</h1>
+  <p>Laboratorio di ragionamento giuridico: leggi il caso, qualifica i fatti, decidi come il giudice. Ogni scelta produce conseguenze legali e cita gli articoli applicati.</p>
+  <div class="badges"><span>📚 Cod. Civile</span><span>🏛️ Costituzione</span><span>⚕️ Legge 24/2017</span><span>🎓 Uso didattico</span></div>
+</header>
+
+<div class="wrap">
+<div class="card">
+  <div class="toolbar">
+    <div id="crumb">🏠 Home</div>
+    <div class="progress" title="Avanzamento"><i id="bar"></i></div>
+    <div class="score" id="score">⭐ 0 pt</div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <h2>Scegli il caso da decidere</h2>
+    <div class="sub">3 fascicoli · 4 passaggi ciascuno · 2–3 opzioni per passaggio · punteggio da 0 a 100 per caso</div>
+    <div class="cases" id="caseList"></div>
+    <div class="facts">
+      <h3>ℹ️ Come funziona</h3>
+      <div style="font-family:system-ui,sans-serif;font-size:.9rem">
+      1. Leggi i <b>fatti</b>. 2. Scegli la <b>qualificazione giuridica</b> o la <b>decisione</b> (usa tasti <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>). 3. Leggi <b>conseguenze + articoli</b>. 4. Vai avanti fino alla <b>sentenza finale</b>. Le scelte sbagliate non bloccano: il processo continua con conseguenze diverse, come in udienza reale.
+      </div>
+    </div>
+    <div class="glossary" id="homeGloss"></div>
+  </div>
+
+  <!-- CASE -->
+  <div class="screen hidden" id="screen-case">
+    <div id="caseHeader"></div>
+    <div class="facts"><h3>📁 Fatti di causa</h3><div id="facts"></div></div>
+    <div class="qbox"><h3 id="stepLabel">Passaggio</h3><p class="q" id="question"></p><div class="sub" id="context" style="margin:0"></div></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="btnrow">
+      <button class="btn btn-ghost" id="btnBack">← Cambia caso</button>
+      <button class="btn btn-primary hidden" id="btnNext">Prossimo passaggio →</button>
+      <button class="btn btn-gold hidden" id="btnVerdict">Leggi la sentenza ⚖️</button>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="screen hidden" id="screen-verdict">
+    <h2>⚖️ Sentenza</h2>
+    <div class="sub" id="verdictSub"></div>
+    <div class="verdict" id="verdictBox"></div>
+    <h3 style="font-family:system-ui">📜 Percorso decisionale</h3>
+    <div class="timeline" id="timeline"></div>
+    <div class="btnrow">
+      <button class="btn btn-ghost" id="btnHome">🏠 Altri casi</button>
+      <button class="btn btn-primary" id="btnRetry">↻ Rigenera il processo</button>
+      <button class="btn btn-gold" id="btnPrint">🖨️ Stampa / PDF</button>
+    </div>
+  </div>
+
+</div>
+<footer>Strumento didattico — gli articoli sono citati in forma semplificata. Verifica sempre il testo vigente su Normattiva. Punteggio salvato in locale.</footer>
+</div>
+
+<script>
+const CASES = [
+{
+id:"supermercato", area:"Responsabilità civile", tagClass:"t-civile",
+title:"La caduta nel supermercato",
+meta:"⏱ 10 min · 🟢 Base · artt. 2043, 2051, 1227, 2056 c.c.",
+short:"Cliente scivola su olio in corsia. Il supermercato è custode? Quanto risarcire se il cliente guardava il telefono?",
+facts:`La signora Bianchi, il 12/03/2025, scivola su una macchia d'olio nella corsia 4 del supermercato <b>MaxiMercato S.p.A.</b> e riporta frattura del polso (20 gg prognosi, €4.800 danni documentati). Le telecamere mostrano: macchia presente da 40 minuti, nessun cartello, addetti mai intervenuti. Ma Bianchi camminava guardando il telefono. MaxiMercato nega ogni colpa: «pavimento insidioso? doveva stare attenta».`,
+steps:[
+{label:"Passaggio 1 di 4 — Qualificazione", q:"Come qualifichi giuridicamente la domanda di Bianchi?",
+ctx:"La qualificazione decide regime probatorio e difese. Scegli la norma cardine.",
+options:[
+{t:"Art. 2043 c.c. — fatto illecito generico: Bianchi deve provare dolo/colpa del supermercato", pts:20, level:"mid",
+ art:["art. 2043 c.c. — risarcimento fatto illecito","art. 2697 c.c. — onere della prova"],
+ cons:"Conseguenza: applichi la clausola generale. Bianchi deve provare la colpa specifica del commesso (chi, quando, negligenza). Prova diabolicamente difficile dopo 40 min senza testimoni. Il custode ringrazia.",
+ fb:"Parzialmente corretto ma sfavorevole all'attore: il 2043 richiede prova di colpa. La giurisprudenza (Cass. n. 14719/2023) inquadra questi casi nel più favorevole <b>art. 2051</b>."},
+{t:"Art. 2051 c.c. — danno da cose in custodia: il supermercato risponde salvo caso fortuito", pts:35, level:"ok",
+ art:["art. 2051 c.c. — danno cagionato da cosa in custodia","Cass. Sez. Un. n. 20867/2008"],
+ cons:"Conseguenza: responsabilità oggettiva. Basta provare nesso tra cosa (pavimento unto in custodia) e danno. MaxiMercato può liberarsi solo provando il <b>caso fortuito</b> (es. macchia appena versata da terzo imprevedibile). Qui 40 min di inerzia = custodia negligente.",
+ fb:"✔ Esatto. Pavimento + scaffali sono cose in custodia del gestore. Regime oggettivo: inversione dell'onere sul custode."},
+{t:"Art. 2050 c.c. — attività pericolose: il supermercato è attività pericolosa", pts:5, level:"ko",
+ art:["art. 2050 c.c. — responsabilità per attività pericolose"],
+ cons:"Conseguenza: il giudice rigetta l'inquadramento. Gestire un supermercato non è attività pericolosa ex 2050 (diversa da es. deposito esplosivi). Perdi il rigore probatorio e devi riqualificare ex 2043/2051.",
+ fb:"✘ Errato: il 2050 riguarda attività intrinsecamente pericolose per natura o mezzi (es. artiglieria, chimica). Non estendibile al commercio al dettaglio."}
+]},
+{label:"Passaggio 2 di 4 — Prova", q:"Il giudice sull'onere della prova: cosa deve dimostrare ciascuna parte?",
+ctx:"MaxiMercato dice: «provate la nostra colpa». Bianchi dice: «provino loro il fortuito».",
+options:[
+{t:"Bianchi prova solo caduta + danno + nesso; MaxiMercato deve provare il caso fortuito", pts:35, level:"ok",
+ art:["art. 2051 c.c.","art. 2697 c.c. — ripartizione onere","Cass. n. 9065/2022"],
+ cons:"Conseguenza: Bianchi allega scontrino, referto, foto macchia. MaxiMercato non prova fortuito (nessun intervento in 40 min, nessun cartello) → soccombente sul punto. Si passa alla quantificazione.",
+ fb:"✔ Corretto: nel 2051 l'attore prova evento e nesso; il custode ha onere liberatorio del fortuito, qui mancato."},
+{t:"Bianchi deve provare anche la colpa specifica del dipendente che non ha pulito", pts:10, level:"ko",
+ art:["art. 2043 c.c.","art. 2697 c.c."],
+ cons:"Conseguenza: confondi i regimi. Imponi a Bianchi una probatio diabolica (turni, mansionari). Il giudice d'appello riformerebbe: in 2051 la colpa non va provata.",
+ fb:"✘ Sbagliato regime: stai ragionando da 2043. In custodia la colpa è irrilevante; conta solo fortuito del custode."},
+{t:"Basta la caduta: danno in re ipsa, nessuna prova del nesso", pts:10, level:"mid",
+ art:["art. 1223 c.c. — danno","art. 2051 c.c."],
+ cons:"Conseguenza: il giudice ti corregge. Il nesso causale va sempre provato (caduta proprio su quell'olio, non per malore). Senza nesso, domanda rigettata. Per fortuna qui video + referto lo provano.",
+ fb:"⚠ Mezzo punto: il danno non è mai automatico. Serve comunque prova del collegamento eziologico cosa→evento."}
+]},
+{label:"Passaggio 3 di 4 — Concorso di colpa", q:"Le immagini mostrano Bianchi al telefono. Che rilevanza dai alla sua distrazione?",
+ctx:"Art. 1227 c.c. richiamato dall'art. 2056 per l'illecito. La distrazione può ridurre — o escludere — il risarcimento.",
+options:[
+{t:"Nessuna rilevanza: il custode risponde al 100%, la distrazione è irrilevante", pts:5, level:"ko",
+ art:["art. 1227 c.c. — concorso del fatto colposo del creditore","art. 2056 c.c. — valutazione danni da illecito"],
+ cons:"Conseguenza: ignori il 1227 co.1. In appello il risarcimento verrebbe ridotto: il creditore che con colpa concorre al danno sopporta una quota. Sentenza riformabile.",
+ fb:"✘ Errato: la disattenzione della vittima è colpa concorrente rilevante ex art. 1227 co.1."},
+{t:"Concorso di colpa: riduzione proporzionale (es. −30%), ma non esclusione", pts:35, level:"ok",
+ art:["art. 1227 co.1 c.c. — diminuzione proporzionale","art. 2056 c.c.","Cass. n. 6481/2021"],
+ cons:"Conseguenza: il giudice riduce del 30%: €4.800 → €3.360. Il fortuito escludente (co.2) richiede condotta abnorme/imprevedibile (es. tuffo volontario), non una comune distrazione.",
+ fb:"✔ Esatto: distrazione = colpa concorrente ordinaria → riduzione, non azzeramento. Il co.2 (esclusione) vale solo per condotte del tutto imprevedibili."},
+{t:"Colpa esclusiva di Bianchi: domanda rigettata, caso fortuito incidente", pts:10, level:"mid",
+ art:["art. 1227 co.2 c.c. — fatto esclusivo","art. 2051 c.c. — caso fortuito"],
+ cons:"Conseguenza: tesi estrema del convenuto. Il giudice la respinge: camminare col telefono in corsia è prevedibilissimo; il custode doveva comunque presidiare 40 min. Al massimo riduzione, non rigetto.",
+ fb:"⚠ Difesa del supermercato, ma eccessiva: il fortuito incidente richiede interruzione totale del nesso. Qui la macchia resta causa principale."}
+]},
+{label:"Passaggio 4 di 4 — Liquidazione", q:"Come liquidi il danno da lesione (frattura polso, 20 gg)?",
+ctx:"Danno documentato €4.800 (spese + mancato guadagno). Bianchi chiede anche €2.000 di danno morale 'a forfait'.",
+options:[
+{t:"€3.360 (danno provato −30% ex 1227) + morale solo se provato e secondo tabelle, niente forfait", pts:35, level:"ok",
+ art:["art. 1223 c.c. — danno emergente + lucro cessante","art. 1226 c.c. — valutazione equitativa","art. 2056 c.c.","Tabelle Milano lesioni micropermanenti"],
+ cons:"Conseguenza: sentenza solida e appell-proof. Riconosci solo poste provate (scontrini, buste paga), morale parametrizzato a tabelle. Totale ≈ €3.360 + rivalutazione. Spese compensate al 30%.",
+ fb:"✔ Perfetto: il 1223 impone certezza; il 1226 consente equità solo se il danno c'è ma è inquantificabile con precisione. Niente danni punitivi in Italia."},
+{t:"€6.800 pieni senza riduzioni, incluso morale forfettario richiesto", pts:5, level:"ko",
+ art:["art. 1223 c.c.","art. 1227 c.c."],
+ cons:"Conseguenza: sentenza riformata in appello. Violati 1227 (mancata riduzione) e 2697 (morale non provato). Il giudice liquida senza criteri = motivazione apparente, nulla.",
+ fb:"✘ Errato: cumuli due errori — ignori il concorso già accertato e liquidi un morale indimostrato e senza tabelle."}
+]}
+],
+verdict:(s,h)=>s>=120?{t:"ACCOGLIMENTO PARZIALE — condanna a €3.360 + rivalutazione",d:`Motivi: responsabilità ex <b>art. 2051 c.c.</b>; fortuito non provato; <b>riduzione 30% ex artt. 1227 co.1 e 2056</b>; liquidazione ex <b>artt. 1223–1226</b> su poste provate. Punteggio ${s}/140.`}:s>=70?{t:"ACCOGLIMENTO con motivazione fragile — a rischio riforma",d:`Hai individuato il nucleo (${h.filter(x=>x.level==="ok").length}/4 passaggi corretti) ma con sbavature su prova o quantificazione. Il dispositivo regge (${s}/140), la motivazione va integrata con Cass. 20867/2008.`}:{t:"RIGETTO / NULLITÀ — riscrivi la motivazione",d:`Percorso insufficiente (${s}/140). Errori di qualificazione (2050/2043) o liquidazione forfettaria espongono a riforma integrale. Ristudia 2051–2056 e riprova.`}
+},
+{
+id:"software", area:"Responsabilità contrattuale", tagClass:"t-contr",
+title:"Il software mai consegnato",
+meta:"⏱ 12 min · 🟡 Intermedio · artt. 1218, 1225, 1229, 1453, 1455 c.c.",
+short:"Agenzia ordina gestionale da €30.000, consegna in ritardo e buggata. Risoluzione? Clausola tetto €2.000? Danni da fermo?",
+facts:`L'agenzia <b>Viaggi Sole S.r.l.</b> commissiona a <b>DevSoft</b> un gestionale prenotazioni (€30.000, consegna 01/02/2025, penale + clausola «responsabilità max €2.000»). DevSoft consegna il 20/04 con bug bloccanti (no pagamenti online) e sparisce per 30 gg. Sole perde la stagione (€25.000 mancati utili documentati da storico) e chiede risoluzione + risarcimento pieno. DevSoft: «ritardo tollerabile, bug minori, vale il tetto €2.000».`,
+steps:[
+{label:"Passaggio 1 di 4 — Inadempimento", q:"Come qualifichi la condotta di DevSoft?",
+ctx:"Ritardo di 80 giorni + aliud pro alio (programma inutilizzabile per lo scopo).",
+options:[
+{t:"Inadempimento grave e inesatto adempimento: ritardo + opera inidonea all'uso pattuito", pts:35, level:"ok",
+ art:["art. 1218 c.c. — responsabilità del debitore","art. 1455 c.c. — importanza dell'inadempimento"],
+ cons:"Conseguenza: apri a risoluzione + risarcimento. L'inutilizzabilità del modulo pagamenti rende l'inadempimento 'di non scarsa importanza' ex 1455: la stagione è persa.",
+ fb:"✔ Corretto: cumulo di ritardo e inesattezza funzionale. La gravità si misura sull'interesse creditorio frustrato (stagione)."},
+{t:"Mero ritardo lieve: tollerabile nel software, si chiede solo adempimento tardivo", pts:5, level:"ko",
+ art:["art. 1455 c.c.","art. 1218 c.c."],
+ cons:"Conseguenza: rigetti di fatto la domanda. Ma 80 gg + bug bloccanti + silenzio 30 gg non sono 'scarsa importanza'. Il cliente resterebbe con un software morto.",
+ fb:"✘ Minimacci il fatto: 80 giorni su una fornitura stagionale + inidoneità funzionale = grave ex 1455."},
+{t:"Solo vizi ex garanzia vendita, non inadempimento contrattuale d'appalto/servizi", pts:10, level:"mid",
+ art:["art. 1490 c.c. — garanzia vizi","art. 1218 c.c."],
+ cons:"Conseguenza: strada stretta e termini decadenziali brevi (denuncia 8 gg). Il giudice riqualifica in inadempimento di obbligazione di risultato: DevSoft doveva consegnare opera funzionante.",
+ fb:"⚠ Fuorviante: qui non è compravendita di bene standard ma obbligazione di fare su misura. Si applica 1218, non 1490."}
+]},
+{label:"Passaggio 2 di 4 — Rimedi", q:"Sole chiede risoluzione + risarcimento. Cosa decidi?",
+ctx:"Contratto a prestazioni corrispettive, inadempimento grave, diffida già inviata il 25/04 rimasta senza esito.",
+options:[
+{t:"Risoluzione ex art. 1453 + risarcimento: trattieni acconto, svincola dal contratto, danni oltre", pts:35, level:"ok",
+ art:["art. 1453 c.c. — risolubilità per inadempimento","art. 1455 c.c.","art. 1223 c.c."],
+ cons:"Conseguenza: liberi Sole dal pagare il saldo, ordini restituzione acconto se versato e apri la via al risarcimento pieno (fermo stagionale). Decisione market-standard in appalti IT.",
+ fb:"✔ Esatto: inadempimento non di scarsa importanza → risoluzione giudiziale + cumulo col risarcimento (1453 co.1)."},
+{t:"Solo adempimento coatto: dai altri 60 giorni a DevSoft, niente risoluzione", pts:10, level:"ko",
+ art:["art. 1453 c.c.","art. 1454 c.c. — diffida ad adempiere"],
+ cons:"Conseguenza: condanni Sole a una stagione persa due volte. La diffida 1454 è già scaduta inutilmente; insistere sull'adempimento viola l'interesse del creditore (termine essenziale stagionale).",
+ fb:"✘ Errato: la diffida è già stata esperita e l'interesse è venuto meno. Il 1453 consente di sciogliere il vincolo."},
+{t:"Risoluzione ma senza risarcimento: o l'una o l'altro", pts:10, level:"mid",
+ art:["art. 1453 c.c. — cumulo risoluzione + danni","art. 1223 c.c."],
+ cons:"Conseguenza: dimezzi la tutela. Il 1453 co.1 prevede espressamente il cumulo: risoluzione (liberazione) + risarcimento (ristoro). Negarlo è contra legem.",
+ fb:"⚠ Errore comune: risoluzione e risarcimento sono cumulabili, non alternativi."}
+]},
+{label:"Passaggio 3 di 4 — Clausola tetto", q:"DevSoft invoca il tetto «max €2.000». È valida?",
+ctx:"Clausola di limitazione predisposta da DevSoft, non trattata, per inadempimento con 30 gg di sparizione totale.",
+options:[
+{t:"Nulla ex art. 1229 co.1: esonero per dolo/colpa grave — sparizione e incuria = colpa grave", pts:35, level:"ok",
+ art:["art. 1229 co.1 c.c. — nullità patto esonero dolo/colpa grave","art. 1341 co.2 c.c. — clausole vessatorie"],
+ cons:"Conseguenza: disapplichi il tetto. La giurisprudenza ritiene colpa grave la totale incuria/abbandono del cliente. Il tetto cade, si apre al danno effettivo (€25.000).",
+ fb:"✔ Perfetto: il 1229 fulmina ogni patto preventivo per dolo o colpa grave. 30 gg di irreperibilità su fornitura critica = grave."},
+{t:"Valida sempre: pacta sunt servanda, Sole l'ha firmata", pts:5, level:"ko",
+ art:["art. 1229 c.c.","art. 1372 c.c."],
+ cons:"Conseguenza: applichi un patto nullo. In appello nullità rilevabile d'ufficio ex 1421: sentenza riformata e giudice esposto a critica. Il 1372 cede davanti a norma imperativa.",
+ fb:"✘ Errato: l'autonomia (1372) non può derogare al limite imperativo del 1229."},
+{t:"Valida ma riducibile equamente dal giudice come la penale", pts:10, level:"mid",
+ art:["art. 1229 c.c.","art. 1384 c.c. — riduzione penale"],
+ cons:"Conseguenza: confondi istituti. La riduzione equitativa vale per la <b>penale</b> (1384), non per il tetto esonerativo nullo. Se nullo, è nullo: non si riduce, si disapplica.",
+ fb:"⚠ Confusione: 1384 = penale manifestamente eccessiva (riducibile); 1229 = esonero per dolo/colpa grave (nullo)."}
+]},
+{label:"Passaggio 4 di 4 — Danno risarcibile", q:"Sole prova €25.000 di mancati utili (storico 3 anni). DevSoft dice 'imprevedibili'. Li riconosci?",
+ctx:"Contratto di febbraio per stagione estiva: DevSoft sapeva l'uso stagionale. Danno documentato ma oltre il prezzo (€30.000).",
+options:[
+{t:"Sì, interamente se prevedibili al momento dell'obbligazione e provati (art. 1225 + 1223)", pts:35, level:"ok",
+ art:["art. 1225 c.c. — danno prevedibile (colpa)","art. 1223 c.c. — emergente + lucro cessante","art. 2697 c.c."],
+ cons:"Conseguenza: condanni a €25.000 (lucro cessante da storico contabile). La stagionalità era nota → prevedibilità ex 1225 soddisfatta. Con dolo/colpa grave, comunque, anche l'imprevedibile sarebbe dovuto.",
+ fb:"✔ Corretto: nessun tetto pari al prezzo nel 1223. Conta prevedibilità al momento del contratto + prova rigorosa del lucro (bilanci, prenotazioni perse)."},
+{t:"No: il risarcimento non può superare il corrispettivo (€30.000 tetto naturale)", pts:5, level:"ko",
+ art:["art. 1223 c.c.","art. 1225 c.c."],
+ cons:"Conseguenza: inventi un tetto inesistente. Il 1223 non àncora il danno al prezzo: un gestionale da 30k può causare 100k di fermo. Motivazione errata.",
+ fb:"✘ Nessun articolo prevede il 'tetto prezzo'. Il limite è solo prevedibilità (1225) e certezza/prova."}
+]}
+],
+verdict:(s,h)=>s>=120?{t:"RISOLUZIONE + CONDANNA a €25.000 oltre restituzioni",d:`Motivi: inadempimento grave ex <b>artt. 1218, 1455</b>; <b>risoluzione ex 1453</b> con cumulo danni; <b>clausola tetto nulla ex 1229 co.1</b>; lucro cessante prevedibile e provato ex <b>artt. 1223, 1225</b>. Punteggio ${s}/140.`}:s>=70?{t:"RISOLUZIONE con motivazione da integrare",d:`Dispositivo corretto ma fragile su 1229/1225 (${s}/140). Rischi riduzione in appello se il tetto non è motivatamente disapplicato.`}:{t:"RIGETTO INFONDATO — riforma probabile",d:`Hai salvato DevSoft senza base (${s}/140). Ristudia 1453–1455, 1229 e 1225 e rigioca il fascicolo.`}
+},
+{
+id:"consenso", area:"Dilemma etico-giuridico", tagClass:"t-etico",
+title:"Il consenso che manca",
+meta:"⏱ 12 min · 🔴 Avanzato · artt. 13, 32 Cost. · L. 24/2017 · 1218/2043 c.c.",
+short:"Chirurgo omette un rischio raro (1%) che si avvera. Lesione curata ma senza consenso pieno. Responsabile? E se il paziente rifiuta trasfusione?",
+facts:`Il sig. Rossi (52 anni) subisce colecistectomia programmata. Il modulo firmato cita rischi «generici» ma <b>omette la lesione biliare (rischio 1%)</b>, che purtroppo si verifica. Lesione riparata con secondo intervento riuscito, +15 gg degenza, nessun postumo permanente. Rossi cita ospedale e chirurgo: «se avessi saputo, avrei atteso». L'ospedale: «intervento eseguito a regola d'arte, rischio statisticamente raro». In variante B, Rossi testimone di Geova rifiuta trasfusione salvavita in urgenza.`,
+steps:[
+{label:"Passaggio 1 di 4 — Fondamento", q:"Su cosa fondi il diritto al consenso informato?",
+ctx:"Non è cortesia: è diritto fondamentale che rende lecito toccare il corpo altrui.",
+options:[
+{t:"Artt. 13 + 32 Cost. + L. 219/2017: autodeterminazione e salute, consenso presupposto di liceità", pts:35, level:"ok",
+ art:["art. 13 Cost. — libertà personale","art. 32 Cost. — salute/autodeterminazione","L. 219/2017 — consenso informato"],
+ cons:"Conseguenza: inquadri correttamente la lesione del diritto a decidere, autonoma dalla perizia tecnica. Anche un intervento perfetto può essere illecito se senza consenso valido.",
+ fb:"✔ Esatto: Cass. 7248/2023 e Corte cost. 438/2008. Senza consenso informato, il trattamento viola 13 e 32 Cost."},
+{t:"Solo deontologia medica: galateo professionale, nessuna rilevanza giuridica", pts:5, level:"ko",
+ art:["art. 13 Cost.","Cod. deontologia art. 33"],
+ cons:"Conseguenza: rigetteresti una voce di danno ormai consolidata (danno da lesione dell'autodeterminazione). Appello certo.",
+ fb:"✘ Riduttivo: la deontologia riflette un obbligo giuridico costituzionale e legislativo (L. 219/2017)."},
+{t:"Solo art. 2043 generico: vale come qualsiasi illecito", pts:10, level:"mid",
+ art:["art. 2043 c.c.","art. 13 Cost."],
+ cons:"Conseguenza: qualificazione povera. Perde la specificità (contatto sociale, struttura vs medico, onere) e la doppia voce di danno (salute + autodeterminazione).",
+ fb:"⚠ Incompleto: il 2043 da solo non coglie contatto sociale (1218 per la struttura) né il rango costituzionale."}
+]},
+{label:"Passaggio 2 di 4 — Responsabilità", q:"Intervento a regola d'arte ma rischio non disclosed e avveratosi. Chi risponde e a che titolo?",
+ctx:"Struttura + medico. Dal 2017 doppio binario: L. 24/2017 (Gelli-Bianco).",
+options:[
+{t:"Struttura ex 1218 (contatto sociale/contratto) + medico ex 2043 salvo dolo/colpa grave verso struttura; danno da lesione autodeterminazione risarcibile", pts:35, level:"ok",
+ art:["L. 24/2017 art. 7 — struttura contrattuale, medico extracontrattuale","Cass. S.U. 577/2008","art. 1218 / 2043 c.c."],
+ cons:"Conseguenza: ripartisci correttamente oneri (struttura: prova adempimento diligente + consenso raccolto) e prescrivi a 10 anni vs 5. Riconosci danno autonomo anche con esito clinico recuperato.",
+ fb:"✔ Doppio binario Gelli-Bianco: struttura 1218 (10 anni), sanitario 2043 (5 anni, 2043 verso paziente). Lesione consenso = danno-evento autonomo."},
+{t:"Nessuno: se la tecnica è perfetta, l'omissione informativa è irrilevante", pts:5, level:"ko",
+ art:["L. 24/2017","Cass. n. 28985/2019"],
+ cons:"Conseguenza: tesi superata. Cassazione costante: omessa informazione su rischio poi avveratosi = nesso presunto con la scelta. Rigetto riformato.",
+ fb:"✘ Smentito da Cass. 28985/2019: anche con lex artis rispettata, la violazione del consenso fonda il risarcimento."},
+{t:"Solo il medico dipendente ex 1218, mai la struttura", pts:10, level:"mid",
+ art:["L. 24/2017 art. 7","art. 1228 c.c. — ausiliari"],
+ cons:"Conseguenza: inverti i poli. È la struttura a rispondere ex 1218 (anche per fatto degli ausiliari ex 1228); il medico dipendente risponde ex 2043. Condanna al soggetto sbagliato.",
+ fb:"⚠ Invertito: la struttura assorbe il rischio organizzativo (1218 + 1228); il sanitario è extracontrattuale."}
+]},
+{label:"Passaggio 3 di 4 — Nesso e prova", q:"Rossi dice 'avrei rifiutato'. Basta la sua parola (allegazione) per il nesso?",
+ctx:"Serve prova controfattuale: cosa avrebbe scelto se informato? Criteri: gravità, alternative, condizioni personali.",
+options:[
+{t:"No automatismo: controfattuale con presunzioni + onere allegatorio rafforzato (alternative, urgenza, personalità)", pts:35, level:"ok",
+ art:["art. 2697 c.c.","Cass. n. 16443/2021 — consenso e nesso","art. 2727 c.c. — presunzioni"],
+ cons:"Conseguenza: istruisci bene. Qui intervento programmato + alternativa (attesa/dieta) + nessuna urgenza → presunzione che, informato, avrebbe differito. +15 gg e secondo intervento = danno da autodeterminazione + biologico differenziale.",
+ fb:"✔ Corretto: non basta il 'disse che'. Ma nemmeno serve prova diabolica: presunzioni gravi-precise-concordanti (urgenza? alternative? proclività?)."},
+{t:"Sì, basta la dichiarazione postuma: parola del paziente = nesso", pts:5, level:"ko",
+ art:["art. 2697 c.c.","art. 2729 c.c."],
+ cons:"Conseguenza: apri a risarcimenti automatici e difensivismo. La mera affermazione ex post è auto-dichiarazione, non prova. Motivazione apparente.",
+ fb:"✘ La Cassazione esige allegazione + riscontri: auto-dichiarazione da sola non prova il controfattuale."},
+{t:"Mai risarcibile: danno esistenziale non patrimoniale abrogato", pts:10, level:"mid",
+ art:["art. 2059 c.c. — danni non patrimoniali","Corte cost. 184/1986"],
+ cons:"Conseguenza: confondi stagioni. Il danno non patrimoniale è risarcibile ex 2059 nei casi previsti (illecito costituzionalmente rilevante = 13/32). L'autodeterminazione lo è.",
+ fb:"⚠ Superato: S.U. 26972/2008. Il non patrimoniale da lesione di diritti inviolabili è pieno."}
+]},
+{label:"Passaggio 4 di 4 — Variante etica", q:"Variante B: Rossi, cosciente, rifiuta trasfusione salvavita per fede. Il medico trasfonde per salvarlo. Responsabile?",
+ctx:"Dissenso attuale, libero, informato vs dovere di curare. Art. 1 L. 219/2017.",
+options:[
+{t:"Sì: trasfusione contro dissenso = violazione 13/32 Cost. e L. 219/2017, anche se salva la vita", pts:35, level:"ok",
+ art:["art. 13 Cost.","art. 32 co.2 Cost. — nessuno obbligato a trattamento","L. 219/2017 art. 1 — dissenso vincolante","Cass. n. 23676/2008"],
+ cons:"Conseguenza: condanni (almeno per lesione autodeterminazione) pur con esito salvifico. Il dissenso attuale prevale sul paternalismo: il medico doveva rispettare e documentare, attivando alternative (emoderivati accettati, cell-saver).",
+ fb:"✔ Il dissenso informato e attuale è vincolante. Curare contro volontà è illecito (salvo TSO/incapacità). Principio cardine: dignità > efficienza salvifica."},
+{t:"No: lo stato di necessità (art. 54 c.p.) scrima sempre il medico che salva", pts:10, level:"mid",
+ art:["art. 54 c.p. — stato di necessità","L. 219/2017"],
+ cons:"Conseguenza: applichi male la scriminante. Il 54 richiede pericolo non altrimenti evitabile E assenza di opposizione cosciente del titolare. Contro dissenso espresso, la scriminante cede.",
+ fb:"⚠ La necessità non prevale sul dissenso attuale del capace: la Cassazione la esclude in presenza di rifiuto valido."}
+]}
+],
+verdict:(s,h)=>s>=120?{t:"CONDANNA per lesione dell'autodeterminazione + danno differenziale",d:`Motivi: consenso fondato su <b>artt. 13, 32 Cost., L. 219/2017</b>; struttura ex <b>1218</b> / medico ex <b>2043 (L. 24/2017 art.7)</b>; nesso controfattuale presunto su intervento differibile; dissenso attuale sempre vincolante. Punteggio ${s}/140.`}:s>=70?{t:"CONDANNA con motivazione da rafforzare sul nesso",d:`Buon inquadramento costituzionale ma prova controfattuale debole (${s}/140). Integra con Cass. 16443/2021 e documenta alternative terapeutiche.`}:{t:"ASSOLUZIONE ERRATA — paternalismo superato",d:`Hai assolto un intervento senza consenso (${s}/140). Ristudia 13/32 Cost., L. 219/2017 e Gelli-Bianco prima di tornare in camera di consiglio.`}
+}
+];
+
+const GLOSS = [
+["art. 2043 c.c.","Chi cagiona danno ingiusto con dolo/colpa risarcisce. Clausola generale dell'illecito."],
+["art. 2051 c.c.","Custode risponde dei danni da cosa in custodia salvo caso fortuito. Responsabilità oggettiva."],
+["art. 1218 c.c.","Debitore inadempiente risarcisce se non prova impossibilità senza colpa. Perno contrattuale."],
+["art. 1227 c.c.","Se il creditore concorre con colpa, il risarcimento diminuisce (co.1); se causa esclusiva, zero (co.2)."],
+["art. 1229 c.c.","Nullo il patto che esonera da dolo/colpa grave. Limite imperativo all'autonomia."],
+["L. 24/2017 art.7","Struttura: contrattuale (10 anni). Medico dipendente: extracontrattuale (5 anni)."],
+];
+let state = {caseId:null, stepIdx:0, score:0, history:[]};
+
+const $ = id=>document.getElementById(id);
+function renderHome(){
+  $("caseList").innerHTML = CASES.map(c=>`
+    <div class="case-card"><span class="tag ${c.tagClass}">${c.area}</span>
+    <h3>${c.title}</h3><p>${c.short}</p>
+    <div class="case-meta">${c.meta}</div>
+    <div class="case-meta">⭐ Best: <b>${localStorage.getItem("best_"+c.id)||0}</b> / 140</div>
+    <button class="btn btn-primary" onclick="startCase('${c.id}')">Apri fascicolo →</button></div>`).join("");
+  $("homeGloss").innerHTML = "<h3 style='font-family:system-ui;margin:0'>📖 Mini-glossario</h3>" + GLOSS.map(([k,v])=>`<details><summary><b>${k}</b></summary>${v}</details>`).join("");
+}
+function show(id){["screen-home","screen-case","screen-verdict"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+function startCase(id){
+  const c = CASES.find(x=>x.id===id);
+  state = {caseId:id, stepIdx:0, score:0, history:[]};
+  $("crumb").textContent = "⚖️ "+c.title;
+  show("screen-case"); renderStep();
+}
+function renderStep(){
+  const c = CASES.find(x=>x.id===state.caseId);
+  const st = c.steps[state.stepIdx];
+  $("caseHeader").innerHTML = `<span class="tag ${c.tagClass}">${c.area}</span><h2>${c.title}</h2><div class="sub">${c.meta} · Punteggio: <b>${state.score}</b></div>`;
+  $("facts").innerHTML = c.facts;
+  $("stepLabel").textContent = st.label;
+  $("question").textContent = st.q;
+  $("context").textContent = st.ctx;
+  $("feedback").className = "feedback"; $("feedback").innerHTML="";
+  $("btnNext").classList.add("hidden"); $("btnVerdict").classList.add("hidden");
+  $("bar").style.width = (state.stepIdx / c.steps.length * 100)+"%";
+  $("score").textContent = "⭐ "+state.score+" pt";
+  $("options").innerHTML = st.options.map((o,i)=>`<button class="opt" onclick="answer(${i})"><b>${i+1}. ${o.t}</b><small>Conseguenza nascosta — scegli per scoprirla</small></button>`).join("");
+}
+function answer(i){
+  const c = CASES.find(x=>x.id===state.caseId);
+  const st = c.steps[state.stepIdx];
+  const o = st.options[i];
+  state.score += o.pts;
+  state.history.push({label:st.label, q:st.q, choice:o.t, pts:o.pts, level:o.level, fb:o.fb, art:o.art, cons:o.cons});
+  const btns = [...document.querySelectorAll(".opt")];
+  btns.forEach((b,j)=>{b.disabled=true; if(j===i) b.classList.add(o.level==="ok"?"picked-correct":"picked-wrong"); else b.classList.add("dim");});
+  const f = $("feedback");
+  f.className = "feedback show " + (o.level==="ok"?"ok":o.level==="ko"?"ko":"mid");
+  f.innerHTML = `<h4>${o.level==="ok"?"✅ Scelta corretta +"+o.pts:o.level==="ko"?"❌ Scelta errata +"+o.pts:"⚠️ Scelta parziale +"+o.pts}</h4>
+    <div>${o.fb}</div>
+    <div class="articles">${o.art.map(a=>`<span class="art">📜 <b>${a.split("—")[0].trim()}</b> ${a.includes("—")?"— "+a.split("—").slice(1).join("—"):""}</span>`).join("")}</div>
+    <div class="conseq"><b>⚖️ Conseguenza processuale:</b> ${o.cons}</div>`;
+  $("score").textContent = "⭐ "+state.score+" pt";
+  $("bar").style.width = ((state.stepIdx+1)/c.steps.length*100)+"%";
+  const last = state.stepIdx === c.steps.length-1;
+  $(last?"btnVerdict":"btnNext").classList.remove("hidden");
+}
+$("btnNext").onclick = ()=>{state.stepIdx++; renderStep();};
+$("btnBack").onclick = ()=>{$("crumb").textContent="🏠 Home"; show("screen-home"); renderHome();};
+$("btnHome").onclick = ()=>{$("crumb").textContent="🏠 Home"; show("screen-home"); renderHome();};
+$("btnRetry").onclick = ()=>startCase(state.caseId);
+$("btnPrint").onclick = ()=>window.print();
+$("btnVerdict").onclick = ()=>{
+  const c = CASES.find(x=>x.id===state.caseId);
+  const v = c.verdict(state.score, state.history);
+  const best = Math.max(state.score, +(localStorage.getItem("best_"+c.id)||0));
+  localStorage.setItem("best_"+c.id, best);
+  const grade = state.score>=120?"🏆 Giudice esperto":state.score>=70?"⚖️ Praticante solido":"📚 Da ripassare";
+  $("verdictSub").textContent = c.title+" · "+state.score+" / 140 · "+grade;
+  $("verdictBox").innerHTML = `<h3>${v.t}</h3><p style="font-family:system-ui">${v.d}</p>
+    <div class="articles">${[...new Set(state.history.flatMap(h=>h.art))].map(a=>`<span class="art">📜 ${a}</span>`).join("")}</div>`;
+  $("timeline").innerHTML = state.history.map(h=>`<div><b>${h.label}</b> <span style="float:right">${h.level==="ok"?"✅":h.level==="ko"?"❌":"⚠️"} +${h.pts}</span><br><i>Q: ${h.q}</i><br>→ ${h.choice}<br><span style="color:#475569">${h.fb.replace(/<[^>]+>/g,"")}</span></div>`).join("");
+  $("crumb").textContent = "⚖️ Sentenza — "+c.title;
+  show("screen-verdict");
+};
+document.addEventListener("keydown", e=>{
+  if($("screen-case").classList.contains("hidden")) return;
+  const n = {"1":0,"2":1,"3":2}[e.key];
+  if(n!==undefined){const b=document.querySelectorAll(".opt")[n]; if(b&&!b.disabled) b.click();}
+  if(e.key==="Enter"){if(!$("btnNext").classList.contains("hidden"))$("btnNext").click(); else if(!$("btnVerdict").classList.contains("hidden"))$("btnVerdict").click();}
+});
+renderHome();
+</script>
+</body>
+</html>

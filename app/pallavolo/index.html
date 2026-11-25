@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VolleyLab — Guida + Simulatore Interattivo</title>
+<style>
+:root{
+  --blu:#1d4ed8; --azzurro:#0ea5e9; --rosso:#ef4444; --arancio:#f97316;
+  --verde:#16a34a; --viola:#7c3aed; --giallo:#eab308;
+  --bg:#f0f7ff; --card:#ffffff; --testo:#1e293b; --muted:#64748b;
+  --bordo:#dbeafe;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--testo)}
+header{background:linear-gradient(135deg,#1e3a8a 0%,#0ea5e9 55%,#22c55e 100%);color:#fff;padding:22px 16px 0}
+.hwrap{max-width:1100px;margin:0 auto}
+h1{margin:0;font-size:clamp(24px,4vw,38px);letter-spacing:.5px}
+.sub{opacity:.92;margin:6px 0 14px;font-size:clamp(13px,2vw,16px)}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;padding-bottom:14px}
+.tabbtn{border:0;cursor:pointer;padding:12px 20px;border-radius:999px;font-weight:800;font-size:15px;background:rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(6px);transition:.2s}
+.tabbtn.active{background:#fff;color:#1d4ed8;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+main{max-width:1100px;margin:0 auto;padding:18px 14px 60px}
+.panel{display:none;animation:fade .3s}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:var(--card);border:2px solid var(--bordo);border-radius:18px;padding:16px;box-shadow:0 6px 20px rgba(29,78,216,.08)}
+.card h3{margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;color:#fff}
+.fischietto{cursor:pointer;border:0;border-radius:14px;padding:10px 12px;font-weight:800;width:100%;text-align:left;margin-top:8px;font-size:14px;transition:.15s}
+.fischietto:hover{transform:translateY(-1px)}
+.dettaglio{display:none;background:#f8fafc;border:1px dashed #93c5fd;border-radius:12px;padding:10px;margin-top:8px;font-size:14px;line-height:1.5}
+.dettaglio.show{display:block}
+.ruoli{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}
+.ruolo{border-radius:16px;padding:14px;color:#fff;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.ruolo:hover{transform:scale(1.02)}
+.ruolo small{opacity:.9}
+.campo-ico{font-size:30px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}
+th{background:#eff6ff}
+/* SIMULATORE */
+.sim-layout{display:grid;grid-template-columns:1.65fr .9fr;gap:14px}
+@media(max-width:900px){.sim-layout{grid-template-columns:1fr}}
+.controls{background:#fff;border:2px solid var(--bordo);border-radius:18px;padding:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select,input[type=range]{padding:10px;border-radius:12px;border:2px solid #bfdbfe;font-weight:700;font-size:14px}
+.btn{border:0;border-radius:999px;padding:11px 18px;font-weight:800;cursor:pointer;font-size:14px;transition:.15s}
+.btn-avvia{background:var(--verde);color:#fff}
+.btn-pausa{background:var(--giallo);color:#1e293b}
+.btn-reset{background:#64748b;color:#fff}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.svgwrap{background:linear-gradient(180deg,#0f766e,#115e59);border-radius:18px;padding:10px;border:3px solid #0f172a}
+svg{width:100%;height:auto;display:block;border-radius:12px}
+.comment-box{background:#fff;border:2px solid var(--bordo);border-radius:18px;padding:14px;min-height:220px}
+.comment-box h3{margin:0 0 8px}
+#liveComment{font-size:15px;line-height:1.6;background:#f8fafc;border-radius:12px;padding:12px;min-height:90px}
+.arbitro{margin-top:10px;border-radius:12px;padding:12px;font-weight:700;display:none}
+.arbitro.show{display:block}
+.arbitro.ok{background:#dcfce7;border:2px solid #22c55e;color:#14532d}
+.arbitro.fallo{background:#fee2e2;border:2px solid #ef4444;color:#7f1d1d;animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.progress{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:10px}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--azzurro),var(--verde));transition:width .1s}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:13px}
+.chip{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:999px;padding:4px 10px;font-weight:700}
+.zoneinfo{background:#fffbeb;border:2px solid #facc15;border-radius:12px;padding:10px;margin-top:10px;font-size:14px;display:none}
+.zoneinfo.show{display:block}
+.togglezone{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tz{border:2px solid #bfdbfe;background:#eff6ff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer;font-size:13px}
+.tz.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
+.kbd{background:#0f172a;color:#fff;border-radius:6px;padding:1px 7px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<div class="hwrap">
+<h1>🏐 VolleyLab — Impara la Pallavolo Giocando</h1>
+<p class="sub">Guida alle regole + simulatore tattico vettoriale (SVG) con rotazioni, attacchi e falli. Per studenti, prof e curiosi.</p>
+<div class="tabs">
+<button class="tabbtn active" data-tab="guida">📖 1. Guida alle Regole</button>
+<button class="tabbtn" data-tab="sim">🎮 2. Simulatore di Gioco</button>
+</div>
+</div>
+</header>
+<main>
+<!-- ============ GUIDA ============ -->
+<section id="tab-guida" class="panel active">
+<div class="grid">
+<div class="card">
+<h3><span class="badge" style="background:#0ea5e9">CAMPO</span> Dimensioni e Zone</h3>
+<p style="font-size:14px;line-height:1.6">Campo <b>18 m × 9 m</b>, rete al centro. Altezza rete: <b>2,43 m maschile / 2,24 m femminile</b>. Linea d'attacco a <b>3 m</b> dalla rete: divide <b>Zona d'Attacco (prima linea)</b> e <b>Zona di Difesa (seconda linea)</b>.</p>
+<button class="fischietto" style="background:#e0f2fe" data-t="d1">📏 Clicca: misure esatte ⏷</button>
+<div id="d1" class="dettaglio">Lunghezza 18m (9+9), larghezza 9m. Linee larghe 5cm. Zona di servizio: dietro linea di fondo, tra le laterali. Zona libera minima 3m attorno. Antenna sulla rete delimita spazio di passaggio: palla che tocca antenna o passa fuori = fuori.</div>
+<button class="fischietto" style="background:#fef9c3" data-t="d2">🟨 Clicca: linea dei 3 metri ⏷</button>
+<div id="d2" class="dettaglio">Chi è in <b>seconda linea</b> (zone 1,6,5) non può attaccare saltando da davanti ai 3m colpendo sopra la rete. Può attaccare da dietro linea (salto prima, atterraggio oltre ok) oppure con colpo sotto il bordo rete. Violazione = fallo, punto agli avversari.</div>
+</div>
+<div class="card">
+<h3><span class="badge" style="background:#7c3aed">RUOLI</span> I 5 protagonisti</h3>
+<div class="ruoli">
+<div class="ruolo" style="background:#0ea5e9" data-r="P"><div class="campo-ico">🧠</div><b>Palleggiatore (P)</b><br><small>Zona 2-3 • il regista</small></div>
+<div class="ruolo" style="background:#f97316" data-r="S"><div class="campo-ico">🔨</div><b>Schiacciatore (S)</b><br><small>Zona 4 • martello</small></div>
+<div class="ruolo" style="background:#7c3aed" data-r="C"><div class="campo-ico">🧱</div><b>Centrale (C)</b><br><small>Zona 3 • muro + primo tempo</small></div>
+<div class="ruolo" style="background:#ef4444" data-r="O"><div class="campo-ico">💣</div><b>Opposto (O)</b><br><small>Zona 2 • terminale</small></div>
+<div class="ruolo" style="background:#16a34a" data-r="L"><div class="campo-ico">🧤</div><b>Libero (L)</b><br><small>Zona 5-6-1 • difesa</small></div>
+</div>
+<div id="ruoloInfo" class="dettaglio show">👆 Clicca un ruolo per i dettagli. Il <b>Libero</b> non può servire, murare o attaccare sopra rete; maglia diversa; entra/esce liberamente per un difensore di seconda linea.</div>
+</div>
+<div class="card">
+<h3><span class="badge" style="background:#16a34a">ROTAZIONE</span> Ordine e Falli</h3>
+<p style="font-size:14px;line-height:1.6">6 giocatori, 6 zone numerate così (guardando la rete): <b>1 dietro-dx (servizio), 6 dietro-centro, 5 dietro-sx, 4 avanti-sx, 3 avanti-centro, 2 avanti-dx</b>. Quando si conquista il servizio si ruota in senso orario.</p>
+<button class="fischietto" style="background:#dcfce7" data-t="d3">🔄 Clicca: fallo di posizione ⏷</button>
+<div id="d3" class="dettaglio">Al momento del <b>colpo di servizio</b> ogni giocatore deve essere al suo posto rispetto ai compagni: es. il 3 non oltre il 2 a destra, il 4 davanti al 5, ecc. Se no: <b>fischio → punto + servizio agli avversari</b>. Dopo il servizio ci si può muovere liberamente.</div>
+<button class="fischietto" style="background:#fee2e2" data-t="d4">🚨 Clicca: fallo di rotazione ⏷</button>
+<div id="d4" class="dettaglio">Se serve il giocatore sbagliato (ordine errato): fallo di rotazione. Si annullano i punti fatti con ordine sbagliato, punto agli avversari. Provalo nel simulatore!</div>
+</div>
+<div class="card">
+<h3><span class="badge" style="background:#f97316">TOCCHI</span> Max 3 + Punteggio</h3>
+<table>
+<tr><th>Regola</th><th>Spiegazione</th></tr>
+<tr><td><b>3 tocchi</b></td><td>Ricezione → Alzata → Attacco. Il muro non conta come tocco.</td></tr>
+<tr><td><b>Doppia / Trattenuta</b></td><td>Stesso giocatore non tocca 2 volte di fila (salvo muro). Palla non trattenuta.</td></tr>
+<tr><td><b>Rete / Invasione</b></td><td>Non toccare rete durante azione; non invadere oltre con piede/mano se interferisce.</td></tr>
+<tr><td><b>Rally Point</b></td><td>Ogni azione = 1 punto. Set a <b>25</b> (min +2), 5° set a <b>15</b>. Vince chi fa 3 set.</td></tr>
+</table>
+<button class="fischietto" style="background:#ffedd5" data-t="d5">🏆 Clicca: esempio punteggio ⏷</button>
+<div id="d5" class="dettaglio">Es. 25-23 set chiuso. Se 24-24 si va avanti finché +2 (26-24, 27-25...). Tie-break 15 punti con +2. Ogni fallo = punto avversario + cambio servizio se lo subisce chi riceveva.</div>
+</div>
+</div>
+<div class="card" style="margin-top:14px">
+<h3>✅ Mini-quiz lampo (clicca per verificare)</h3>
+<div class="grid">
+<button class="fischietto" style="background:#eff6ff" onclick="this.nextElementSibling.classList.toggle('show')">Quanti tocchi max per squadra? ⏷</button><div class="dettaglio"><b>3 tocchi</b> (+ eventuale muro che non conta).</div>
+<button class="fischietto" style="background:#eff6ff" onclick="this.nextElementSibling.classList.toggle('show')">Il libero può murare? ⏷</button><div class="dettaglio"><b>No.</b> Né murare, né servire, né alzare di palleggio sopra rete da zona attacco per attacco sopra rete.</div>
+<button class="fischietto" style="background:#eff6ff" onclick="this.nextElementSibling.classList.toggle('show')">Quanto è alto il campo? ⏷</button><div class="dettaglio"><b>18×9 m</b>, linea attacco a 3 m dalla rete.</div>
+</div>
+</section>
+
+<!-- ============ SIMULATORE ============ -->
+<section id="tab-sim" class="panel">
+<div class="controls">
+<label><b>Situazione:</b><br>
+<select id="scenario">
+<option value="servizio">1️⃣ Servizio e Rotazione</option>
+<option value="prima">2️⃣ Attacco dalla Prima Linea (zona 4)</option>
+<option value="pipe">3️⃣ Attacco Seconda Linea — Pipe</option>
+<option value="rete">4️⃣ Fallo di Rete / Invasione</option>
+<option value="rotazione">5️⃣ Fallo di Rotazione / Posizione</option>
+</select></label>
+<button class="btn btn-avvia" id="btnPlay">▶ Avvia Animazione</button>
+<button class="btn btn-pausa" id="btnPause" disabled>⏸ Pausa</button>
+<button class="btn btn-reset" id="btnReset">↺ Reset</button>
+<label>Velocità<br><input type="range" id="speed" min="0.5" max="2.5" step="0.25" value="1"></label>
+</div>
+
+<div class="sim-layout" style="margin-top:12px">
+<div>
+<div class="svgwrap">
+<svg id="court" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Campo pallavolo visto dall'alto">
+<defs>
+<pattern id="legno" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#f59e0b"/><rect width="40" height="6" fill="#fbbf24" opacity=".5"/></pattern>
+</defs>
+<rect x="0" y="0" width="900" height="520" rx="16" fill="#0f766e"/>
+<!-- campo -->
+<rect x="50" y="60" width="800" height="400" rx="6" fill="#fde68a" stroke="#fff" stroke-width="5"/>
+<!-- metà -->
+<rect x="50" y="60" width="400" height="400" fill="#38bdf8" opacity=".55"/>
+<rect x="450" y="60" width="400" height="400" fill="#f87171" opacity=".55"/>
+<!-- zone attacco/difesa -->
+<rect id="zaA" x="317" y="60" width="133" height="400" fill="#1d4ed8" opacity=".22"/>
+<rect id="zaB" x="450" y="60" width="133" height="400" fill="#b91c1c" opacity=".22"/>
+<!-- linee -->
+<line x1="450" y1="60" x2="450" y2="460" stroke="#0f172a" stroke-width="7"/>
+<line x1="317" y1="60" x2="317" y2="460" stroke="#fff" stroke-width="4" stroke-dasharray="10 6"/>
+<line x1="583" y1="60" x2="583" y2="460" stroke="#fff" stroke-width="4" stroke-dasharray="10 6"/>
+<line x1="50" y1="260" x2="850" y2="260" stroke="#ffffff" stroke-width="2" opacity=".4"/>
+<!-- etichette -->
+<text x="130" y="50" fill="#fff" font-size="16" font-weight="800">SQUADRA BLU ⬅ riceve/attacca</text>
+<text x="560" y="50" fill="#fff" font-size="16" font-weight="800">SQUADRA ROSSA ➡</text>
+<text x="150" y="485" fill="#fff" font-size="14" font-weight="700">ZONA DIFESA (2ª linea 6m)</text>
+<text x="330" y="485" fill="#fff" font-size="14" font-weight="700">ATTACCO 3m</text>
+<text x="600" y="485" fill="#fff" font-size="14" font-weight="700">ATTACCO 3m | DIFESA</text>
+<text x="60" y="90" font-size="13" font-weight="800" fill="#1e3a8a">4</text>
+<text x="60" y="265" font-size="13" font-weight="800" fill="#1e3a8a">5</text>
+<text x="60" y="430" font-size="13" font-weight="800" fill="#1e3a8a">1</text>
+<text x="825" y="90" font-size="13" font-weight="800" fill="#7f1d1d">2</text>
+<text x="825" y="430" font-size="13" font-weight="800" fill="#7f1d1d">1</text>
+<!-- reticolo esplorazione -->
+<g id="exploreLayer"></g>
+<!-- traiettoria palla -->
+<path id="trail" d="" fill="none" stroke="#fef08a" stroke-width="4" stroke-dasharray="6 6" opacity=".9"/>
+<!-- giocatori -->
+<g id="players"></g>
+<!-- palla -->
+<circle id="ball" r="11" fill="#fff" stroke="#0f172a" stroke-width="3"/>
+<text id="ballEmoji" text-anchor="middle" font-size="13">🏐</text>
+<!-- rete icona -->
+<text x="450" y="40" text-anchor="middle" font-size="22">🕸️ RETE</text>
+</svg>
+</div>
+<div class="legend">
+<span class="chip">🔵 Blu = tua squadra</span><span class="chip">🔴 Rossi = avversari</span>
+<span class="chip">⭕ numero = zona (1-6)</span><span class="chip">👆 clicca un giocatore o una zona</span>
+</div>
+<div class="togglezone">
+<button class="tz active" data-z="none">Nessuna zona</button>
+<button class="tz" data-z="rice">🛡️ Zone Ricezione (W)</button>
+<button class="tz" data-z="difesa">🧤 Zone Difesa per ruolo</button>
+</div>
+<div id="zoneInfo" class="zoneinfo"></div>
+</div>
+<div>
+<div class="comment-box">
+<h3>📢 Cronaca live + decisione arbitro</h3>
+<div id="liveComment">Scegli una situazione e premi <b>Avvia Animazione</b>. La cronaca apparirà qui passo passo.</div>
+<div id="refBox" class="arbitro"></div>
+<div class="progress"><div id="bar"></div></div>
+<p style="font-size:13px;color:#64748b">Tempo: <span id="tlabel">0.0</span>s / <span id="tdur">12</span>s • <span class="kbd">Spazio</span> = play/pausa • <span class="kbd">R</span> = reset</p>
+</div>
+<div class="card" style="margin-top:12px">
+<h3 style="margin:0 0 6px">🧭 Cosa osservare</h3>
+<div id="focusBox" style="font-size:14px;line-height:1.6"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer>VolleyLab didattico • Campo 18×9 • Rally Point System • SVG animato via JS • premi Spazio per pausa</footer>
+
+<script>
+// ---------- TABS ----------
+document.querySelectorAll('.tabbtn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+});
+// guida interattiva
+document.querySelectorAll('.fischietto[data-t]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.t).classList.toggle('show'));
+const ruoloTxt={
+ P:"🧠 <b>Palleggiatore:</b> regista in zona 2-3. Tocca più palloni di tutti, alza preciso per gli attaccanti. In difesa copre pallonetti dietro il muro. Spesso serve per primo dopo rotazione.",
+ S:"🔨 <b>Schiacciatore (banda):</b> zona 4 (e 1 in seconda linea). Riceve + attacca palla alta. Deve saltare fuori dai 3m se è in prima linea, curare muro a 2.",
+ C:"🧱 <b>Centrale:</b> zona 3. Primo tempo velocissimo + muro su tutto il fronte. In ricezione spesso esce (lo copre il libero), in difesa copre il centro.",
+ O:"💣 <b>Opposto:</b> zona 2 (e zona 1 dietro). Non riceve quasi mai, è il terminale anche da palla staccata. Mura contro la banda avversaria.",
+ L:"🧤 <b>Libero:</b> solo seconde linee (1,6,5). Maglia diversa. Super-ricevitore e difensore, non serve/mura/attacca sopra rete. Cambi illimitati."
+};
+document.querySelectorAll('.ruolo').forEach(r=>r.onclick=()=>{document.getElementById('ruoloInfo').innerHTML=ruoloTxt[r.dataset.r];document.getElementById('ruoloInfo').classList.add('show');});
+
+// ---------- SIMULATORE ----------
+const svgNS="http://www.w3.org/2000/svg";
+const playersG=document.getElementById('players');
+const ballEl=document.getElementById('ball'), ballEm=document.getElementById('ballEmoji'), trail=document.getElementById('trail');
+const live=document.getElementById('liveComment'), refBox=document.getElementById('refBox'), bar=document.getElementById('bar');
+const tlabel=document.getElementById('tlabel'), tdur=document.getElementById('tdur'), focusBox=document.getElementById('focusBox');
+
+// ruoli squadre
+const teamA=[ // blu, sinistra
+ {id:'A1',n:1,role:'O',label:'Opposto'},{id:'A6',n:6,role:'L',label:'Libero'},
+ {id:'A5',n:5,role:'S',label:'Schiacc.'},{id:'A4',n:4,role:'S',label:'Schiacc.'},
+ {id:'A3',n:3,role:'C',label:'Centrale'},{id:'A2',n:2,role:'P',label:'Palleg.'}];
+const teamB=[
+ {id:'B1',n:1,role:'O',label:'Opposto'},{id:'B6',n:6,role:'L',label:'Libero'},
+ {id:'B5',n:5,role:'S',label:'Schiacc.'},{id:'B4',n:4,role:'S',label:'Schiacc.'},
+ {id:'B3',n:3,role:'C',label:'Centrale'},{id:'B2',n:2,role:'P',label:'Palleg.'}];
+const allPlayers=[...teamA.map(p=>({...p,team:'A'})),...teamB.map(p=>({...p,team:'B'}))];
+const colorA={fill:'#2563eb',ring:'#bfdbfe'}, colorB={fill:'#dc2626',ring:'#fecaca'};
+const roleColor={P:'#0ea5e9',S:'#f97316',C:'#7c3aed',O:'#ef4444',L:'#16a34a'};
+
+// posizioni base [x,y]
+function basePos(){
+ return {
+  A1:[170,380],A6:[150,260],A5:[170,140],A4:[350,130],A3:[350,260],A2:[350,390],
+  B1:[730,380],B6:[750,260],B5:[730,140],B4:[550,130],B3:[550,260],B2:[550,390]
+ };
+}
+
+// scenari: keyframes {t, ball, pos:{}, msg, ref:{type,text}}
+function K(t,ball,pos,msg,ref){return {t,ball,pos,msg,ref}}
+const SC={
+servizio:{
+ dur:14, focus:"Osserva la <b>rotazione oraria</b>: chi era in zona 2 va a servire in zona 1. Al fischio tutti devono rispettare l'ordine, poi si muovono. Conta i 3 tocchi: ricezione-libero → alzata-palleggiatore → attacco.",
+ frames:(B)=>{
+ const p0={...B};
+ return [
+  K(0,[20,400],p0,"🟢 Pronti: i Blu conquistano il servizio e <b>ruotano</b> di una posizione in senso orario. L'Opposto va in zona 1 a servire.",null),
+  K(2,[20,400],{...p0,A1:[22,400]},"➡️ Rotazione completata. Arbitro fischia: si può servire. Tutti fermi al loro posto fino al colpo.",null),
+  K(4,[450,340],{...p0,A1:[80,380]},"🚀 <b>Servizio!</b> Palla sopra la rete verso zona 5 rossa. tocco 0.",null),
+  K(6,[720,180],{...p0,A1:[150,300],B5:[700,160]},"🛡️ <b>Tocco 1 – Ricezione:</b> lo Schiacciatore rosso riceve a bagher verso il centro.",null),
+  K(8,[580,260],{...p0,B5:[720,200],B2:[580,320]},"🧠 <b>Tocco 2 – Alzata:</b> il Palleggiatore rosso alza in zona 4.",null),
+  K(10,[350,180],{...p0,B4:[520,150],A4:[330,150],A3:[330,230]},"🔨 <b>Tocco 3 – Attacco prima linea!</b> Banda rossa schiaccia, muro blu a due.",null),
+  K(12,[200,300],{...p0,B4:[480,180],A6:[200,290]},"🧤 <b>Difesa blu!</b> Il Libero salva. Azione continua… rally point: ogni scambio vale.",{type:'ok',text:'✅ Nessun fallo. Gioco regolare — si continua fino a palla a terra. Punto a chi chiude il rally.'})
+ ];}},
+prima:{
+ dur:12, focus:"Classico <b>cambio palla su banda</b>: ricezione → alzata alta in zona 4 → rincorsa e salto da dentro i 3m (lecito perché il giocatore è di prima linea). Muro avversario a 2.",
+ frames:(B)=>[
+  K(0,[730,380],B,"🟢 Seconda linea rossa in possesso: il Libero difende e serve il palleggiatore.",null),
+  K(2.5,[700,250],{...B,B6:[720,260],B2:[600,300]},"🛡️ <b>Tocco 1:</b> ricezione precisa verso zona 2-3.",null),
+  K(5,[520,150],{...B,B2:[560,300],B4:[540,140],A4:[360,140],A3:[360,220]},"🧠 <b>Tocco 2:</b> alzata alta in <b>zona 4</b> per lo Schiacciatore.",null),
+  K(7.5,[450,180],{...B,B4:[490,160],A4:[380,160],A3:[390,230]},"🦘 Rincorsa + salto <b>dentro i 3m</b>: lecito, è prima linea!",null),
+  K(9.5,[250,350],{...B,B4:[450,200],A6:[240,340],A5:[190,200]},"💥 <b>Attacco vincente</b> in diagonale! Difesa blu in ritardo.",{type:'ok',text:'✅ Punto Rossa! Attacco regolare di prima linea. Cambio palla pulito: 1-2-3 tocchi.'})
+ ]},
+pipe:{
+ dur:13, focus:"La <b>Pipe</b> è l'attacco dalla seconda linea attraverso il centro (zona 6). Il centrale parte da dietro i 3m, salta prima della linea e colpisce sopra. Sorprende il muro.",
+ frames:(B)=>[
+  K(0,[170,260],B,"🟢 Blu in ricezione a W: Libero + bande coprono il campo, palleggiatore già verso zona 2.",null),
+  K(3,[200,200],{...B,A5:[190,160],A6:[220,260]},"🛡️ <b>Tocco 1:</b> ricezione del Libero verso il centro.",null),
+  K(5.5,[350,360],{...B,A2:[360,340],A3:[260,260]},"🧠 <b>Tocco 2:</b> il Palleggiatore finta banda e alza dietro per la <b>Pipe</b>.",null),
+  K(8,[330,260],{...B,A3:[310,260],B3:[540,260],B2:[540,320]},"🏃 Il Centrale blu arriva da <b>dietro i 3m</b> (zona 6) e salta prima della linea!",null),
+  K(11,[650,340],{...B,A3:[340,280],B6:[660,330]},"💥 <b>Pipe vincente!</b> Palla nel buco tra muro e difesa.",{type:'ok',text:'✅ Punto Blu! Attacco di seconda linea regolare: stacco dietro i 3m. Il muro non ha letto la combinazione.'})
+ ]},
+rete:{
+ dur:12, focus:"Guarda lo schiacciatore blu: dopo il colpo <b>tocca la rete</b> con la spalla. È fallo anche se involontario, se avviene durante l'azione di gioco sulla palla. Punto agli avversari.",
+ frames:(B)=>[
+  K(0,[350,360],B,"🟢 Costruzione blu regolare: ricezione + alzata in zona 2 per l'Opposto.",null),
+  K(3,[360,340],{...B,A2:[360,340],A1:[330,360]},"🧠 Alzata precisa, rincorsa dell'Opposto…",null),
+  K(5,[450,200],{...B,A1:[400,250],B3:[530,240],B2:[530,330]},"🔨 Attacco forte sul muro rosso!",null),
+  K(7,[430,220],{...B,A1:[435,250]},"⚠️ L'Opposto nella ricaduta <b>tocca la rete con il corpo</b>! L'arbitro vede tutto.",null),
+  K(10,[430,220],{...B,A1:[435,250]},"🚨 <b>FISCHIO!</b> Fallo di rete. Il punto va ai Rossi anche se la palla era dentro.",{type:'fallo',text:'🚨 FALLO DI RETE — Art.11: tocco rete durante azione = punto + servizio alla Squadra Rossa.'})
+ ]},
+rotazione:{
+ dur:12, focus:"Al momento del servizio il n.2 blu è <b>avanti al n.1</b>? No: è dietro/invaso. Controlla l'allineamento: il fallo si fischia <b>al colpo di servizio</b>, non dopo.",
+ frames:(B)=>{
+ const bad={...B,A2:[120,420],A1:[200,380]}; // palleggiatore palesemente fuori posto
+ return [
+  K(0,[22,400],bad,"🟢 Blu al servizio, ma guarda il Palleggiatore (2): è <b>davanti/sovrapposto</b> all'Opposto (1)? Sospetto…",null),
+  K(3,[22,400],bad,"👀 L'arbitro controlla le posizioni al momento del colpo…",null),
+  K(4.5,[450,340],{...bad,A1:[80,380]},"🚀 Servizio partito… ma il fischio arriva subito!",null),
+  K(7,[450,340],bad,"🚨 <b>FISCHIO! Fallo di posizione/rotazione.</b> Il n.2 non rispettava l'ordine rispetto al n.1 e al n.3.",{type:'fallo',text:'🚨 FALLO DI POSIZIONE — punto + servizio ai Rossi. In rotazione ognuno deve rispettare vicini: 2 dietro a 4? No: 2 vicino a 1 e 3.'}),
+  K(10,[730,380],{...B,B1:[790,400]},"🔄 Ora i Rossi ruotano e servono regolarmente. Ordine ripristinato.",null)
+ ];}}
+};
+let cur='servizio', dur=14, frames=[], time=0, playing=false, raf=null, lastTs=0, speed=1, trailPts=[];
+
+function buildPlayers(){
+ playersG.innerHTML='';
+ allPlayers.forEach(p=>{
+  const g=document.createElementNS(svgNS,'g');
+  g.setAttribute('id','g-'+p.id); g.style.cursor='pointer';
+  const c=document.createElementNS(svgNS,'circle');
+  c.setAttribute('r','22'); c.setAttribute('stroke',p.team==='A'?colorA.ring:colorB.ring);
+  c.setAttribute('stroke-width','4'); c.setAttribute('fill',p.team==='A'?colorA.fill:colorB.fill);
+  const t=document.createElementNS(svgNS,'text');
+  t.setAttribute('text-anchor','middle'); t.setAttribute('dy','6'); t.setAttribute('font-size','16');
+  t.setAttribute('font-weight','900'); t.setAttribute('fill','#fff'); t.textContent=p.n;
+  const l=document.createElementNS(svgNS,'text');
+  l.setAttribute('text-anchor','middle'); l.setAttribute('dy','38'); l.setAttribute('font-size','12');
+  l.setAttribute('font-weight','800'); l.setAttribute('fill','#0f172a');
+  l.setAttribute('paint-order','stroke'); l.setAttribute('stroke','#fff'); l.setAttribute('stroke-width','3');
+  l.textContent=p.role+'·'+p.label;
+  const dot=document.createElementNS(svgNS,'circle');
+  dot.setAttribute('r','6'); dot.setAttribute('cy','-24'); dot.setAttribute('fill',roleColor[p.role]); dot.setAttribute('stroke','#fff'); dot.setAttribute('stroke-width','2');
+  g.append(c,t,l,dot);
+  g.addEventListener('click',(e)=>{e.stopPropagation();showPlayerZone(p);});
+  playersG.appendChild(g);
+ });
+}
+function lerp(a,b,k){return a+(b-a)*k}
+function render(t){
+ // trova segmento
+ let i=0; while(i<frames.length-2 && t>frames[i+1].t) i++;
+ const f0=frames[i], f1=frames[i+1];
+ const span=Math.max(.001,f1.t-f0.t), k=Math.min(1,Math.max(0,(t-f0.t)/span));
+ const pos={};
+ Object.keys(f1.pos).forEach(id=>{
+  const a=(f0.pos[id]||f1.pos[id]), b=f1.pos[id];
+  pos[id]=[lerp(a[0],b[0],k),lerp(a[1],b[1],k)];
+ });
+ Object.entries(pos).forEach(([id,[x,y]])=>{
+  const g=document.getElementById('g-'+id); if(g) g.setAttribute('transform',`translate(${x},${y})`);
+ });
+ const bx=lerp(f0.ball[0],f1.ball[0],k), by=lerp(f0.ball[1],f1.ball[1],k);
+ ballEl.setAttribute('cx',bx); ballEl.setAttribute('cy',by);
+ ballEm.setAttribute('x',bx); ballEm.setAttribute('y',by+1);
+ // scia
+ trailPts.push([bx,by]); if(trailPts.length>60) trailPts.shift();
+ trail.setAttribute('d','M'+trailPts.map(p=>p.join(',')).join(' L'));
+ // commento: ultimo frame con t<=time
+ let cur2=frames[0];
+ for(const f of frames) if(f.t<=t+.01) cur2=f;
+ if(live.dataset.msg!==cur2.msg){live.innerHTML=cur2.msg;live.dataset.msg=cur2.msg;}
+ if(cur2.ref){refBox.className='arbitro show '+(cur2.ref.type==='fallo'?'fallo':'ok');refBox.innerHTML=cur2.ref.text;}
+ else {refBox.className='arbitro';refBox.innerHTML='';}
+ bar.style.width=(t/dur*100)+'%'; tlabel.textContent=t.toFixed(1);
+}
+function loadScenario(id){
+ cur=id; const sc=SC[id]; dur=sc.dur; tdur.textContent=dur;
+ frames=sc.frames(basePos()); time=0; trailPts=[]; playing=false;
+ focusBox.innerHTML=sc.focus;
+ cancelAnimationFrame(raf); raf=null;
+ document.getElementById('btnPlay').disabled=false;
+ document.getElementById('btnPause').disabled=true;
+ render(0);
+ live.innerHTML="Premi <b>Avvia Animazione</b> per vedere: <i>"+document.querySelector(`#scenario option[value=${id}]`).textContent+"</i>.";
+ refBox.className='arbitro';
+}
+function tick(ts){
+ if(!playing) return;
+ if(!lastTs) lastTs=ts;
+ time+=(ts-lastTs)/1000*speed; lastTs=ts;
+ if(time>=dur){time=dur;render(time);pause();return;}
+ render(time); raf=requestAnimationFrame(tick);
+}
+function play(){if(time>=dur)time=0;trailPts=[];playing=true;lastTs=0;document.getElementById('btnPlay').disabled=true;document.getElementById('btnPause').disabled=false;raf=requestAnimationFrame(tick);}
+function pause(){playing=false;cancelAnimationFrame(raf);document.getElementById('btnPlay').disabled=false;document.getElementById('btnPause').disabled=true;}
+document.getElementById('btnPlay').onclick=play;
+document.getElementById('btnPause').onclick=pause;
+document.getElementById('btnReset').onclick=()=>{pause();time=0;trailPts=[];render(0);};
+document.getElementById('scenario').onchange=e=>loadScenario(e.target.value);
+document.getElementById('speed').oninput=e=>speed=parseFloat(e.target.value);
+document.addEventListener('keydown',e=>{
+ if(e.code==='Space'&&document.getElementById('tab-sim').classList.contains('active')){e.preventDefault();playing?pause():play();}
+ if(e.key==='r'||e.key==='R')document.getElementById('btnReset').click();
+});
+
+// ---------- ZONE ESPLORABILI ----------
+const explore=document.getElementById('exploreLayer'), zoneInfo=document.getElementById('zoneInfo');
+let zoneMode='none';
+const riceZones=[ // solo metà blu
+ {x:50,y:60,w:200,h:400,role:'Schiacciatore (zona 4/5)',txt:'🛡️ <b>Ricezione lato sx:</b> Schiacciatore di banda copre metà campo in W. Competenza: palle corte e lunghe su zona 5.',c:'#f97316'},
+ {x:250,y:60,w:100,h:400,role:'Libero (zona 6)',txt:'🧤 <b>Ricezione centro:</b> il <b>Libero</b> comanda la W, prende tutto il centro. Competenza: flottanti e bombe centrali.',c:'#16a34a'},
+ {x:350,y:60,w:100,h:400,role:'Palleggiatore / Centrale',txt:'🧠 <b>Zona centrale-avanti:</b> il Palleggiatore si nasconde dietro, pronto ad alzare. Il Centrale esce dalla ricezione.',c:'#0ea5e9'},
+ {x:50,y:260,w:400,h:200,role:'Opposto + Libero',txt:'💣 <b>Ricezione lato dx:</b> Opposto aiuta dietro, Libero chiude i buchi. Palleggiatore escluso se deve alzare.',c:'#ef4444'}
+];
+const difZones=[
+ {x:50,y:60,w:150,h:130,role:'Schiacciatore zona 4',txt:'🧱 <b>Difesa zona 4:</b> lo Schiacciatore mura + poi scala in difesa sul lungolinea. Copre pallonetto dietro muro.',c:'#f97316'},
+ {x:50,y:195,w:150,h:130,role:'Centrale zona 3-5',txt:'🧱 <b>Difesa centro-sx:</b> il Centrale chiude il muro e ripiega a 6m per i rimbalzi.',c:'#7c3aed'},
+ {x:50,y:330,w:150,h:130,role:'Libero zona 5-1',txt:'🧤 <b>Difesa zona 5/1:</b> il <b>Libero</b> legge la diagonale, difende tutto il fondo.',c:'#16a34a'},
+ {x:200,y:60,w:250,h:400,role:'Palleggiatore + Opposto',txt:'🧠 <b>Difesa avanzata:</b> Palleggiatore copre il pallonetto dietro il muro (zona 2), Opposto il recupero.',c:'#0ea5e9'}
+];
+function drawZones(){
+ explore.innerHTML='';
+ const list=zoneMode==='rice'?riceZones:zoneMode==='difesa'?difZones:[];
+ list.forEach((z,i)=>{
+  const r=document.createElementNS(svgNS,'rect');
+  r.setAttribute('x',z.x);r.setAttribute('y',z.y);r.setAttribute('width',z.w);r.setAttribute('height',z.h);
+  r.setAttribute('rx','8');r.setAttribute('fill',z.c);r.setAttribute('opacity','.38');
+  r.setAttribute('stroke','#fff');r.setAttribute('stroke-width','2');r.setAttribute('stroke-dasharray','8 5');
+  r.style.cursor='pointer';
+  r.addEventListener('click',(e)=>{e.stopPropagation();zoneInfo.innerHTML=z.txt+'<br><small>Clicca un giocatore per il dettaglio ruolo.</small>';zoneInfo.classList.add('show');});
+  const t=document.createElementNS(svgNS,'text');
+  t.setAttribute('x',z.x+z.w/2);t.setAttribute('y',z.y+22);t.setAttribute('text-anchor','middle');
+  t.setAttribute('font-size','12');t.setAttribute('font-weight','900');t.setAttribute('fill','#0f172a');
+  t.textContent=z.role;
+  explore.append(t,r);
+ });
+}
+document.querySelectorAll('.tz').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.tz').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ zoneMode=b.dataset.z;drawZones();
+ zoneInfo.classList.remove('show');
+ if(zoneMode!=='none'){zoneInfo.innerHTML='👆 <b>Clicca una zona colorata</b> sul campo blu per vedere chi la copre in '+(zoneMode==='rice'?'ricezione':'difesa')+'.';zoneInfo.classList.add('show');}
+});
+function showPlayerZone(p){
+ const comp={P:'Copre pallonetti dietro muro + alza in zona 2. In ricezione si nasconde per essere pronto.',S:'Ricezione a W su zona 4/5 + difesa lungolinea/diagonale. Muro contro opposto.',C:'Esce spesso dalla ricezione; in difesa muro centrale + copertura centro.',O:'Riceve poco; difende zona 1 e recupera. Attacca da zona 2.',L:'Re della ricezione/difesa in 1-6-5. Non mura/serve/attacca sopra rete.'}[p.role];
+ zoneInfo.innerHTML=`<b>${p.team==='A'?'🔵':'🔴'} n.${p.n} ${p.label} (${p.role})</b><br>${comp}`;
+ zoneInfo.classList.add('show');
+ // evidenzia
+ const g=document.getElementById('g-'+p.id);
+ g.animate([{transform:'scale(1)'},{transform:'scale(1.15)'}],{duration:200});
+}
+document.getElementById('court').addEventListener('click',()=>{zoneInfo.classList.remove('show');});
+
+buildPlayers(); loadScenario('servizio');
+</script>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlante — Rotte della Storia | Mappa interattiva</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,600;9..144,0,700;9..144,1,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --carta:#efe7d3;
+    --carta-2:#e6dcc2;
+    --inchiostro:#1e1b14;
+    --inchiostro-soft:#4a4436;
+    --ruggine:#8c2f1b;
+    --oceano:#234e52;
+    --linea:#c9bb95;
+    --marker-geo:#8c2f1b;
+    --marker-guerra:#234e52;
+    --muschio:#4f6b3a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Archivo',system-ui,sans-serif;
+    background:var(--carta);
+    color:var(--inchiostro);
+    display:flex;flex-direction:column;height:100vh;overflow:hidden;
+  }
+  header{
+    display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+    padding:14px 22px 12px;
+    border-bottom:1px solid var(--inchiostro);
+    background:var(--carta);
+  }
+  header h1{
+    font-family:'Fraunces',Georgia,serif;font-weight:700;
+    font-size:clamp(22px,3vw,32px);letter-spacing:-.02em;line-height:1;
+  }
+  header h1 em{font-weight:400}
+  header p{
+    font-size:13px;color:var(--inchiostro-soft);max-width:52ch;line-height:1.45;
+  }
+  .epoche{margin-left:auto;display:flex;border:1px solid var(--inchiostro);background:var(--carta)}
+  .epoche button{
+    font:600 12.5px 'Archivo',sans-serif;letter-spacing:.02em;
+    padding:9px 14px;background:transparent;border:0;cursor:pointer;color:var(--inchiostro);
+    border-left:1px solid var(--inchiostro);
+  }
+  .epoche button:first-child{border-left:0}
+  .epoche button[aria-pressed="true"]{background:var(--inchiostro);color:var(--carta)}
+  .epoche button:focus-visible{outline:2px solid var(--ruggine);outline-offset:-2px}
+  main{flex:1;display:flex;min-height:0}
+  aside{
+    width:384px;max-width:42vw;flex-shrink:0;
+    border-right:1px solid var(--inchiostro);
+    display:flex;flex-direction:column;background:var(--carta);
+  }
+  .indice-meta{
+    padding:12px 18px;border-bottom:1px solid var(--linea);
+    font-size:12.5px;color:var(--inchiostro-soft);
+    display:flex;justify-content:space-between;gap:10px;
+  }
+  .indice-meta strong{color:var(--inchiostro)}
+  #lista{overflow-y:auto;flex:1;padding:6px 0 20px}
+  .voce{
+    width:100%;background:transparent;
+    display:grid;grid-template-columns:18px 1fr auto;gap:10px;align-items:start;
+    padding:10px 12px 10px 6px;border-bottom:1px solid var(--linea);
+  }
+  .voce:hover{background:#e3d7b8}
+  .voce.attiva{background:var(--inchiostro);color:var(--carta)}
+  .voce.attiva .data,.voce.attiva .sintesi{color:#d8cdb0}
+  .voce.trascinata{opacity:.45}
+  .voce.drop-sopra{box-shadow:inset 0 3px 0 var(--ruggine)}
+  .voce.drop-sotto{box-shadow:inset 0 -3px 0 var(--ruggine)}
+  .maniglia{cursor:grab;font-size:15px;color:var(--inchiostro-soft);padding-top:12px;text-align:center;user-select:none;-webkit-user-select:none}
+  .voce.attiva .maniglia{color:#d8cdb0}
+  .voce-principale{
+    background:transparent;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0;
+    display:grid;grid-template-columns:44px 1fr;gap:12px;
+  }
+  .voce-principale:focus-visible{outline:2px solid var(--ruggine);outline-offset:2px}
+  .sposta{display:flex;flex-direction:column;gap:4px;visibility:hidden}
+  .voce:hover .sposta,.voce:focus-within .sposta{visibility:visible}
+  @media (pointer:coarse){.sposta{visibility:visible}}
+  .sposta button{
+    width:26px;height:22px;line-height:1;cursor:pointer;background:transparent;
+    border:1px solid var(--linea);color:var(--inchiostro-soft);font-size:12px;padding:0;
+  }
+  .sposta button:hover{border-color:var(--inchiostro);color:var(--inchiostro)}
+  .voce.attiva .sposta button{border-color:#8a8064;color:#d8cdb0}
+  .voce.personale .sigla{background:var(--muschio);border-color:var(--muschio);color:#fff}
+  .voce.personale .marchio{color:var(--muschio)}
+  .voce.personale.attiva .marchio{color:#d8cdb0}
+  .num-custom{color:var(--muschio)}
+  .sigla{
+    width:38px;height:38px;border:1px solid currentColor;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font:600 13px 'Fraunces',serif;
+  }
+  .voce h2{font-family:'Fraunces',serif;font-size:17px;line-height:1.2;margin-bottom:3px}
+  .data{
+    display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;
+    border:1px solid var(--linea);padding:2px 7px;margin:4px 0 6px;color:var(--ruggine);
+  }
+  .voce.guerra .data{color:var(--oceano)}
+  .voce.attiva .data{border-color:#8a8064;color:#f0e6cc}
+  .sintesi{font-size:13px;line-height:1.5;color:var(--inchiostro-soft)}
+  #mappa{flex:1;min-width:0;background:#d9cfb0;z-index:0}
+  footer{
+    border-top:1px solid var(--inchiostro);padding:8px 22px;
+    font-size:12px;color:var(--inchiostro-soft);
+    display:flex;gap:16px;flex-wrap:wrap;background:var(--carta);
+  }
+  footer a{color:var(--ruggine)}
+  /* Leaflet restyle */
+  .leaflet-container{font-family:'Archivo',sans-serif;background:#d9cfb0}
+  .pin{
+    width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--carta);
+    box-shadow:0 1px 4px rgba(30,27,20,.45);
+  }
+  .pin span{transform:rotate(45deg);color:var(--carta);font:700 12px 'Fraunces',serif;line-height:1}
+  .pin.geo{background:var(--marker-geo)}
+  .pin.guerra{background:var(--marker-guerra)}
+  .pin.custom{background:var(--muschio);border-style:dashed}
+  .barra-azioni{display:flex;gap:8px;padding:10px 18px;border-bottom:1px solid var(--inchiostro);flex-wrap:wrap}
+  .pulsante{
+    font:600 12.5px 'Archivo',sans-serif;letter-spacing:.02em;cursor:pointer;
+    padding:8px 12px;border:1px solid var(--inchiostro);background:var(--carta);color:var(--inchiostro);
+  }
+  .pulsante:hover{background:#e3d7b8}
+  .pulsante.primario{background:var(--inchiostro);color:var(--carta)}
+  .pulsante.primario[aria-pressed="true"]{background:var(--ruggine);border-color:var(--ruggine);color:#fff}
+  .pulsante.secondario{border-color:var(--linea);color:var(--inchiostro-soft)}
+  .pulsante:focus-visible{outline:2px solid var(--ruggine);outline-offset:2px}
+  .voce .testa{display:flex;align-items:baseline;gap:8px}
+  .voce .testa h2{flex:1}
+  .marchio{
+    flex-shrink:0;font-size:10.5px;font-weight:600;letter-spacing:.06em;
+    border:1px dashed currentColor;padding:2px 6px;opacity:.85;
+  }
+  #avviso-aggiunta{
+    display:none;padding:9px 18px;font-size:13px;font-weight:600;
+    background:var(--ruggine);color:#fff;
+  }
+  #avviso-aggiunta.visibile{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  #avviso-aggiunta button{background:transparent;border:1px solid #fff;color:#fff;font:600 12px 'Archivo',sans-serif;padding:4px 10px;cursor:pointer}
+  #mappa.in-aggiunta{cursor:crosshair}
+  dialog#modale{
+    border:1px solid var(--inchiostro);background:#faf5e6;color:var(--inchiostro);
+    padding:0;width:min(480px,92vw);box-shadow:6px 6px 0 rgba(30,27,20,.85);
+  }
+  dialog#modale::backdrop{background:rgba(30,27,20,.5)}
+  .mod-testa{padding:14px 18px;border-bottom:1px solid var(--inchiostro);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .mod-testa h2{font-family:'Fraunces',serif;font-size:21px}
+  .mod-testa button{background:transparent;border:1px solid var(--inchiostro);width:30px;height:30px;cursor:pointer;font-size:15px;line-height:1}
+  form#form-tappa{padding:14px 18px 18px;display:grid;gap:11px}
+  form#form-tappa label{display:grid;gap:4px;font-size:12.5px;font-weight:600}
+  form#form-tappa input,form#form-tappa select,form#form-tappa textarea{
+    font:400 13.5px 'Archivo',sans-serif;padding:8px 10px;color:var(--inchiostro);
+    border:1px solid var(--inchiostro);background:#fff;border-radius:0;width:100%;
+  }
+  form#form-tappa textarea{min-height:86px;resize:vertical;line-height:1.5}
+  form#form-tappa input:focus-visible,form#form-tappa select:focus-visible,form#form-tappa textarea:focus-visible{outline:2px solid var(--ruggine);outline-offset:1px}
+  .riga{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .aiuto{font-size:11.5px;font-weight:400;color:var(--inchiostro-soft)}
+  .mod-azioni{display:flex;gap:8px;justify-content:flex-end;margin-top:2px}
+  .popup .az{display:flex;gap:8px;margin-top:10px}
+  .popup .az button{
+    flex:1;font:600 12px 'Archivo',sans-serif;padding:7px 0;cursor:pointer;
+    border:1px solid var(--inchiostro);background:transparent;color:var(--inchiostro);
+  }
+  .popup .az button.pericolo{background:var(--ruggine);border-color:var(--ruggine);color:#fff}
+  .popup .tua{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--inchiostro-soft);display:block;margin-bottom:6px}
+  .leaflet-popup-content-wrapper{
+    border-radius:2px;background:#faf5e6;color:var(--inchiostro);
+    border:1px solid var(--inchiostro);box-shadow:4px 4px 0 rgba(30,27,20,.85);
+  }
+  .leaflet-popup-content{margin:0;width:300px !important;line-height:1.45}
+  .leaflet-popup-tip{background:#faf5e6;border:1px solid var(--inchiostro)}
+  .popup img{width:100%;height:160px;object-fit:cover;display:block;border-bottom:1px solid var(--inchiostro);background:var(--carta-2)}
+  .popup .corpo{padding:12px 14px 14px}
+  .popup .quando{
+    font-size:12px;font-weight:600;letter-spacing:.05em;
+    color:var(--carta);background:var(--ruggine);
+    display:inline-block;padding:3px 8px;margin-bottom:8px;
+  }
+  .popup.guerra .quando{background:var(--oceano)}
+  .popup h3{font-family:'Fraunces',serif;font-size:19px;line-height:1.15;margin-bottom:6px}
+  .popup p{font-size:13.5px;color:#38332a;line-height:1.55}
+  .popup .crediti{margin-top:8px;font-size:11.5px;color:#7a7260}
+  .popup .crediti a{color:var(--ruggine)}
+  @media (max-width:860px){
+    body{overflow:auto;height:auto}
+    main{flex-direction:column}
+    aside{width:100%;max-width:none;border-right:0;border-bottom:1px solid var(--inchiostro)}
+    #lista{max-height:46vh}
+    #mappa{height:62vh;flex:none}
+    .epoche{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Atlante <em>— Rotte della Storia</em></h1>
+  <p>Due itinerari per la lezione di Storia e Geografia: l'espansione europea del Cinquecento e l'Europa della Seconda guerra mondiale. Seleziona un'epoca, poi un luogo dall'indice o dalla mappa.</p>
+  <div class="epoche" role="group" aria-label="Scelta epoca">
+    <button id="btnGeo" aria-pressed="true">Esplorazioni · 1488–1522</button>
+    <button id="btnGuerra" aria-pressed="false">Seconda guerra mondiale · 1939–1945</button>
+  </div>
+</header>
+
+<main>
+  <aside>
+    <div class="indice-meta"><span><strong id="conteggio">7</strong> tappe in questa rotta</span><span id="etichetta">Trascina ≡ per riordinare · clicca per volare</span></div>
+    <div class="barra-azioni">
+      <button class="pulsante primario" id="btnAggiungi" aria-pressed="false" title="Attiva la modalità inserimento, poi clicca un punto sulla mappa">+ Aggiungi tappa</button>
+      <button class="pulsante secondario" id="btnExport" title="Scarica le tue tappe in un file JSON">Esporta</button>
+      <button class="pulsante secondario" id="btnImport" title="Carica tappe da un file JSON esportato">Importa</button>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    </div>
+    <div id="avviso-aggiunta"><span>Modalità inserimento: clicca un punto sulla mappa.</span><button id="btnAnnullaAdd" type="button">Annulla</button></div>
+    <div id="lista" role="list"></div>
+  </aside>
+  <div id="mappa" aria-label="Mappa interattiva dei luoghi storici"></div>
+</main>
+
+<footer>
+  <span>Mappe: Esri / OSM Francia / OpenTopoMap, dati © OpenStreetMap contributors · Libreria: Leaflet 1.9.4 via CDN · Immagini default: Wikimedia Commons (fonte nel popup). Le tue tappe restano salvate in questo browser (localStorage).</span>
+</footer>
+
+<dialog id="modale" aria-labelledby="mod-titolo">
+  <div class="mod-testa"><h2 id="mod-titolo">Nuova tappa</h2><button id="btnChiudi" type="button" aria-label="Chiudi">×</button></div>
+  <form id="form-tappa" method="dialog">
+    <label>Luogo / titolo
+      <input name="titolo" required maxlength="90" placeholder="Es. Trento — Concilio" autocomplete="off">
+    </label>
+    <div class="riga">
+      <label>Data / periodo
+        <input name="data" required maxlength="90" placeholder="Es. 1545–1563" autocomplete="off">
+      </label>
+      <label>Rotta
+        <select name="epoca">
+          <option value="geo">Esplorazioni</option>
+          <option value="guerra">Seconda guerra mondiale</option>
+        </select>
+      </label>
+    </div>
+    <label>Sintesi storica
+      <textarea name="testo" required maxlength="1200" placeholder="2–3 frasi: cosa accadde qui, quando, perché conta."></textarea>
+    </label>
+    <label>Immagine da URL <span class="aiuto">(facoltativa, es. link Wikimedia Commons)</span>
+      <input name="imgUrl" type="url" placeholder="https://…" autocomplete="off">
+    </label>
+    <label>Oppure carica un'immagine <span class="aiuto">(facoltativa, ridotta a max 640px)</span>
+      <input name="imgFile" type="file" accept="image/*">
+    </label>
+    <div class="riga">
+      <label>Latitudine<input name="lat" type="number" step="any" min="-90" max="90" required></label>
+      <label>Longitudine<input name="lon" type="number" step="any" min="-180" max="180" required></label>
+    </div>
+    <p class="aiuto" id="coord-aiuto"></p>
+    <div class="mod-azioni">
+      <button class="pulsante" id="btnAnnullaForm" type="button">Annulla</button>
+      <button class="pulsante primario" type="submit">Salva tappa</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const FP = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=640";
+
+const LUOGHI = [
+  // ——— Esplorazioni ———
+  {epoca:"geo", n:"1", titolo:"Lisbona — Torre di Belém", data:"1497–1498 · Partenza di Vasco da Gama",
+   lat:38.6919, lon:-9.216,
+   img:FP("Torre de Belém, Lisboa, Portugal, 2012-05-12, DD 02.JPG"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Torre_de_Bel%C3%A9m,_Lisboa,_Portugal,_2012-05-12,_DD_02.JPG",
+   testo:"Da qui salpa l'armata di Vasco da Gama. La rotta atlantica portoghese aggira l'Africa e apre la via marittima delle spezie verso l'Oceano Indiano, spostando il baricentro commerciale dal Mediterraneo all'Atlantico."},
+  {epoca:"geo", n:"2", titolo:"Capo di Buona Speranza", data:"1488 · Bartolomeu Dias",
+   lat:-34.3567, lon:18.4733,
+   img:FP("Cape of Good Hope, South Africa (5277483330).jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Cape_of_Good_Hope,_South_Africa_(5277483330).jpg",
+   testo:"Dias doppia per primo l'estremità meridionale dell'Africa. Dimostra che Atlantico e Indiano comunicano e rende tecnicamente possibile il viaggio di Gama dieci anni dopo."},
+  {epoca:"geo", n:"3", titolo:"Calicut (Kozhikode), India", data:"20 maggio 1498 · Arrivo di Gama",
+   lat:11.2588, lon:75.7804,
+   img:FP("Kozhikode beach 2.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Kozhikode_beach_2.jpg",
+   testo:"Gama approda sulla costa del Malabar. I portoghesi ottengono carichi di pepe e cannella e pongono le basi dell'Estado da Índia: fortezze e feitorie lungo le coste invece di un dominio territoriale interno."},
+  {epoca:"geo", n:"4", titolo:"Guanahani (San Salvador)", data:"12 ottobre 1492 · Cristoforo Colombo",
+   lat:24.1, lon:-74.5,
+   img:FP("San Salvador Island, Bahamas.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:San_Salvador_Island,_Bahamas.jpg",
+   testo:"Prima terra americana toccata dalla spedizione finanziata dai Re Cattolici. Colombo crede di aver raggiunto le Indie orientali: da qui inizia la colonizzazione europea delle Americhe e lo scambio colombiano di piante, animali e malattie."},
+  {epoca:"geo", n:"5", titolo:"Tenochtitlan (Città del Messico)", data:"1519–1521 · Hernán Cortés",
+   lat:19.4326, lon:-99.1332,
+   img:FP("Tenochtitlan-Model.PNG"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Tenochtitlan-Model.PNG",
+   testo:"Capitale azteca su un'isola del lago Texcoco, con 200-300 mila abitanti. Cortés, con alleanze indigene, armi da fuoco e vaiolo, la assedia e la rade al suolo: nasce la Nuova Spagna."},
+  {epoca:"geo", n:"6", titolo:"Stretto di Magellano", data:"Ottobre–novembre 1520 · Ferdinando Magellano",
+   lat:-53.5, lon:-70.9,
+   img:FP("Strait of Magellan, Chile.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Strait_of_Magellan,_Chile.jpg",
+   testo:"La flotta spagnola trova il passaggio tra Atlantico e Pacifico all'estremo sud del continente. L'attraversamento dura 38 giorni: prova pratica che le Americhe sono un continente separato dall'Asia."},
+  {epoca:"geo", n:"7", titolo:"Ternate, isole Molucche", data:"1521 · Fine della circumavigazione",
+   lat:0.79, lon:127.38,
+   img:FP("Mount Gamalama, Ternate, North Maluku, Indonesia.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Mount_Gamalama,_Ternate,_North_Maluku,_Indonesia.jpg",
+   testo:"Le 'isole delle spezie' (chiodi di garofano) sono la meta della spedizione. Dopo la morte di Magellano nelle Filippine, la Victoria rientra in Spagna nel 1522: prima circumavigazione del globo, 18 uomini su 234."},
+
+  // ——— Seconda guerra mondiale ———
+  {epoca:"guerra", n:"1", titolo:"Westerplatte, Danzica", data:"1º settembre 1939 · Inizio della guerra",
+   lat:54.407, lon:18.667,
+   img:FP("Westerplatte Monument 2010-08-13.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Westerplatte_Monument_2010-08-13.jpg",
+   testo:"La corazzata Schleswig-Holstein apre il fuoco sul deposito polacco nella Città Libera di Danzica. La guarnigione resiste sette giorni. Il 3 settembre Francia e Regno Unito dichiarano guerra alla Germania."},
+  {epoca:"guerra", n:"2", titolo:"Dunkerque", data:"26 maggio – 4 giugno 1940 · Evacuazione",
+   lat:51.034, lon:2.377,
+   img:FP("Dunkirk evacuation behaviour.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Dunkirk_evacuation_behaviour.jpg",
+   testo:"Il corpo di spedizione britannico e reparti francesi, accerchiati dopo lo sfondamento delle Ardenne, vengono evacuati via mare verso l'Inghilterra (oltre 330 mila uomini). La Francia firma l'armistizio il 22 giugno."},
+  {epoca:"guerra", n:"3", titolo:"Stalingrado (Volgograd)", data:"Agosto 1942 – febbraio 1943 · Svolta",
+   lat:48.708, lon:44.513,
+   img:FP("Bundesarchiv Bild 183-W0506-316, Stalingrad, Häuserkampf.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-W0506-316,_Stalingrad,_H%C3%A4userkampf.jpg",
+   testo:"La VI armata tedesca resta intrappolata nella sacca sovietica e capitola il 2 febbraio 1943: circa 90 mila prigionieri. È la prima grande sconfitta campale tedesca e il punto di svolta sul fronte orientale."},
+  {epoca:"guerra", n:"4", titolo:"Omaha Beach, Normandia", data:"6 giugno 1944 · D-Day",
+   lat:49.369, lon:-0.874,
+   img:FP("Into the Jaws of Death 23-0455M edit.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Into_the_Jaws_of_Death_23-0455M_edit.jpg",
+   testo:"Sbarco alleato in Normandia (Operazione Overlord): 156 mila uomini il primo giorno su cinque spiagge. Omaha è il settore più sanguinoso. Entro agosto la Francia è liberata e si apre il secondo fronte in Europa."},
+  {epoca:"guerra", n:"5", titolo:"Auschwitz-Birkenau", data:"1940–1945 · Liberazione 27 gennaio 1945",
+   lat:50.034, lon:19.178,
+   img:FP("Arbeit macht frei Auschwitz I.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Arbeit_macht_frei_Auschwitz_I.jpg",
+   testo:"Il più grande complesso concentrazionario e di sterminio nazista: oltre 1,1 milioni di vittime, in maggioranza ebrei. Liberato dall'Armata Rossa, è oggi Memoriale UNESCO e simbolo della Shoah."},
+  {epoca:"guerra", n:"6", titolo:"Hiroshima", data:"6 agosto 1945 · Bomba atomica",
+   lat:34.385, lon:132.455,
+   img:FP("Hiroshima aftermath.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Hiroshima_aftermath.jpg",
+   testo:"Il B-29 Enola Gay sgancia la prima bomba atomica usata in guerra: circa 140 mila morti entro fine anno. Il 9 agosto tocca a Nagasaki; il 2 settembre il Giappone firma la resa e la guerra finisce."},
+  {epoca:"guerra", n:"7", titolo:"Reichstag, Berlino", data:"30 aprile – 2 maggio 1945 · Caduta di Berlino",
+   lat:52.518, lon:13.376,
+   img:FP("Reichstag building Berlin view from west before sunset.jpg"),
+   fonte:"https://commons.wikimedia.org/wiki/File:Reichstag_building_Berlin_view_from_west_before_sunset.jpg",
+   testo:"Le truppe sovietiche issano la bandiera sul Reichstag. Hitler si suicida nel bunker il 30 aprile; l'8 maggio la Germania capitola. L'Europa si divide in zone di occupazione: inizia la guerra fredda."}
+];
+
+const map = L.map("mappa", {scrollWheelZoom:true}).setView([30, 5], 3);
+// Tile senza key, funzionano anche da file:// :
+// - Esri World Street Map (default, affidabile)
+// - OSM Francia e OpenTopoMap (dati OSM, belli per lezione geo/storia).
+// tile.openstreetmap.org bloccato da file:// (403, osm.wiki/Blocked);
+// basemaps.cartocdn.com dal 2025 richiede API key.
+const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+  maxZoom: 19,
+  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom &mdash; &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+const osmFr = L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+  maxZoom: 20, subdomains: "abc",
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, tiles &copy; <a href="https://www.openstreetmap.fr/">OSM Francia</a>'
+});
+const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+  maxZoom: 17, subdomains: "abc",
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM | style &copy; <a href="https://opentopomap.org/">OpenTopoMap</a> (CC-BY-SA)'
+});
+const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+L.control.layers({"Stradale Esri (consigliata)": esri, "OSM Francia": osmFr, "Topografica": topo, "OpenStreetMap standard": osm}, null, {position:"topright"}).addTo(map);
+
+const layer = L.layerGroup().addTo(map);
+const lista = document.getElementById("lista");
+const conteggio = document.getElementById("conteggio");
+const btnGeo = document.getElementById("btnGeo");
+const btnGuerra = document.getElementById("btnGuerra");
+let epoca = "geo";
+let vociBtn = [];
+
+/* ——— Tappe personalizzate (localStorage) ——— */
+const CHIAVE = "atlante-custom-v1";
+let personalizzate = [];
+try { personalizzate = JSON.parse(localStorage.getItem(CHIAVE) || "[]"); }
+catch(e){ personalizzate = []; }
+function salvaCustom(){
+  try { localStorage.setItem(CHIAVE, JSON.stringify(personalizzate)); }
+  catch(e){ alert("Spazio locale esaurito: usa un'immagine più piccola o un URL."); }
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => "c" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
+const chiaveDi = l => l.custom ? "c-" + l.id : "d-" + l.epoca + "-" + l.n;
+/* ——— Ordine personalizzato delle tappe (localStorage, per rotta) ——— */
+const ORD_KEY = "atlante-ordine-v1";
+let ordini = {};
+try { ordini = JSON.parse(localStorage.getItem(ORD_KEY) || "{}"); }
+catch(e){ ordini = {}; }
+function salvaOrdini(){
+  try { localStorage.setItem(ORD_KEY, JSON.stringify(ordini)); } catch(e){}
+}
+function applicaOrdine(set){
+  if (!Array.isArray(ordini[epoca])){
+    ordini[epoca] = set.map(chiaveDi); salvaOrdini(); return set;
+  }
+  const pos = new Map(ordini[epoca].map((k,i) => [k,i]));
+  const noti = set.filter(l => pos.has(chiaveDi(l))).sort((a,b) => pos.get(chiaveDi(a)) - pos.get(chiaveDi(b)));
+  const nuovi = set.filter(l => !pos.has(chiaveDi(l)));
+  const out = [...noti, ...nuovi];
+  ordini[epoca] = out.map(chiaveDi); salvaOrdini();
+  return out;
+}
+function spostaChiave(chiave, dir){
+  const arr = [...(ordini[epoca] || [])];
+  const i = arr.indexOf(chiave), j = i + dir;
+  if (i < 0 || j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  ordini[epoca] = arr; salvaOrdini(); render(false);
+}
+function rilascia(from, target, dopo){
+  if (!from || from === target && !dopo) { render(false); return; }
+  const arr = [...(ordini[epoca] || [])].filter(k => k !== from);
+  let idx = arr.indexOf(target);
+  if (idx < 0) idx = arr.length;
+  else if (dopo) idx++;
+  arr.splice(idx, 0, from);
+  ordini[epoca] = arr; salvaOrdini(); render(false);
+}
+
+function icona(l, num){
+  if (l.custom) return L.divIcon({
+    className:"", html:`<div class="pin custom"><span>${num}</span></div>`,
+    iconSize:[30,30], iconAnchor:[15,28], popupAnchor:[0,-26]
+  });
+  return L.divIcon({
+    className:"", html:`<div class="pin ${l.epoca}"><span>${num}</span></div>`,
+    iconSize:[30,30], iconAnchor:[15,28], popupAnchor:[0,-26]
+  });
+}
+function popupHtml(l, num){
+  const cls = l.epoca === "guerra" ? "popup guerra" : "popup";
+  const titolo = l.custom ? `<span class="num-custom">${num}.</span> ${esc(l.titolo)}` : `${num}. ${l.titolo}`;
+  const img = l.img ? `<img src="${esc(l.img)}" alt="${esc(l.titolo)}" loading="lazy" onerror="this.style.display='none'">` : "";
+  const fonte = l.custom
+    ? `<p class="crediti">Tappa aggiunta da te.</p><div class="az"><button type="button" data-mod="${l.id}">Modifica</button><button type="button" class="pericolo" data-del="${l.id}">Elimina</button></div>`
+    : `<p class="crediti">Immagine: Wikimedia Commons · <a href="${l.fonte}" target="_blank" rel="noopener">fonte e licenza</a></p>`;
+  const marchio = l.custom ? '<span class="tua">La tua tappa</span>' : "";
+  return `<div class="${cls}">${img}<div class="corpo">${marchio}<span class="quando">${esc(l.data)}</span><h3>${titolo}</h3><p>${esc(l.testo)}</p>${fonte}</div></div>`;
+}
+function render(fit=true){
+  layer.clearLayers();
+  lista.innerHTML = "";
+  vociBtn = [];
+  const set = applicaOrdine([...LUOGHI.filter(l => l.epoca === epoca), ...personalizzate.filter(l => l.epoca === epoca)]);
+  conteggio.textContent = set.length;
+  const bounds = [];
+  set.forEach((l, i) => {
+    const num = String(i + 1);
+    const chiave = chiaveDi(l);
+    const m = L.marker([l.lat, l.lon], {icon: icona(l, num)}).bindPopup(popupHtml(l, num), {maxWidth:320});
+    m.addTo(layer);
+    bounds.push([l.lat, l.lon]);
+    const row = document.createElement("div");
+    row.className = "voce" + (l.epoca === "guerra" ? " guerra" : "") + (l.custom ? " personale" : "");
+    row.setAttribute("role","listitem");
+    row.draggable = true;
+    row.dataset.chiave = chiave;
+    const testa = l.custom
+      ? `<span class="testa"><h2>${num}. ${esc(l.titolo)}</h2><span class="marchio">tua</span></span>`
+      : `<h2>${num}. ${l.titolo}</h2>`;
+    row.innerHTML = `<span class="maniglia" title="Trascina per riordinare" aria-hidden="true">≡</span>`
+      + `<button type="button" class="voce-principale"><span class="sigla">${num}</span><span>${testa}<span class="data">${esc(l.data)}</span><br><span class="sintesi">${esc(l.testo)}</span></span></button>`
+      + `<span class="sposta"><button type="button" data-su title="Sposta su" aria-label="Sposta ${esc(l.titolo)} su">↑</button><button type="button" data-giu title="Sposta giù" aria-label="Sposta ${esc(l.titolo)} giù">↓</button></span>`;
+    const b = row.querySelector(".voce-principale");
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".voce").forEach(v => v.classList.remove("attiva"));
+      row.classList.add("attiva");
+      map.flyTo([l.lat, l.lon], Math.max(map.getZoom(), 5), {duration:1.1});
+      m.openPopup();
+    });
+    b.addEventListener("keydown", ev => {
+      if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")){
+        ev.preventDefault();
+        spostaChiave(chiave, ev.key === "ArrowUp" ? -1 : 1);
+      }
+    });
+    m.on("popupopen", e => {
+      document.querySelectorAll(".voce").forEach(v => v.classList.remove("attiva"));
+      row.classList.add("attiva");
+      row.scrollIntoView({block:"nearest"});
+      const el = e.popup.getElement();
+      const bm = el && el.querySelector("[data-mod]");
+      const bd = el && el.querySelector("[data-del]");
+      if (bm) bm.addEventListener("click", () => apriModale(l));
+      if (bd) bd.addEventListener("click", () => eliminaTappa(l.id));
+    });
+    row.querySelector("[data-su]").addEventListener("click", ev => { ev.stopPropagation(); spostaChiave(chiave, -1); });
+    row.querySelector("[data-giu]").addEventListener("click", ev => { ev.stopPropagation(); spostaChiave(chiave, 1); });
+    row.addEventListener("dragstart", ev => {
+      ev.dataTransfer.setData("text/plain", chiave);
+      ev.dataTransfer.effectAllowed = "move";
+      row.classList.add("trascinata");
+    });
+    row.addEventListener("dragend", () => {
+      row.classList.remove("trascinata");
+      lista.querySelectorAll(".drop-sopra,.drop-sotto").forEach(x => x.classList.remove("drop-sopra","drop-sotto"));
+    });
+    row.addEventListener("dragover", ev => {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = "move";
+      const r = row.getBoundingClientRect();
+      const sotto = (ev.clientY - r.top) > r.height / 2;
+      row.classList.toggle("drop-sotto", sotto);
+      row.classList.toggle("drop-sopra", !sotto);
+    });
+    row.addEventListener("dragleave", () => row.classList.remove("drop-sopra","drop-sotto"));
+    row.addEventListener("drop", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const from = ev.dataTransfer.getData("text/plain");
+      const r = row.getBoundingClientRect();
+      rilascia(from, chiave, (ev.clientY - r.top) > r.height / 2);
+    });
+    lista.appendChild(row);
+    vociBtn.push(b);
+  });
+  if (fit && bounds.length) map.flyToBounds(bounds, {padding:[40,40], duration:1});
+  btnGeo.setAttribute("aria-pressed", epoca === "geo");
+  btnGuerra.setAttribute("aria-pressed", epoca === "guerra");
+}
+function eliminaTappa(id){
+  const t = personalizzate.find(x => x.id === id);
+  if (!t) return;
+  if (!confirm(`Eliminare la tappa "${t.titolo}"?`)) return;
+  personalizzate = personalizzate.filter(x => x.id !== id);
+  salvaCustom();
+  Object.keys(ordini).forEach(k => { ordini[k] = (ordini[k] || []).filter(x => x !== "c-" + id); });
+  salvaOrdini();
+  render(false);
+}
+
+/* ——— Modalità inserimento + modale ——— */
+const btnAggiungi = document.getElementById("btnAggiungi");
+const avviso = document.getElementById("avviso-aggiunta");
+const modale = document.getElementById("modale");
+const form = document.getElementById("form-tappa");
+let inAggiunta = false, inModifica = null, marcatoreBozza = null;
+
+function setAggiunta(on){
+  inAggiunta = on;
+  btnAggiungi.setAttribute("aria-pressed", on);
+  avviso.classList.toggle("visibile", on);
+  document.getElementById("mappa").classList.toggle("in-aggiunta", on);
+}
+btnAggiungi.addEventListener("click", () => setAggiunta(!inAggiunta));
+document.getElementById("btnAnnullaAdd").addEventListener("click", () => setAggiunta(false));
+
+map.on("click", e => {
+  if (!inAggiunta) return;
+  apriModale(null, e.latlng.lat, e.latlng.lng);
+});
+function apriModale(esistente=null, lat=null, lon=null){
+  inModifica = esistente ? esistente.id : null;
+  document.getElementById("mod-titolo").textContent = esistente ? "Modifica tappa" : "Nuova tappa";
+  form.titolo.value = esistente?.titolo || "";
+  form.data.value = esistente?.data || "";
+  form.epoca.value = esistente?.epoca || epoca;
+  form.testo.value = esistente?.testo || "";
+  form.imgUrl.value = (esistente?.img && !esistente.img.startsWith("data:")) ? esistente.img : "";
+  form.imgFile.value = "";
+  form.lat.value = (esistente?.lat ?? lat ?? map.getCenter().lat).toFixed(4);
+  form.lon.value = (esistente?.lon ?? lon ?? map.getCenter().lng).toFixed(4);
+  document.getElementById("coord-aiuto").textContent =
+    esistente ? "Puoi correggere le coordinate a mano." : `Coordinate dal punto cliccato: ${Number(form.lat.value).toFixed(4)}, ${Number(form.lon.value).toFixed(4)}. Puoi correggerle a mano.`;
+  if (marcatoreBozza){ map.removeLayer(marcatoreBozza); marcatoreBozza = null; }
+  if (!esistente && lat != null){
+    marcatoreBozza = L.marker([lat, lon], {icon: L.divIcon({className:"", html:'<div class="pin custom"><span>+</span></div>', iconSize:[30,30], iconAnchor:[15,28]})}).addTo(map);
+  }
+  setAggiunta(false);
+  modale.showModal();
+  form.titolo.focus();
+}
+document.getElementById("btnChiudi").addEventListener("click", () => modale.close());
+document.getElementById("btnAnnullaForm").addEventListener("click", () => modale.close());
+modale.addEventListener("close", () => { if (marcatoreBozza){ map.removeLayer(marcatoreBozza); marcatoreBozza = null; } });
+
+function riduciImmagine(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const max = 640, k = Math.min(1, max / Math.max(im.width, im.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(im.width*k); c.height = Math.round(im.height*k);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        res(c.toDataURL("image/jpeg", .82));
+      };
+      im.onerror = rej; im.src = r.result;
+    };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const titolo = form.titolo.value.trim(), data = form.data.value.trim(), testo = form.testo.value.trim();
+  const lat = parseFloat(form.lat.value), lon = parseFloat(form.lon.value);
+  if (!titolo || !data || !testo) return;
+  if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180){ alert("Coordinate non valide."); return; }
+  let img = form.imgUrl.value.trim();
+  const f = form.imgFile.files[0];
+  if (f){
+    try { img = await riduciImmagine(f); }
+    catch(err){ alert("Immagine non leggibile."); return; }
+  }
+  if (inModifica){
+    const t = personalizzate.find(x => x.id === inModifica);
+    if (t) Object.assign(t, {titolo, data, testo, img, epoca: form.epoca.value, lat, lon});
+  } else {
+    personalizzate.push({id: uid(), custom:true, titolo, data, testo, img, epoca: form.epoca.value, lat, lon});
+  }
+  salvaCustom();
+  modale.close();
+  epoca = form.epoca.value;
+  render(false);
+  const t = inModifica ? personalizzate.find(x => x.id === inModifica) : personalizzate[personalizzate.length-1];
+  if (t) map.flyTo([t.lat, t.lon], Math.max(map.getZoom(), 5), {duration:1});
+  inModifica = null;
+});
+
+/* ——— Esporta / importa JSON ——— */
+document.getElementById("btnExport").addEventListener("click", () => {
+  if (!personalizzate.length){ alert("Nessuna tappa personale da esportare."); return; }
+  const blob = new Blob([JSON.stringify(personalizzate, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "atlante-tappe.json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+document.getElementById("btnImport").addEventListener("click", () => document.getElementById("fileImport").click());
+document.getElementById("fileImport").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const arr = JSON.parse(r.result);
+      if (!Array.isArray(arr)) throw 0;
+      let n = 0;
+      arr.forEach(o => {
+        if (o && o.titolo && o.testo && isFinite(+o.lat) && isFinite(+o.lon)){
+          personalizzate.push({id: uid(), custom:true, titolo: String(o.titolo).slice(0,90),
+            data: String(o.data || "").slice(0,90), testo: String(o.testo).slice(0,1200),
+            img: String(o.img || ""), epoca: o.epoca === "guerra" ? "guerra" : "geo",
+            lat: +o.lat, lon: +o.lon});
+          n++;
+        }
+      });
+      salvaCustom(); render(false);
+      alert(n ? `${n} tappe importate.` : "Nessuna tappa valida nel file.");
+    } catch(err){ alert("File JSON non valido."); }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+});
+
+btnGeo.addEventListener("click", () => { epoca = "geo"; render(); });
+btnGuerra.addEventListener("click", () => { epoca = "guerra"; render(); });
+render();
+</script>
+</body>
+</html>

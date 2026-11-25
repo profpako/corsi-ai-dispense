@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generatore di Mappe Concettuali — Filosofia e Autori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,600;9..144,1,400&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --paper:#E9ECF1; --paper-2:#DFE4EB; --ink:#17233B; --ink-soft:#5B6B85;
+  --line:#B9C2D0; --card:#F7F8FA; --blue:#1D4ED8;
+  --mono:'IBM Plex Mono',monospace; --sans:'Space Grotesk',sans-serif; --serif:'Fraunces',serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;
+  background-image:linear-gradient(var(--paper-2) 1px,transparent 1px),linear-gradient(90deg,var(--paper-2) 1px,transparent 1px);background-size:28px 28px;}
+.topbar{display:flex;align-items:stretch;background:var(--card);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:30;flex-wrap:wrap}
+.brand{padding:12px 18px;border-right:2px solid var(--ink);display:flex;align-items:center;gap:12px;min-width:260px}
+.brand-mark{width:34px;height:34px;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:20px;border-radius:50% 50% 50% 4px}
+.brand small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-soft)}
+.brand strong{font-size:14.5px}
+.titleblock{padding:10px 20px;flex:1;min-width:240px}
+.titleblock h1{font-family:var(--serif);font-weight:600;font-size:clamp(20px,2.4vw,28px);line-height:1.05;margin:0;letter-spacing:-.02em}
+.titleblock h1 em{font-style:italic;font-weight:400}
+#mapTitleInput{font-family:var(--serif);font-size:inherit;font-weight:inherit;color:inherit;background:transparent;border:0;border-bottom:1.5px dashed var(--line);width:min(420px,80%);outline:none}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 16px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:12px;border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:#000}
+.btn.ghost{border-style:dashed}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr) 400px;height:calc(100vh - 88px);min-height:560px}
+.rail{border-right:2px solid var(--ink);background:var(--card);padding:16px;overflow:auto}
+.rail h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;margin:0 0 10px;color:var(--ink-soft)}
+.steps{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:8px}
+.steps li{border:1.5px solid var(--ink);border-radius:12px;padding:10px 12px;background:#fff;font-size:13px}
+.steps li.done{opacity:.75}
+.steps .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;margin-right:8px}
+.steps b{display:block;margin-bottom:2px}
+.mini-form{border:1.5px solid var(--ink);border-radius:14px;padding:12px;background:#fff;margin-bottom:14px}
+.mini-form label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);display:block;margin:8px 0 4px}
+.mini-form label:first-of-type{margin-top:0}
+.mini-form input,.mini-form select,.mini-form textarea{width:100%;font-family:var(--sans);font-size:13.5px;padding:8px 10px;border:1.5px solid var(--ink);border-radius:9px;background:var(--card)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.legend li{display:flex;gap:10px;align-items:center;border:1.5px solid var(--ink);border-radius:10px;padding:6px 10px;background:#fff;font-size:12.5px;cursor:pointer}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid var(--ink)}
+.hint{font-size:12.5px;color:var(--ink-soft);border:1.5px dashed var(--line);border-radius:12px;padding:10px;margin-top:12px;background:#fff}
+.stage{position:relative;min-width:0;display:flex;flex-direction:column}
+.canvas-tools{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:6px;box-shadow:4px 4px 0 rgba(23,35,59,.2);flex-wrap:wrap;justify-content:center;max-width:96%}
+.tool-btn{font-family:var(--mono);font-size:12px;border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:7px 13px;cursor:pointer}
+.tool-btn:hover{background:var(--ink);color:#fff}
+.tool-btn.armed{background:var(--blue);border-color:var(--blue);color:#fff}
+.mode-banner{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:10;background:var(--ink);color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;display:none;max-width:92%;text-align:center}
+.mode-banner.show{display:block}
+#network{flex:1;min-height:0;cursor:grab}
+#network:active{cursor:grabbing}
+.empty-overlay{position:absolute;inset:0;display:none;place-items:center;z-index:5;pointer-events:none;padding:20px}
+.empty-overlay.show{display:grid}
+.empty-card{pointer-events:auto;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:28px;max-width:620px;text-align:center;box-shadow:8px 8px 0 rgba(23,35,59,.18)}
+.empty-card h2{font-family:var(--serif);font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
+.empty-card p{color:var(--ink-soft);font-size:14px;margin:0 0 16px}
+.empty-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:6px}
+.empty-actions button{border:2px solid var(--ink);border-radius:14px;background:#fff;padding:14px 10px;cursor:pointer;font-family:var(--sans)}
+.empty-actions button:hover{background:var(--ink);color:#fff}
+.empty-actions b{display:block;font-size:14px;margin-bottom:4px}
+.empty-actions span{font-size:12px;opacity:.75}
+.stage-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:2px solid var(--ink);background:var(--card);padding:8px 14px;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.chip{border:1.5px solid var(--ink);border-radius:999px;padding:4px 10px;background:#fff;color:var(--ink);font-size:12px}
+.edge-expl{position:absolute;left:14px;bottom:52px;max-width:420px;background:var(--ink);color:#fff;border-radius:14px;padding:12px 14px;font-size:13px;display:none;z-index:8}
+.edge-expl.show{display:block}
+.panel{border-left:2px solid var(--ink);background:var(--card);overflow:auto}
+.panel-inner{padding:20px}
+.timbro{display:inline-flex;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:6px;padding:5px 10px;background:#fff;transform:rotate(-1.2deg)}
+.panel h2{font-family:var(--serif);font-size:32px;line-height:1;margin:12px 0 2px;letter-spacing:-.02em}
+.dates{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.thesis{font-family:var(--serif);font-style:italic;font-size:16.5px;line-height:1.45;border-left:4px solid var(--ink);padding-left:14px;margin:16px 0}
+.opere{list-style:none;margin:12px 0;padding:0}
+.opere li{display:grid;grid-template-columns:56px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.opere li:last-child{border-bottom:1px solid var(--line)}
+.opere .yr{font-family:var(--mono)}
+.quote{background:var(--ink);color:#F1F5F9;border-radius:14px;padding:14px 16px;font-family:var(--serif);font-style:italic;font-size:15px;margin:14px 0}
+.quote cite{display:block;font-family:var(--mono);font-style:normal;font-size:11px;opacity:.7;margin-top:8px}
+.conn h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px;color:var(--ink-soft)}
+.conn article{border:1.5px solid var(--ink);border-radius:12px;background:#fff;padding:10px 12px;margin-bottom:8px;font-size:13.5px}
+.rel{font-family:var(--mono);font-size:11px;border:1px solid var(--ink);border-radius:999px;padding:2px 8px;background:var(--paper)}
+.conn button.linklike{all:unset;cursor:pointer;font-weight:700;text-decoration:underline}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.form-grid label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);display:block;margin:10px 0 4px}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;font-family:var(--sans);font-size:14px;padding:9px 11px;border:1.5px solid var(--ink);border-radius:10px;background:#fff}
+.form-grid textarea{min-height:70px;resize:vertical}
+.modal-back{position:fixed;inset:0;background:rgba(23,35,59,.5);display:none;place-items:center;z-index:100;padding:18px}
+.modal-back.show{display:grid}
+.modal{background:var(--card);border:2px solid var(--ink);border-radius:20px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:24px;box-shadow:10px 10px 0 rgba(0,0,0,.25)}
+.modal h2{font-family:var(--serif);font-size:26px;margin:0 0 4px}
+.modal .sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 14px}
+.opt-group{border:1.5px solid var(--ink);border-radius:14px;background:#fff;padding:12px;margin-bottom:12px}
+.opt-group h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px;color:var(--ink-soft)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{border:1.5px solid var(--ink);border-radius:999px;padding:8px 14px;font-family:var(--mono);font-size:12px;cursor:pointer;background:var(--card)}
+.seg input{display:none}
+.seg input:checked + span{font-weight:700}
+.seg label:has(input:checked){background:var(--ink);color:#fff}
+.split-preview{display:grid;gap:6px;margin-top:10px;background:var(--paper);border:1.5px dashed var(--line);border-radius:12px;padding:12px}
+.split-preview .tiles{display:grid;gap:6px}
+.split-preview .tile{background:var(--ink);color:#fff;border-radius:8px;font-family:var(--mono);font-size:11px;display:grid;place-items:center;min-height:54px}
+.kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--ink);border-bottom-width:3px;border-radius:6px;padding:1px 7px;background:#fff}
+@media (max-width:1100px){.layout{grid-template-columns:1fr;height:auto}.rail{border-right:0;border-bottom:2px solid var(--ink);order:2}.stage{min-height:64vh;order:1}.panel{border-left:0;border-top:2px solid var(--ink);order:3}.empty-actions{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">φ</div><div><small>GENERATORE · MAPPE CONCETTUALI</small><strong id="brandSub">Filosofia della Scienza</strong></div></div>
+  <div class="titleblock">
+    <h1><input id="mapTitleInput" value="Come cambia un'idea di scienza, 1906 – 1980" aria-label="Titolo della mappa"></h1>
+  </div>
+  <div class="toolbar">
+    <button class="btn ghost" id="btnHelp">Come si usa</button>
+    <button class="btn" id="btnNew">Nuova mappa</button>
+    <button class="btn" id="btnExample">Carica esempio</button>
+    <button class="btn" id="btnImport">Importa</button>
+    <button class="btn primary" id="btnExport">Esporta</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="rail">
+    <h2>PERCORSO IN 3 PASSI</h2>
+    <ol class="steps">
+      <li id="step1"><span class="n">1</span><b>Aggiungi gli autori</b>Usa il modulo qui sotto, oppure doppio clic sul foglio centrale, oppure il pulsante + Autore.</li>
+      <li id="step2"><span class="n">2</span><b>Collega le idee</b>Premi “Collega”, clicca il primo nodo e poi il secondo. Scrivi il tipo di relazione e perché esiste.</li>
+      <li id="step3"><span class="n">3</span><b>Esplora ed esporta</b>Clicca nodi e frecce per leggere le schede. Poi Esporta: PNG, PDF dossier o slide ritagliate.</li>
+    </ol>
+    <div class="mini-form">
+      <h2 style="margin-bottom:2px">AGGIUNTA RAPIDA</h2>
+      <label for="fName">Nome autore</label>
+      <input id="fName" placeholder="es. Simone Weil">
+      <label for="fGroup">Corrente</label>
+      <select id="fGroup"></select>
+      <label for="fThesis">Tesi in una frase</label>
+      <input id="fThesis" placeholder="es. L'attenzione è la forma più rara di generosità">
+      <div class="row-btns"><button class="btn primary" id="btnQuickAdd" style="flex:1">+ Aggiungi alla mappa</button></div>
+    </div>
+    <h2>CORRENTI · CLIC PER EVIDENZIARE</h2>
+    <ul class="legend" id="legend"></ul>
+    <p class="hint">Lo spazio al centro è il tuo foglio. Se è vuoto, usa <b>+ Autore</b> o <b>Carica esempio</b>. Trascina i nodi per sistemarli, rotella per zoomare, doppio clic su uno spazio libero per creare un nodo lì.</p>
+  </aside>
+
+  <main class="stage">
+    <div class="canvas-tools" role="toolbar" aria-label="Strumenti mappa">
+      <button class="tool-btn" id="tAdd">+ Autore</button>
+      <button class="tool-btn" id="tConnect">Collega</button>
+      <button class="tool-btn" id="tEdit">Modifica</button>
+      <button class="tool-btn" id="tDelete">Elimina</button>
+      <button class="tool-btn" id="tFit">Inquadra</button>
+    </div>
+    <div class="mode-banner" id="modeBanner"></div>
+    <div id="network" role="application" aria-label="Foglio della mappa" tabindex="0"></div>
+    <div class="empty-overlay" id="emptyOverlay">
+      <div class="empty-card">
+        <span class="timbro">Foglio vuoto · da dove comincio?</span>
+        <h2>Costruisci la tua mappa in un minuto</h2>
+        <p>Il foglio si riempie solo con le tue mosse. Tre strade, scegli la tua:</p>
+        <div class="empty-actions">
+          <button id="eExample"><b>Carica l'esempio</b><span>9 filosofi della scienza già collegati</span></button>
+          <button id="eAdd"><b>Crea il primo nodo</b><span>aggiungi un autore da zero</span></button>
+          <button id="eImport"><b>Incolla una lista</b><span>“Nome — corrente — tesi” per riga</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="edge-expl" id="edgeExpl"></div>
+    <div class="stage-footer"><span class="chip" id="countChip">0 nodi · 0 relazioni</span><span id="statusLine">Doppio clic sul foglio = nuovo autore · <span class="kbd">Canc</span> elimina selezione</span></div>
+  </main>
+
+  <aside class="panel" id="panel"><div class="panel-inner" id="panelInner"></div></aside>
+</div>
+
+<!-- MODALE EXPORT -->
+<div class="modal-back" id="exportBack">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Esporta">
+    <h2>Esporta per stampa e slide</h2>
+    <p class="sub">Niente più “stampa del sito”. Qui componi un documento progettato: copertina con titolo, mappa pulita, legenda e schede. Poi scegli come tagliarlo per PowerPoint.</p>
+    <div class="opt-group"><h3>1 · Cosa esporto</h3>
+      <div class="seg" id="segWhat">
+        <label><input type="radio" name="what" value="png" checked><span>PNG · immagine unica</span></label>
+        <label><input type="radio" name="what" value="pdf"><span>PDF · dossier impaginato</span></label>
+        <label><input type="radio" name="what" value="tiles"><span>Slide · PNG ritagliati per PowerPoint</span></label>
+      </div>
+    </div>
+    <div class="opt-group"><h3>2 · Orientamento del foglio</h3>
+      <div class="seg" id="segOrient">
+        <label><input type="radio" name="orient" value="landscape" checked><span>Orizzontale 16:9 · ideale per slide</span></label>
+        <label><input type="radio" name="orient" value="portrait"><span>Verticale A4 · ideale per stampa</span></label>
+        <label><input type="radio" name="orient" value="square"><span>Quadrato · ideale per poster</span></label>
+      </div>
+    </div>
+    <div class="opt-group" id="splitGroup"><h3>3 · Dividi in blocchi (solo modalità Slide)</h3>
+      <div class="seg" id="segSplit">
+        <label><input type="radio" name="split" value="1" checked><span>1 · intera</span></label>
+        <label><input type="radio" name="split" value="2"><span>2 blocchi</span></label>
+        <label><input type="radio" name="split" value="4"><span>4 blocchi</span></label>
+        <label><input type="radio" name="split" value="6"><span>6 blocchi</span></label>
+      </div>
+      <div class="split-preview"><div class="tiles" id="splitTiles"></div>
+      <small id="splitNote" style="color:var(--ink-soft)">Ogni blocco diventa un PNG numerato: inseriscili in PowerPoint uno per slide, in ordine.</small></div>
+    </div>
+    <div class="opt-group"><h3>4 · Dettagli</h3>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px">
+        <label><input type="checkbox" id="optTitle" checked> Includi titolo e legenda</label>
+        <label><input type="checkbox" id="optSheets" checked> Nel PDF aggiungi una pagina per autore</label>
+      </div>
+    </div>
+    <div class="row-btns">
+      <button class="btn primary" id="doExport" style="flex:1">Scarica ora</button>
+      <button class="btn" id="closeExport">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE AIUTO / IMPORT -->
+<div class="modal-back" id="helpBack">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Aiuto">
+    <h2>Come si crea una mappa, passo passo</h2>
+    <p class="sub">Chiudi questo riquadro e segui i 3 punti nella colonna di sinistra.</p>
+    <div class="opt-group"><h3>Il giro minimo · 60 secondi</h3>
+      <p style="font-size:14px;margin:0">1. Premi <b>+ Autore</b> (o doppio clic sul foglio) e dai un nome al nodo.<br>2. Ripeti per un secondo autore.<br>3. Premi <b>Collega</b>, clicca il primo nodo poi il secondo, scrivi l'etichetta (“critica”, “eredita”) e una frase di spiegazione.<br>4. Clicca un nodo per vederne la scheda a destra; premi <b>Modifica</b> per aggiungere opere e citazione.</p>
+    </div>
+    <div class="opt-group"><h3> Scorciatoie </h3>
+      <p style="font-size:14px;margin:0">Doppio clic sul foglio = nuovo nodo lì · <span class="kbd">Canc</span> = elimina selezione · rotella = zoom · trascinamento sfondo = sposta vista · i dati si salvano da soli nel browser.</p>
+    </div>
+    <div class="row-btns"><button class="btn primary" id="closeHelp" style="flex:1">Ho capito, comincio</button></div>
+  </div>
+</div>
+
+<div class="modal-back" id="importBack">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Importa">
+    <h2>Importa autori ed esporta dati</h2>
+    <p class="sub">Incolla una riga per autore nel formato: <span class="kbd">Nome — Corrente — Tesi</span>. Oppure gestisci il file JSON della mappa.</p>
+    <div class="form-grid">
+      <textarea id="importText" style="min-height:120px" placeholder="Karl Popper — Razionalismo critico — La scienza corregge, non verifica&#10;Thomas Kuhn — Svolta storica — La scienza lavora dentro paradigmi"></textarea>
+    </div>
+    <div class="row-btns">
+      <button class="btn primary" id="doBulkAdd">Aggiungi queste righe</button>
+      <button class="btn" id="doExportJson">Scarica JSON</button>
+      <button class="btn" id="doImportJson">Carica JSON…</button>
+      <input type="file" id="jsonFile" accept=".json" style="display:none">
+      <button class="btn" id="closeImport">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROUPS = {
+  vienna:{label:"Neopositivismo viennese",color:"#1D4ED8"},
+  critica:{label:"Razionalismo critico e dintorni",color:"#0F766E"},
+  storica:{label:"Svolta storica",color:"#92400E"},
+  radicale:{label:"Pluralismo radicale",color:"#BE123C"},
+  empirica:{label:"Empirismi dopo Vienna",color:"#4D7C0F"}
+};
+const EXAMPLE_AUTHORS = {
+  duhem:{label:"Pierre\nDuhem",name:"Pierre Duhem",years:"1861 – 1916",group:"empirica",school:"Convenzionalismo fisico",place:"Bordeaux / Parigi",thesis:"Nessun esperimento giudica un'ipotesi isolata: giudica sempre un intero blocco di teoria.",works:[["1906","La théorie physique"],["1908","Sozein ta phainomena"]],quote:["Un esperimento in fisica non è mai la condanna di un'ipotesi isolata.","La théorie physique, 1906"],bio:"Fisico e storico della scienza, fonte della tesi della sottodeterminazione."},
+  carnap:{label:"Rudolf\nCarnap",name:"Rudolf Carnap",years:"1891 – 1970",group:"vienna",school:"Circolo di Vienna",place:"Vienna / Chicago",thesis:"Ha senso solo ciò che è riconducibile a osservazioni.",works:[["1928","Der logische Aufbau der Welt"],["1936","Testability and Meaning"]],quote:["In scienza non ci sono profondità: c'è superficie ovunque.","1935"],bio:"Centro del Circolo di Vienna, bersaglio polemico di quasi tutti gli altri nodi."},
+  popper:{label:"Karl\nPopper",name:"Karl Popper",years:"1902 – 1994",group:"critica",school:"Falsificazionismo",place:"Vienna / Londra",thesis:"È scientifica l'ipotesi che accetta il rischio di essere smentita.",works:[["1934","Logik der Forschung"],["1963","Congetture e confutazioni"]],quote:["Non possiamo giustificare una teoria, ma possiamo criticarla.","1963"],bio:"Sostituisce verificazione con falsificazione. Maestro poi avversario di molti."},
+  hempel:{label:"Carl\nHempel",name:"Carl Hempel",years:"1905 – 1997",group:"critica",school:"Neopositivismo critico",place:"Berlino / Princeton",thesis:"Spiegare è dedurre da leggi generali più condizioni iniziali.",works:[["1942","Leggi generali nella storia"],["1965","Aspects of Scientific Explanation"]],quote:["Spiegare è mostrare che il fatto poteva essere previsto.","1965"],bio:"Formalizza il modello nomologico-deduttivo."},
+  quine:{label:"Willard\nQuine",name:"W. V. O. Quine",years:"1908 – 2000",group:"empirica",school:"Olistismo",place:"Harvard",thesis:"La scienza è una rete di credenze che tocca l'esperienza solo ai margini.",works:[["1951","Due dogmi dell'empirismo"],["1960","Parola e oggetto"]],quote:["L'unità di significato empirico è la scienza nel suo insieme.","1951"],bio:"Demolisce la distinzione analitico/sintetico."},
+  kuhn:{label:"Thomas\nKuhn",name:"Thomas Kuhn",years:"1922 – 1996",group:"storica",school:"Teoria dei paradigmi",place:"Princeton / MIT",thesis:"La scienza normale lavora dentro un paradigma; le rivoluzioni lo sostituiscono.",works:[["1962","La struttura delle rivoluzioni scientifiche"]],quote:["La competizione tra paradigmi non si risolve con prove.","1962"],bio:"Sposta l'asse dalla logica alla storia."},
+  lakatos:{label:"Imre\nLakatos",name:"Imre Lakatos",years:"1922 – 1974",group:"storica",school:"Programmi di ricerca",place:"Londra (LSE)",thesis:"Si giudicano programmi, non teorie isolate: progredisce chi predice fatti nuovi.",works:[["1970","Falsificazione e metodologia dei programmi di ricerca"]],quote:["La falsificazione ingenua è un suicidio metodologico.","1970"],bio:"Mediazione tra Popper e Kuhn."},
+  feyerabend:{label:"Paul\nFeyerabend",name:"Paul Feyerabend",years:"1924 – 1994",group:"radicale",school:"Anarchismo epistemologico",place:"Berkeley",thesis:"Non esiste un metodo universale: anything goes.",works:[["1975","Contro il metodo"]],quote:["L'unico principio che non ostacola il progresso è: anything goes.","1975"],bio:"Radicalizza Kuhn, critico feroce di Popper."},
+  vanfraassen:{label:"Bas\nvan Fraassen",name:"Bas van Fraassen",years:"1941 –",group:"empirica",school:"Empirismo costruttivo",place:"Princeton",thesis:"La scienza mira all'adeguatezza empirica, non alla verità invisibile.",works:[["1980","L'immagine scientifica"]],quote:["Accettare una teoria è credere solo che salvi i fenomeni.","1980"],bio:"Empirista dopo Kuhn e dopo la logica."}
+};
+const EXAMPLE_EDGES = [
+  {from:"duhem",to:"quine",label:"generalizza",width:2,why:"Quine estende Duhem dal laboratorio all'intero linguaggio: tesi Duhem-Quine."},
+  {from:"duhem",to:"kuhn",label:"anticipa",width:1,dashes:true,why:"I dati carichi di teoria anticipano la scienza normale."},
+  {from:"carnap",to:"popper",label:"rottura",width:4,why:"Popper rovescia il criterio: non verificabilità ma falsificabilità."},
+  {from:"carnap",to:"hempel",label:"eredita",width:3,why:"Hempel porta il programma viennese al massimo rigore (modello DN)."},
+  {from:"carnap",to:"quine",label:"rottura interna",width:4,why:"Quine colpisce la distinzione analitico/sintetico."},
+  {from:"popper",to:"kuhn",label:"bersaglio",width:4,why:"Kuhn nega le refutazioni istantanee: lunghi periodi conservatori."},
+  {from:"popper",to:"lakatos",label:"difende e corregge",width:3,why:"Lakatos salva Popper: si falsificano programmi, non teorie."},
+  {from:"popper",to:"feyerabend",label:"maestro rinnegato",width:3,why:"Feyerabend porta la critica oltre ogni regola di metodo."},
+  {from:"hempel",to:"kuhn",label:"crisi del modello",width:2,dashes:true,why:"I paradossi della conferma aprono alla storia."},
+  {from:"quine",to:"kuhn",label:"appoggia",width:2,why:"L'olismo fonda l'incommensurabilità."},
+  {from:"kuhn",to:"lakatos",label:"sfida da assorbire",width:3,why:"Lakatos accetta il nucleo protetto ma salva la razionalità."},
+  {from:"kuhn",to:"feyerabend",label:"radicalizza",width:4,why:"Da un paradigma alla volta a proliferazione selvaggia."},
+  {from:"lakatos",to:"feyerabend",label:"amicizia critica",width:2,dashes:true,why:"Dibattito interrotto dalla morte di Lakatos (1974)."},
+  {from:"kuhn",to:"vanfraassen",label:"eredita critica",width:2,dashes:true,why:"Basta che la teoria salvi i fenomeni osservabili."}
+];
+
+/* ---------- stato ---------- */
+let AUTHORS = {}, EDGES = [];
+const LS_KEY = "mappa-concettuale-v2";
+function save(){ try{localStorage.setItem(LS_KEY, JSON.stringify({AUTHORS, EDGES, title:document.getElementById('mapTitleInput').value}));}catch(e){} }
+function load(){ try{const r=JSON.parse(localStorage.getItem(LS_KEY)); if(r&&(Object.keys(r.AUTHORS||{}).length)){AUTHORS=r.AUTHORS;EDGES=r.EDGES||[];if(r.title)document.getElementById('mapTitleInput').value=r.title;return true;}}catch(e){} return false; }
+
+/* ---------- rete ---------- */
+const container = document.getElementById('network');
+let nodesDS = new vis.DataSet([]), edgesDS = new vis.DataSet([]);
+function nodeVis(id,a){return{id,label:a.label||a.name,group:a.group,shape:"dot",size:26,
+  color:{background:(GROUPS[a.group]||{color:"#334155"}).color,border:"#17233B",highlight:{background:(GROUPS[a.group]||{color:"#334155"}).color,border:"#17233B"}},
+  font:{face:"Space Grotesk",size:15,color:"#17233B",bold:true,multi:true,align:"center"},borderWidth:2};}
+function refreshDS(){
+  nodesDS.clear(); edgesDS.clear();
+  nodesDS.add(Object.entries(AUTHORS).map(([id,a])=>nodeVis(id,a)));
+  edgesDS.add(EDGES.map((e,i)=>({...e,id:"e"+i,arrows:"to",smooth:{type:"curvedCW",roundness:.12},
+    color:{color:"#17233B",highlight:"#1D4ED8"},font:{face:"IBM Plex Mono",size:11,color:"#17233B",background:"#F7F8FA",strokeWidth:0}})));
+  updateChrome();
+}
+const network = new vis.Network(container,{nodes:nodesDS,edges:edgesDS},{
+  interaction:{dragNodes:true,dragView:true,zoomView:true,hover:true,multiselect:false},
+  manipulation:{enabled:false},
+  physics:{enabled:true,solver:"forceAtlas2Based",forceAtlas2Based:{gravitationalConstant:-60,centralGravity:.008,springLength:170,springConstant:.18},stabilization:{iterations:200}},
+  nodes:{borderWidth:2,shadow:{enabled:true,color:"rgba(23,35,59,.25)",size:6,x:3,y:3}}});
+
+/* ---------- UI: legenda, gruppi ---------- */
+const gsel = document.getElementById('fGroup');
+gsel.innerHTML = Object.entries(GROUPS).map(([k,g])=>`<option value="${k}">${g.label}</option>`).join("");
+const legendEl = document.getElementById('legend');
+let activeGroup=null;
+function buildLegend(){
+  legendEl.innerHTML="";
+  Object.entries(GROUPS).forEach(([k,g])=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="dot" style="background:${g.color}"></span><span>${g.label}</span>`;
+    li.title="Clic per evidenziare"; li.tabIndex=0;
+    const tg=()=>{activeGroup=(activeGroup===k)?null:k;
+      [...legendEl.children].forEach(c=>c.style.outline="");
+      if(!activeGroup){nodesDS.update(nodesDS.getIds().map(id=>({id,opacity:1})));return;}
+      li.style.outline="3px solid "+g.color;
+      nodesDS.update(nodesDS.getIds().map(id=>({id,opacity:(AUTHORS[id].group===activeGroup?1:.2)})));};
+    li.onclick=tg; li.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};
+    legendEl.appendChild(li);
+  });
+}
+buildLegend();
+
+/* ---------- modalità ---------- */
+let mode=null, pendingFrom=null;
+const banner=document.getElementById('modeBanner');
+function setMode(m){
+  mode=m; pendingFrom=null;
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('armed'));
+  if(m==='connect'){document.getElementById('tConnect').classList.add('armed');banner.textContent="Modalità Collega: clicca il primo nodo (origine), poi il secondo (destinazione). Premi di nuovo Collega per uscire.";banner.classList.add('show');}
+  else if(m==='add'){banner.textContent="Modalità Autore: clicca un punto libero del foglio per creare il nodo lì. Oppure usa il modulo a sinistra.";banner.classList.add('show');document.getElementById('tAdd').classList.add('armed');}
+  else banner.classList.remove('show');
+  container.style.cursor = m? 'crosshair':'';
+}
+document.getElementById('tConnect').onclick=()=>setMode(mode==='connect'?null:'connect');
+document.getElementById('tAdd').onclick=()=>setMode(mode==='add'?null:'add');
+document.getElementById('tFit').onclick=()=>network.fit({animation:{duration:500}});
+document.getElementById('tDelete').onclick=deleteSelection;
+document.getElementById('tEdit').onclick=()=>{const s=network.getSelectedNodes()[0];if(s)editNodeForm(s);else{const e=network.getSelectedEdges()[0];if(e)editEdgeForm(e);else flash("Seleziona prima un nodo o una freccia da modificare.");}};
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea,select'))return;
+  if(e.key==="Delete"||e.key==="Backspace")deleteSelection();
+  if(e.key==="Escape"){setMode(null);network.unselectAll();hideEmpty(false);}
+});
+function flash(t){const s=document.getElementById('statusLine');s.textContent=t;setTimeout(()=>s.textContent="Doppio clic sul foglio = nuovo autore · Canc elimina selezione",2600);}
+
+/* ---------- CRUD ---------- */
+function uid(base){base=(base||"nodo").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"").slice(0,12)||"nodo";let id=base,i=2;while(AUTHORS[id])id=base+(i++);return id;}
+function quickAdd(name,group,thesis,pos){
+  if(!name){flash("Scrivi almeno il nome dell'autore.");return null;}
+  const id=uid(name);
+  AUTHORS[id]={label:name.replace(/ /g,"\n"),name,years:"",group:group||"storica",school:GROUPS[group||"storica"].label,place:"",thesis:thesis||"",works:[],quote:["",""],bio:""};
+  refreshDS(); save();
+  if(pos)network.moveNode(id,pos.x,pos.y);
+  selectAndShow(id); return id;
+}
+document.getElementById('btnQuickAdd').onclick=()=>{quickAdd(document.getElementById('fName').value.trim(),gsel.value,document.getElementById('fThesis').value.trim());document.getElementById('fName').value="";document.getElementById('fThesis').value="";};
+network.on("doubleClick",p=>{ if(p.nodes.length===0){ const c=network.DOMtoCanvas({x:p.pointer.DOM.x,y:p.pointer.DOM.y}); const name=prompt("Nome del nuovo autore:"); if(name) quickAdd(name.trim(),gsel.value,"",c);} });
+network.on("click",p=>{
+  const expl=document.getElementById('edgeExpl'); expl.classList.remove('show');
+  if(mode==='add'&&p.nodes.length===0&&p.edges.length===0){const c=network.DOMtoCanvas({x:p.pointer.DOM.x,y:p.pointer.DOM.y});const name=prompt("Nome del nuovo autore:");if(name)quickAdd(name.trim(),gsel.value,"",c);return;}
+  if(mode==='connect'){
+    if(p.nodes.length===0)return;
+    const id=p.nodes[0];
+    if(!pendingFrom){pendingFrom=id;banner.textContent=`Origine: ${AUTHORS[id].name}. Ora clicca il nodo di destinazione.`;network.selectNodes([id]);}
+    else{const from=pendingFrom;pendingFrom=null;if(from===id){banner.textContent="Scegli due nodi diversi.";return;}
+      const label=prompt(`Relazione da "${AUTHORS[from].name}" a "${AUTHORS[id].name}" (es. critica, eredita, radicalizza):`,"critica");
+      if(label===null)return;
+      const why=prompt("In una frase: perché esiste questa connessione?","")||"";
+      EDGES.push({from,to:id,label:label||"collegato",width:2,why});refreshDS();save();setMode(null);selectAndShow(id);}
+    return;
+  }
+  if(p.nodes.length>0)selectAndShow(p.nodes[0]);
+  else if(p.edges.length>0)showEdge(p.edges[0]);
+  else showStart();
+});
+function deleteSelection(){
+  const n=network.getSelectedNodes(), e=network.getSelectedEdges();
+  if(!n.length&&!e.length){flash("Niente da eliminare: seleziona prima un nodo o una freccia.");return;}
+  n.forEach(id=>{delete AUTHORS[id];EDGES=EDGES.filter(x=>x.from!==id&&x.to!==id);});
+  e.forEach(eid=>{const i=parseInt(eid.slice(1));EDGES.splice(i,1);});
+  network.unselectAll();refreshDS();save();showStart();
+}
+
+/* ---------- pannello ---------- */
+const panelInner=document.getElementById('panelInner');
+function edgeListFor(id){return{incoming:EDGES.filter(e=>e.to===id),outgoing:EDGES.filter(e=>e.from===id)};}
+function selectAndShow(id){network.selectNodes([id]);showNode(id);}
+function showStart(){
+  const n=Object.keys(AUTHORS).length;
+  panelInner.innerHTML = n===0 ? `
+    <span class="timbro">Da dove comincio?</span>
+    <h2>Il foglio è vuoto, ed è normale.</h2>
+    <p style="color:var(--ink-soft)">Fai così, nell'ordine:<br>1. Premi <b>+ Autore</b> o fai <b>doppio clic</b> sul foglio per creare il primo nodo.<br>2. Aggiungine un secondo.<br>3. Premi <b>Collega</b> e unisci i due nodi.<br><br>Fretta? Premi <b>Carica esempio</b> in alto e studia una mappa già pronta, poi cancellala e rifalla tua.</p>
+    <div class="row-btns"><button class="btn primary" onclick="document.getElementById('eExample').click()">Carica l'esempio</button><button class="btn" id="gHelp">Mostra guida</button></div>`
+    : `<span class="timbro">Mappa · ${n} nodi</span><h2>Clicca un nodo per leggerne il fascicolo.</h2>
+    <p style="color:var(--ink-soft)">Oppure premi <b>Collega</b> e costruisci una nuova freccia. Ogni freccia deve avere un'etichetta e una frase di spiegazione: senza, la mappa resta un disegno muto.</p>
+    <div class="row-btns"><button class="btn" onclick="setModeUI('add')">+ Autore</button><button class="btn" onclick="setModeUI('connect')">Collega</button><button class="btn primary" onclick="openExportUI()">Esporta</button></div>`;
+  const gh=document.getElementById('gHelp'); if(gh)gh.onclick=()=>document.getElementById('helpBack').classList.add('show');
+}
+window.setModeUI=m=>setMode(m); window.openExportUI=()=>openExport();
+function showNode(id){
+  const a=AUTHORS[id]; if(!a)return;
+  const{incoming,outgoing}=edgeListFor(id);
+  const conn=(e,dir)=>{const o=AUTHORS[dir==="in"?e.from:e.to];if(!o)return"";
+    const gid=dir==="in"?e.from:e.to;
+    return`<article><span class="rel">${e.label}</span> ${dir==="in"?"← da":"→ verso"} <button class="linklike" data-go="${gid}">${o.name}</button><div style="margin-top:4px">${e.why||"<i style='color:var(--ink-soft)'>spiegazione mancante — premi Modifica freccia.</i>"}</div></article>`;};
+  panelInner.innerHTML=`
+    <span class="timbro" style="box-shadow:3px 3px 0 ${(GROUPS[a.group]||{color:"#333"}).color}">${(GROUPS[a.group]||{label:""}).label}</span>
+    <h2>${a.name}</h2><div class="dates">${a.years||"date da completare"}${a.place?" · "+a.place:""}</div>
+    ${a.thesis?`<p class="thesis">“${a.thesis}”</p>`:`<p class="hint">Manca la tesi in una frase. Premi Modifica e aggiungila: è la riga più importante della scheda.</p>`}
+    ${a.bio?`<p style="font-size:13.5px;color:var(--ink-soft)">${a.bio}</p>`:""}
+    <div class="conn"><h3>Opere principali · ${a.works.length}</h3>
+    ${a.works.length?`<ul class="opere">${a.works.map(w=>`<li><span class="yr">${w[0]}</span><span><i>${w[1]}</i></span></li>`).join("")}</ul>`:"<p style='font-size:13px;color:var(--ink-soft)'>Nessuna opera ancora.</p>"}</div>
+    ${a.quote&&a.quote[0]?`<div class="quote">“${a.quote[0]}”<cite>— ${a.quote[1]||a.name}</cite></div>`:""}
+    <div class="conn"><h3>Riceve · ${incoming.length}</h3>${incoming.map(e=>conn(e,"in")).join("")||"<p style='font-size:13px;color:var(--ink-soft)'>Nessuna freccia in entrata.</p>"}
+    <h3>Provoca · ${outgoing.length}</h3>${outgoing.map(e=>conn(e,"out")).join("")||"<p style='font-size:13px;color:var(--ink-soft)'>Nessuna freccia in uscita. Premi Collega per crearne una.</p>"}</div>
+    <div class="row-btns"><button class="btn primary" id="pEdit">Modifica scheda</button><button class="btn" id="pDel">Elimina</button></div>`;
+  panelInner.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>selectAndShow(b.dataset.go));
+  document.getElementById('pEdit').onclick=()=>editNodeForm(id);
+  document.getElementById('pDel').onclick=()=>{network.selectNodes([id]);deleteSelection();};
+}
+function showEdge(eid){
+  const i=parseInt(eid.slice(1)), e=EDGES[i]; if(!e)return;
+  const a=AUTHORS[e.from],b=AUTHORS[e.to];
+  panelInner.innerHTML=`<span class="timbro">Relazione</span><h2 style="font-size:24px">${a?a.name:"?"} → ${b?b.name:"?"}</h2>
+  <p><span class="rel">${e.label}</span></p><p style="font-size:14.5px">${e.why||"<i>Nessuna spiegazione.</i>"}</p>
+  <div class="row-btns"><button class="btn primary" id="eEdit">Modifica freccia</button><button class="btn" id="eDel">Elimina</button></div>`;
+  document.getElementById('eEdit').onclick=()=>editEdgeForm(eid);
+  document.getElementById('eDel').onclick=()=>{network.selectEdges([eid]);deleteSelection();};
+}
+function editNodeForm(id){
+  const a=AUTHORS[id];
+  panelInner.innerHTML=`<span class="timbro">Modifica scheda</span><h2 style="font-size:24px">${a.name}</h2>
+  <div class="form-grid">
+  <label>Nome</label><input id="nName" value="${(a.name||"").replace(/"/g,'&quot;')}">
+  <label>Corrente</label><select id="nGroup">${Object.entries(GROUPS).map(([k,g])=>`<option value="${k}" ${a.group===k?"selected":""}>${g.label}</option>`).join("")}</select>
+  <label>Anni · Luogo</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="nYears" value="${a.years||""}" placeholder="1902 – 1994"><input id="nPlace" value="${a.place||""}" placeholder="Vienna / Londra"></div>
+  <label>Scuola</label><input id="nSchool" value="${(a.school||"").replace(/"/g,'&quot;')}">
+  <label>Tesi in una frase</label><textarea id="nThesis">${a.thesis||""}</textarea>
+  <label>Bio breve</label><textarea id="nBio">${a.bio||""}</textarea>
+  <label>Opere (una per riga: ANNO — Titolo)</label><textarea id="nWorks">${a.works.map(w=>w[0]+" — "+w[1]).join("\n")}</textarea>
+  <label>Citazione | Fonte</label><input id="nQuote" value="${((a.quote||[])[0]||"").replace(/"/g,'&quot;')}"><input id="nCite" style="margin-top:6px" value="${((a.quote||[])[1]||"").replace(/"/g,'&quot;')}" placeholder="Fonte">
+  </div><div class="row-btns"><button class="btn primary" id="nSave">Salva</button><button class="btn" id="nBack">Annulla</button></div>`;
+  const v=x=>document.getElementById(x).value;
+  document.getElementById('nSave').onclick=()=>{
+    const works=v('nWorks').split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^(\d[^—\-]*)[—\-]\s*(.*)$/);return m?[m[1].trim(),m[2].trim()]:["",l];});
+    AUTHORS[id]={...a,name:v('nName')||a.name,label:(v('nName')||a.name).replace(/ /g,"\n"),group:v('nGroup'),years:v('nYears'),place:v('nPlace'),school:v('nSchool'),thesis:v('nThesis'),bio:v('nBio'),works,quote:[v('nQuote'),v('nCite')]};
+    refreshDS();save();showNode(id);};
+  document.getElementById('nBack').onclick=()=>showNode(id);
+}
+function editEdgeForm(eid){
+  const i=parseInt(eid.slice(1)), e=EDGES[i];
+  panelInner.innerHTML=`<span class="timbro">Modifica freccia</span><h2 style="font-size:22px">${AUTHORS[e.from].name} → ${AUTHORS[e.to].name}</h2>
+  <div class="form-grid"><label>Etichetta (una-due parole)</label><input id="eLabel" value="${e.label}">
+  <label>Perché esiste questa connessione?</label><textarea id="eWhy">${e.why||""}</textarea>
+  <label>Peso visivo</label><select id="eW"><option value="1" ${e.width==1?"selected":""}>1 · secondaria</option><option value="2" ${e.width==2?"selected":""}>2 · normale</option><option value="3" ${e.width==3?"selected":""}>3 · importante</option><option value="4" ${e.width==4?"selected":""}>4 · decisiva</option></select></div>
+  <div class="row-btns"><button class="btn primary" id="eSave">Salva</button><button class="btn" id="eBack">Annulla</button></div>`;
+  document.getElementById('eSave').onclick=()=>{e.label=document.getElementById('eLabel').value||"collegato";e.why=document.getElementById('eWhy').value;e.width=parseInt(document.getElementById('eW').value);refreshDS();save();showEdge(eid);};
+  document.getElementById('eBack').onclick=()=>showEdge(eid);
+}
+
+/* ---------- chrome ---------- */
+function updateChrome(){
+  const n=Object.keys(AUTHORS).length;
+  document.getElementById('countChip').textContent=`${n} nodi · ${EDGES.length} relazioni`;
+  document.getElementById('emptyOverlay').classList.toggle('show',n===0);
+  document.getElementById('step1').classList.toggle('done',n>0);
+  document.getElementById('step2').classList.toggle('done',EDGES.length>0);
+  document.getElementById('step3').classList.toggle('done',n>0&&EDGES.length>0);
+}
+
+/* ---------- top buttons ---------- */
+function loadExample(){AUTHORS=JSON.parse(JSON.stringify(EXAMPLE_AUTHORS));EDGES=JSON.parse(JSON.stringify(EXAMPLE_EDGES));refreshDS();save();network.fit();showStart();}
+document.getElementById('btnExample').onclick=loadExample;
+document.getElementById('eExample').onclick=loadExample;
+document.getElementById('eAdd').onclick=()=>{document.getElementById('fName').focus();setMode('add');flash("Scrivi il nome a sinistra e premi Aggiungi, oppure doppio clic sul foglio.");};
+document.getElementById('eImport').onclick=()=>document.getElementById('importBack').classList.add('show');
+document.getElementById('btnNew').onclick=()=>{if(!Object.keys(AUTHORS).length||confirm("Svuotare il foglio e ricominciare?")){AUTHORS={};EDGES=[];refreshDS();save();showStart();setMode('add');}};
+document.getElementById('btnHelp').onclick=()=>document.getElementById('helpBack').classList.add('show');
+document.getElementById('closeHelp').onclick=()=>document.getElementById('helpBack').classList.remove('show');
+document.getElementById('btnImport').onclick=()=>document.getElementById('importBack').classList.add('show');
+document.getElementById('closeImport').onclick=()=>document.getElementById('importBack').classList.remove('show');
+document.getElementById('mapTitleInput').addEventListener('input',save);
+document.getElementById('doBulkAdd').onclick=()=>{
+  const lines=document.getElementById('importText').value.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(!lines.length){flash("Incolla almeno una riga.");return;}
+  lines.forEach(l=>{const p=l.split(/[—\-–|;]/).map(s=>s.trim());quickAdd(p[0]||l, Object.keys(GROUPS).find(k=>GROUPS[k].label.toLowerCase().includes((p[1]||"").toLowerCase()))||"storica",p[2]||"");});
+  document.getElementById('importBack').classList.remove('show');network.fit();
+};
+document.getElementById('doExportJson').onclick=()=>{
+  const blob=new Blob([JSON.stringify({title:document.getElementById('mapTitleInput').value,AUTHORS,EDGES},null,2)],{type:"application/json"});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="mappa-concettuale.json";a.click();
+};
+document.getElementById('doImportJson').onclick=()=>document.getElementById('jsonFile').click();
+document.getElementById('jsonFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);AUTHORS=d.AUTHORS||d;EDGES=d.EDGES||[];refreshDS();save();showStart();network.fit();document.getElementById('importBack').classList.remove('show');}catch(err){alert("JSON non valido.");}};r.readAsText(f);
+};
+
+/* ---------- EXPORT progettato ---------- */
+const exportBack=document.getElementById('exportBack');
+function openExport(){
+  if(!Object.keys(AUTHORS).length){flash("Foglio vuoto: niente da esportare. Aggiungi almeno un nodo.");return;}
+  exportBack.classList.add('show');renderSplitPreview();
+}
+window.openExportUI=openExport;
+document.getElementById('btnExport').onclick=openExport;
+document.getElementById('closeExport').onclick=()=>exportBack.classList.remove('show');
+document.querySelectorAll('input[name="orient"],input[name="split"],input[name="what"]').forEach(i=>i.addEventListener('change',renderSplitPreview));
+function expVal(n){return document.querySelector(`input[name="${n}"]:checked`).value;}
+function expSize(){
+  const o=expVal('orient');
+  if(o==='landscape')return[1920,1080];
+  if(o==='portrait')return[1240,1754];
+  return[1600,1600];
+}
+function renderSplitPreview(){
+  const what=expVal('what'), n=parseInt(expVal('split')), o=expVal('orient');
+  document.getElementById('splitGroup').style.opacity = what==='tiles'?'1':'.45';
+  let cols,rows;
+  if(n===1){cols=1;rows=1;} else if(n===2){cols=o==='portrait'?1:2;rows=o==='portrait'?2:1;}
+  else if(n===4){cols=2;rows=2;} else {cols=o==='portrait'?2:3;rows=o==='portrait'?3:2;}
+  const t=document.getElementById('splitTiles');
+  t.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  t.innerHTML=Array.from({length:n},(_,i)=>`<div class="tile">Blocco ${i+1}</div>`).join("");
+  document.getElementById('splitNote').textContent = what==='tiles'
+    ? (n===1?"Un PNG unico in "+(o==='landscape'?"orizzontale 16:9":"verticale A4")+ ", pronto per una slide.":`${n} PNG numerati (${cols}×${rows}), uno per slide, in ordine di lettura.`)
+    : "L'anteprima dei blocchi vale solo per la modalità Slide.";
+}
+function netImage(){
+  const c=container.querySelector('canvas');
+  const t=document.createElement('canvas');t.width=c.width;t.height=c.height;
+  const x=t.getContext('2d');x.fillStyle="#F7F8FA";x.fillRect(0,0,t.width,t.height);x.drawImage(c,0,0);
+  return t;
+}
+function composeSheet(W,H){
+  const src=netImage();
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const x=cv.getContext('2d');
+  x.fillStyle="#F7F8FA";x.fillRect(0,0,W,H);
+  x.strokeStyle="#DFE4EB";x.lineWidth=1;
+  for(let gx=0;gx<W;gx+=48){x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();}
+  for(let gy=0;gy<H;gy+=48){x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();}
+  const includeTitle=document.getElementById('optTitle').checked;
+  const top=includeTitle?190:40, bottom=includeTitle?130:40;
+  if(includeTitle){
+    x.fillStyle="#17233B";x.font=`600 ${W>1500?64:44}px Georgia,serif`;
+    x.fillText(document.getElementById('mapTitleInput').value||"Mappa concettuale",60,100);
+    x.fillStyle="#5B6B85";x.font="28px monospace";
+    x.fillText(`${Object.keys(AUTHORS).length} autori · ${EDGES.length} relazioni · legenda in basso`,60,148);
+    x.fillRect(60,165,W-120,3);
+    // legenda
+    let lx=60;const ly=H-72;
+    x.font="24px monospace";
+    Object.values(GROUPS).forEach(g=>{x.fillStyle=g.color;x.beginPath();x.arc(lx,ly-8,12,0,7);x.fill();x.fillStyle="#17233B";x.fillText(g.label,lx+24,ly);lx+=x.measureText(g.label).width+70;});
+  }
+  // adatta mappa
+  const aw=W-160, ah=H-top-bottom;
+  const s=Math.min(aw/src.width,ah/src.height);
+  const dw=src.width*s, dh=src.height*s;
+  x.drawImage(src,(W-dw)/2,top+(ah-dh)/2,dw,dh);
+  x.fillStyle="#5B6B85";x.font="22px monospace";
+  x.fillText("Trascina i nodi nell'app per sistemare la composizione prima di esportare.",60,H-24);
+  return cv;
+}
+function download(cv,name){const a=document.createElement('a');a.href=cv.toDataURL("image/png");a.download=name;a.click();}
+document.getElementById('doExport').onclick=async()=>{
+  const what=expVal('what'), o=expVal('orient'), n=parseInt(expVal('split'));
+  const[W,H]=expSize();
+  network.fit({animation:false});
+  await new Promise(r=>setTimeout(r,250));
+  const sheet=composeSheet(W,H);
+  const base=(document.getElementById('mapTitleInput').value||"mappa").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").slice(0,40);
+  if(what==='png'){download(sheet,`${base}-${o}.png`);}
+  else if(what==='tiles'){
+    let cols,rows;
+    if(n===1){cols=1;rows=1;}else if(n===2){cols=o==='portrait'?1:2;rows=o==='portrait'?2:1;}
+    else if(n===4){cols=2;rows=2;}else{cols=o==='portrait'?2:3;rows=o==='portrait'?3:2;}
+    const tw=Math.floor(W/cols), th=Math.floor(H/rows);let k=1;
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+      const t=document.createElement('canvas');t.width=tw;t.height=th;
+      t.getContext('2d').drawImage(sheet,c*tw,r*th,tw,th,0,0,tw,th);
+      await new Promise(rr=>setTimeout(rr,150));
+      download(t,`${base}-slide-${String(k++).padStart(2,"0")}.png`);
+    }
+  }
+  else{
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:o==='portrait'?'portrait':'landscape',unit:"mm",format:o==='square'?[210,210]:"a4"});
+    const pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight();
+    const img=sheet.toDataURL("image/png");
+    // copertina progettata: titolo + mappa + piè
+    pdf.setFillColor(247,248,250);pdf.rect(0,0,pw,ph,"F");
+    pdf.setTextColor(23,35,59);pdf.setFont("times","bold");pdf.setFontSize(22);
+    pdf.text(pdf.splitTextToSize(document.getElementById('mapTitleInput').value||"Mappa concettuale",pw-30),15,22);
+    pdf.setFont("courier","normal");pdf.setFontSize(10);pdf.setTextColor(91,107,133);
+    pdf.text(`${Object.keys(AUTHORS).length} autori · ${EDGES.length} relazioni`,15,34);
+    const ratio=sheet.width/sheet.height, mw=pw-30, mh=mw/ratio;
+    const my=42, mhh=Math.min(mh,ph-70);
+    pdf.addImage(img,"PNG",15,my,mw,mhh);
+    pdf.setFontSize(9);pdf.text("Legenda colori: blu = Neopositivismo · verde acqua = Razionalismo critico · ambra = Svolta storica · carminio = Pluralismo radicale · oliva = Empirismi.",15,ph-12);
+    if(document.getElementById('optSheets').checked){
+      Object.values(AUTHORS).forEach(a=>{
+        pdf.addPage();
+        pdf.setFillColor(247,248,250);pdf.rect(0,0,pw,ph,"F");
+        const gc=(GROUPS[a.group]||{color:"#334155"}).color;
+        pdf.setFillColor(gc.slice(1,3),gc.slice(3,5),gc.slice(5,7));pdf.rect(0,0,pw,10,"F");
+        pdf.setTextColor(23,35,59);pdf.setFont("times","bold");pdf.setFontSize(26);pdf.text(a.name,15,26);
+        pdf.setFont("courier","normal");pdf.setFontSize(10);pdf.setTextColor(91,107,133);
+        pdf.text(`${a.years||""} ${a.place?"· "+a.place:""} · ${a.school||""}`,15,34);
+        pdf.setTextColor(23,35,59);pdf.setFont("times","italic");pdf.setFontSize(13);
+        pdf.text(pdf.splitTextToSize("“"+(a.thesis||"Tesi da completare.")+"”",pw-30),15,46);
+        pdf.setFont("helvetica","normal");pdf.setFontSize(11);
+        let y=70;
+        if(a.bio){pdf.text(pdf.splitTextToSize(a.bio,pw-30),15,y);y+=18;}
+        if(a.works.length){pdf.setFont("courier","bold");pdf.text("OPERE PRINCIPALI",15,y);y+=7;pdf.setFont("helvetica","normal");
+          a.works.forEach(w=>{pdf.text(`• ${w[0]} — ${w[1]}`,18,y);y+=7;});y+=4;}
+        const rels=EDGES.filter(e=>e.from===Object.keys(AUTHORS).find(k=>AUTHORS[k]===a)||e.to===Object.keys(AUTHORS).find(k=>AUTHORS[k]===a));
+        if(rels.length){pdf.setFont("courier","bold");pdf.text("CONNESSIONI",15,y);y+=7;pdf.setFont("helvetica","normal");
+          rels.forEach(e=>{const f=AUTHORS[e.from],t=AUTHORS[e.to];pdf.text(pdf.splitTextToSize(`• [${e.label}] ${(f?f.name:"?")} → ${(t?t.name:"?")}: ${e.why||""}`,pw-34),18,y);y+=14;});}
+      });
+    }
+    pdf.save(`${base}-${o}.pdf`);
+  }
+  exportBack.classList.remove('show');
+};
+
+/* ---------- init ---------- */
+if(!load()){AUTHORS={};EDGES=[];}
+refreshDS();showStart();
+if(!Object.keys(AUTHORS).length)document.getElementById('helpBack').classList.add('show');
+else network.once("stabilized",()=>network.fit({animation:false}));
+document.getElementById('mapTitleInput').addEventListener('input',save);
+</script>
+</body>
+</html>

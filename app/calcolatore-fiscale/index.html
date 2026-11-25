@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRPEF 2026 — Come funzionano gli scaglioni</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#FBFBFA;
+    --surface:#FFFFFF;
+    --ink:#161412;
+    --muted:#6E675E;
+    --line:#E8E4DC;
+    --line-strong:#D8D2C6;
+    --fascia1:#2F3437;
+    --fascia2:#5F7A61;
+    --fascia3:#A68A3B;
+    --wash1:#EDF3EC;
+    --wash2:#FBF3DB;
+    --wash3:#EFEDE8;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--canvas);color:var(--ink);
+    font-family:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+    font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1024px;margin:0 auto;padding:0 24px 96px}
+  header.top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 0;border-bottom:1px solid var(--line);
+  }
+  .brand{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;color:var(--muted)}
+  .brand strong{color:var(--ink);font-weight:500}
+  .badge{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
+    background:var(--wash1);color:#346538;border:1px solid #D9E5DA;
+    padding:5px 12px;border-radius:9999px;
+  }
+  .hero{padding:64px 0 32px;max-width:720px}
+  .hero h1{
+    font-family:'Newsreader',Georgia,serif;font-weight:500;
+    font-size:clamp(36px,5.4vw,58px);line-height:1.05;letter-spacing:-0.03em;
+    margin:0 0 18px;
+  }
+  .hero h1 span{font-style:italic;font-weight:400}
+  .hero p{color:var(--muted);font-size:17px;margin:0;max-width:62ch}
+  .hero .rule{margin-top:28px;border-top:1px solid var(--ink);padding-top:12px;
+    display:flex;gap:24px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;margin-top:28px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px;
+  }
+  .card h2{
+    font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:22px;
+    letter-spacing:-0.01em;margin:0 0 6px;
+  }
+  .card .sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+  label.lbl{font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  label.lbl output{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500}
+  input[type=range]{width:100%;accent-color:var(--ink);height:28px;cursor:pointer}
+  .row-input{display:flex;gap:10px;margin-top:12px}
+  .row-input input[type=number]{
+    flex:1;font-family:'IBM Plex Mono',monospace;font-size:16px;
+    border:1px solid var(--line-strong);border-radius:6px;padding:11px 14px;background:#fff;color:var(--ink);
+  }
+  .row-input input:focus{outline:2px solid var(--ink);outline-offset:1px}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .presets button{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;
+    border:1px solid var(--line-strong);background:#fff;border-radius:6px;
+    padding:7px 12px;cursor:pointer;color:var(--ink);
+  }
+  .presets button:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .presets button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+  .kpi div{border-top:1px solid var(--line);padding-top:12px}
+  .kpi small{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+  .kpi strong{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:500}
+  .kpi .net strong{font-size:24px}
+  /* stacked bar */
+  .stack{margin-top:22px}
+  .stack-bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line-strong)}
+  .stack-bar div{transition:width .35s cubic-bezier(.16,1,.3,1);min-width:0}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+  th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+     font-weight:500;text-align:left;padding:10px 8px;border-bottom:1px solid var(--ink)}
+  td{padding:12px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  td.num,th.num{text-align:right;font-family:'IBM Plex Mono',monospace}
+  tr.zero td{color:#B4AFA4}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+  .chart-box{position:relative;height:250px;margin-top:8px}
+  .chart-side{display:flex;gap:20px;align-items:center;margin-top:14px}
+  @media(max-width:520px){.chart-side{flex-direction:column;align-items:stretch}}
+  .chart-legend{flex:1;font-size:14px}
+  .chart-legend .li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+  .chart-legend .li span:first-child{color:var(--muted)}
+  .chart-legend .li b{font-family:'IBM Plex Mono',monospace;font-weight:500}
+  .note{font-size:13px;color:var(--muted);background:var(--wash3);border:1px solid var(--line);
+        border-radius:8px;padding:12px 16px;margin-top:18px}
+  /* explainer */
+  .explain{margin-top:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+  @media(max-width:860px){.explain{grid-template-columns:1fr}}
+  .explain .card{padding:24px}
+  .explain h3{font-family:'Newsreader',Georgia,serif;font-size:19px;font-weight:500;margin:0 0 8px}
+  .explain p{font-size:14px;color:var(--muted);margin:0}
+  .explain .formula{font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--canvas);
+    border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-top:12px;color:var(--ink)}
+  .example{margin-top:20px}
+  .example ol{margin:10px 0 0;padding-left:20px;font-size:14px;color:#3E3A34}
+  .example li{margin-bottom:8px}
+  .example code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--canvas);padding:1px 6px;border:1px solid var(--line);border-radius:4px}
+  footer{margin-top:48px;border-top:1px solid var(--line);padding-top:16px;
+    font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+  .reveal.visible{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.stack-bar div{transition:none}}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand"><strong>Quaderno fiscale</strong> &nbsp;·&nbsp; IRPEF 2026</div>
+    <div class="badge">Aliquote 23% · 33% · 43% — L. 199/2025</div>
+  </header>
+
+  <section class="hero">
+    <h1>L'aliquota si applica <span>a fette,</span> non al totale.</h1>
+    <p>
+      L'IRPEF è progressiva per scaglioni: ogni fascia tassa solo la parte di reddito che la attraversa.
+      Inserisci un reddito lordo e guarda dove finisce ogni euro — fascia per fascia — e quanto resta in tasca.
+    </p>
+    <div class="rule">
+      <span>Fonte: art. 11 TUIR · Agenzia delle Entrate</span>
+      <span>Anno d'imposta 2026</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <!-- INPUT + BREAKDOWN -->
+    <div class="card reveal">
+      <h2>Reddito di prova</h2>
+      <p class="sub">Reddito complessivo annuo lordo, al netto degli oneri deducibili. Imposta lorda, senza detrazioni né addizionali.</p>
+
+      <label class="lbl" for="reddito">Reddito lordo annuo <output id="out" for="reddito">€ 35.000</output></label>
+      <input type="range" id="reddito" min="0" max="150000" step="500" value="35000" aria-describedby="hint">
+      <div class="row-input">
+        <input type="number" id="redditoNum" min="0" max="1000000" step="100" value="35000" aria-label="Reddito lordo annuo in euro">
+      </div>
+      <div class="presets" role="group" aria-label="Esempi rapidi">
+        <button data-v="20000">€ 20.000</button>
+        <button data-v="28000">€ 28.000</button>
+        <button data-v="35000" class="active">€ 35.000</button>
+        <button data-v="50000">€ 50.000</button>
+        <button data-v="80000">€ 80.000</button>
+      </div>
+
+      <div class="kpi">
+        <div class="net"><small>Imposta totale (lorda)</small><strong id="kTax">—</strong></div>
+        <div class="net"><small>Reddito netto</small><strong id="kNet">—</strong></div>
+        <div><small>Aliquota media effettiva</small><strong id="kAvg">—</strong></div>
+        <div><small>Aliquota marginale</small><strong id="kMarg">—</strong></div>
+      </div>
+
+      <div class="stack">
+        <div class="stack-bar" aria-hidden="true">
+          <div id="b1" style="background:var(--fascia1)"></div>
+          <div id="b2" style="background:var(--fascia2)"></div>
+          <div id="b3" style="background:var(--fascia3)"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--fascia1)"></i>Fascia 23%</span>
+          <span><i style="background:var(--fascia2)"></i>Fascia 33%</span>
+          <span><i style="background:var(--fascia3)"></i>Fascia 43%</span>
+        </div>
+      </div>
+
+      <table aria-label="Scomposizione per scaglioni">
+        <thead>
+          <tr><th>Scaglione</th><th>Aliq.</th><th class="num">Quota reddito</th><th class="num">Imposta</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p class="sub" id="hint" style="margin-top:12px">Suggerimento: prova € 28.000 e € 28.500. I primi 28.000 € pagano sempre il 23%.</p>
+    </div>
+
+    <!-- CHART -->
+    <div>
+      <div class="card reveal">
+        <h2>Tasse contro netto</h2>
+        <p class="sub">Ogni € 100 di reddito, quanto trattiene il fisco statale.</p>
+        <div class="chart-box"><canvas id="pie" aria-label="Grafico a torta tasse contro netto"></canvas></div>
+        <div class="chart-side">
+          <div class="chart-legend">
+            <div class="li"><span><span class="dot" style="background:#161412"></span>Imposta lorda</span><b id="legTax">—</b></div>
+            <div class="li"><span><span class="dot" style="background:#D8D2C6"></span>Netto percepito</span><b id="legNet">—</b></div>
+            <div class="li"><span>Netto mensile (÷ 12)</span><b id="legMonth">—</b></div>
+          </div>
+        </div>
+        <div class="note">Calcolo semplificato: IRPEF statale lorda. Escluse detrazioni da lavoro, familiari a carico, addizionali regionali/comunali e contributi.</div>
+      </div>
+
+      <div class="card reveal example" style="margin-top:20px">
+        <h2>Esempio svolto: € 40.000</h2>
+        <p class="sub">Lo stesso calcolo che fa la tabella, passo per passo.</p>
+        <ol>
+          <li>Primi <code>€ 28.000 × 23% = € 6.440</code></li>
+          <li>Eccedenza <code>€ 12.000 × 33% = € 3.960</code></li>
+          <li>Totale <code>€ 6.440 + € 3.960 = € 10.400</code> · netto <code>€ 29.600</code> · media <code>26,0%</code></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <section class="explain">
+    <div class="card reveal">
+      <h3>1. Progressiva, non proporzionale</h3>
+      <p>Superare uno scaglione non tassa tutto il reddito con l'aliquota più alta. Solo gli euro sopra la soglia cambiano aliquota.</p>
+      <div class="formula">R ≤ 28.000 → R × 23%<br>R ≤ 50.000 → 6.440 + (R−28.000) × 33%<br>R &gt; 50.000 → 13.700 + (R−50.000) × 43%</div>
+    </div>
+    <div class="card reveal">
+      <h3>2. Media contro marginale</h3>
+      <p>L'aliquota <b>marginale</b> è quella sull'ultimo euro guadagnato. L'aliquota <b>media</b> è imposta ÷ reddito, ed è sempre più bassa della marginale.</p>
+      <div class="formula">Media = imposta totale ÷ reddito<br>Con € 80.000: 26.600 ÷ 80.000 = 33,25%</div>
+    </div>
+    <div class="card reveal">
+      <h3>3. Cosa cambia nel 2026</h3>
+      <p>La Legge di Bilancio 2026 (L. 199/2025) taglia la seconda aliquota dal 35% al 33%. Risparmio massimo: € 440 l'anno sopra i € 50.000.</p>
+      <div class="formula">Prima: 22.000 × 35% = 7.700<br>Ora: 22.000 × 33% = 7.260 (−440)</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Scaglioni 2026: 23% fino a € 28.000 · 33% fino a € 50.000 · 43% oltre. Imposta lorda, a scopo didattico.</span>
+    <span>Fonte: Agenzia delle Entrate, art. 11 TUIR come modificato da L. 199/2025.</span>
+  </footer>
+</div>
+
+<script>
+const SCAGLIONI = [
+  { fino: 28000, aliq: 0.23, nome: 'Fino a € 28.000',  colore: '#2F3437' },
+  { fino: 50000, aliq: 0.33, nome: '€ 28.001 – 50.000', colore: '#5F7A61' },
+  { fino: Infinity, aliq: 0.43, nome: 'Oltre € 50.000',  colore: '#A68A3B' }
+];
+const fmtEUR = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR', maximumFractionDigits:0 });
+const fmtEUR2 = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR', maximumFractionDigits:2 });
+const fmtPct = new Intl.NumberFormat('it-IT', { style:'percent', maximumFractionDigits:2 });
+
+const range = document.getElementById('reddito');
+const num = document.getElementById('redditoNum');
+const out = document.getElementById('out');
+
+function calcola(reddito){
+  let prev = 0, imposta = 0, marginale = 0;
+  const righe = SCAGLIONI.map(s => {
+    const base = Math.min(reddito, s.fino);
+    const quota = Math.max(0, base - prev);
+    const tax = quota * s.aliq;
+    if (quota > 0) marginale = s.aliq;
+    imposta += tax;
+    prev = s.fino;
+    return { ...s, quota, tax };
+  });
+  return { righe, imposta, netto: reddito - imposta, marginale,
+           media: reddito > 0 ? imposta / reddito : 0 };
+}
+
+const ctx = document.getElementById('pie');
+const chart = new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Imposta lorda', 'Netto percepito'],
+    datasets: [{
+      data: [8750, 26250],
+      backgroundColor: ['#161412', '#DDD9D0'],
+      borderColor: '#FFFFFF',
+      borderWidth: 3,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '62%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: {
+        label: (c) => ' ' + c.label + ': ' + fmtEUR.format(c.parsed) +
+          ' (' + (c.parsed / (c.dataset.data[0]+c.dataset.data[1]) * 100).toFixed(1).replace('.', ',') + '%)'
+      }}
+    },
+    animation: { duration: 500 }
+  }
+});
+
+function render(){
+  let r = Math.max(0, Math.min(1000000, Math.round(Number(num.value) || 0)));
+  if (String(r) !== num.value) num.value = r;
+  range.value = Math.min(150000, r);
+  out.textContent = fmtEUR.format(r);
+
+  const { righe, imposta, netto, marginale, media } = calcola(r);
+
+  document.getElementById('kTax').textContent = fmtEUR.format(Math.round(imposta));
+  document.getElementById('kNet').textContent = fmtEUR.format(Math.round(netto));
+  document.getElementById('kAvg').textContent = r > 0 ? fmtPct.format(media) : '—';
+  document.getElementById('kMarg').textContent = r > 0 ? Math.round(marginale*100) + '%' : '—';
+
+  document.getElementById('legTax').textContent =
+    fmtEUR.format(Math.round(imposta)) + (r>0 ? ' · ' + (imposta/r*100).toFixed(1).replace('.', ',') + '%' : '');
+  document.getElementById('legNet').textContent =
+    fmtEUR.format(Math.round(netto)) + (r>0 ? ' · ' + (netto/r*100).toFixed(1).replace('.', ',') + '%' : '');
+  document.getElementById('legMonth').textContent = fmtEUR2.format(netto/12);
+
+  // stacked bar: quote di reddito per fascia
+  const tot = r || 1;
+  ['b1','b2','b3'].forEach((id, i) => {
+    document.getElementById(id).style.width = (righe[i].quota / tot * 100) + '%';
+    document.getElementById(id).title = righe[i].nome + ': ' + fmtEUR.format(Math.round(righe[i].quota));
+  });
+
+  // tabella
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = righe.map(g =>
+    '<tr class="' + (g.quota === 0 ? 'zero' : '') + '">' +
+    '<td><span class="dot" style="background:' + g.colore + '"></span>' + g.nome + '</td>' +
+    '<td class="num">' + Math.round(g.aliq*100) + '%</td>' +
+    '<td class="num">' + fmtEUR.format(Math.round(g.quota)) + '</td>' +
+    '<td class="num">' + fmtEUR.format(Math.round(g.tax)) + '</td></tr>'
+  ).join('');
+
+  // chart
+  chart.data.datasets[0].data = r > 0 ? [Math.round(imposta), Math.round(netto)] : [0, 1];
+  chart.update();
+
+  document.querySelectorAll('.presets button').forEach(b =>
+    b.classList.toggle('active', Number(b.dataset.v) === r));
+}
+
+range.addEventListener('input', () => { num.value = range.value; render(); });
+num.addEventListener('input', render);
+document.querySelectorAll('.presets button').forEach(b =>
+  b.addEventListener('click', () => { num.value = b.dataset.v; render(); }));
+
+// reveal on scroll
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+}), { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+render();
+</script>
+</body>
+</html>

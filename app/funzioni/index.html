@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parabola Interattiva — y = ax² + bx + c</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --accent: #38bdf8;
+    --accent2: #f472b6;
+    --accent3: #a3e635;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 20px;
+  }
+  h1 { margin: 0.2em 0; font-size: 1.6rem; text-align: center; }
+  .subtitle { color: var(--muted); margin-bottom: 16px; text-align: center; }
+  .equation-big {
+    font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px;
+    background: var(--panel); padding: 10px 22px; border-radius: 14px;
+    border: 1px solid #334155; margin-bottom: 16px;
+  }
+  .equation-big span.a { color: var(--accent); }
+  .equation-big span.b { color: var(--accent2); }
+  .equation-big span.c { color: var(--accent3); }
+  .layout {
+    display: grid; grid-template-columns: 320px 1fr;
+    gap: 16px; width: 100%; max-width: 1100px;
+  }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+  .controls {
+    background: var(--panel); border: 1px solid #334155;
+    border-radius: 14px; padding: 16px;
+  }
+  .ctrl { margin-bottom: 18px; }
+  .ctrl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .badge {
+    display: inline-block; width: 28px; height: 28px; line-height: 28px;
+    text-align: center; border-radius: 50%; font-weight: 800; color: #0f172a;
+  }
+  .badge-a { background: var(--accent); }
+  .badge-b { background: var(--accent2); }
+  .badge-c { background: var(--accent3); }
+  .ctrl input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .ctrl-b input[type="range"] { accent-color: var(--accent2); }
+  .ctrl-c input[type="range"] { accent-color: var(--accent3); }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+  .row input[type="number"] {
+    width: 100%; padding: 6px 8px; border-radius: 8px;
+    border: 1px solid #475569; background: #0f172a; color: var(--text); font-size: 1rem;
+  }
+  .row button {
+    padding: 6px 10px; border-radius: 8px; border: 1px solid #475569;
+    background: #334155; color: white; cursor: pointer;
+  }
+  .info {
+    background: var(--panel); border: 1px solid #334155; border-radius: 14px;
+    padding: 12px 16px; margin-top: 12px; font-size: 0.95rem; line-height: 1.6;
+  }
+  .info code { background: #0f172a; padding: 2px 6px; border-radius: 6px; }
+  .canvas-wrap {
+    background: #020617; border: 1px solid #334155; border-radius: 14px;
+    position: relative; overflow: hidden; min-height: 520px;
+  }
+  canvas { display: block; width: 100%; height: 560px; cursor: crosshair; touch-action: none; }
+  .legend {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(15,23,42,0.85); border: 1px solid #334155;
+    border-radius: 10px; padding: 8px 12px; font-size: 0.82rem; line-height: 1.7;
+    pointer-events: none;
+  }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
+  .toolbar { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .toolbar button {
+    flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #475569;
+    background: #334155; color: white; cursor: pointer; font-size: 0.9rem;
+  }
+  .toolbar button:hover { background: #475569; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<h1>📈 Parabola interattiva — equazione di II grado</h1>
+<div class="subtitle">y = ax² + bx + c &nbsp;·&nbsp; trascina i punti sul grafico oppure muovi i cursori</div>
+
+<div class="equation-big" id="eqBig">y = <span class="a" id="eqA">1</span>x² + <span class="b" id="eqB">0</span>x + <span class="c" id="eqC">0</span></div>
+
+<div class="layout">
+  <div>
+    <div class="controls">
+      <div class="ctrl ctrl-a">
+        <div class="ctrl-header"><span><span class="badge badge-a">a</span> apertura</span><span id="valA">1</span></div>
+        <input type="range" id="sliderA" min="-20" max="20" step="0.05" value="1">
+        <div class="row">
+          <input type="number" id="numA" step="0.05" value="1">
+          <button onclick="stepParam('a',0.1)">+</button>
+          <button onclick="stepParam('a',-0.1)">−</button>
+        </div>
+      </div>
+      <div class="ctrl ctrl-b">
+        <div class="ctrl-header"><span><span class="badge badge-b">b</span> pendenza</span><span id="valB">0</span></div>
+        <input type="range" id="sliderB" min="-20" max="20" step="0.1" value="0">
+        <div class="row">
+          <input type="number" id="numB" step="0.1" value="0">
+          <button onclick="stepParam('b',0.1)">+</button>
+          <button onclick="stepParam('b',-0.1)">−</button>
+        </div>
+      </div>
+      <div class="ctrl ctrl-c">
+        <div class="ctrl-header"><span><span class="badge badge-c">c</span> intercetta y</span><span id="valC">0</span></div>
+        <input type="range" id="sliderC" min="-20" max="20" step="0.1" value="0">
+        <div class="row">
+          <input type="number" id="numC" step="0.1" value="0">
+          <button onclick="stepParam('c',0.1)">+</button>
+          <button onclick="stepParam('c',-0.1)">−</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button onclick="resetParams()">↺ Reset a=1,b=0,c=0</button>
+        <button onclick="resetView()">⛶ Centra vista</button>
+      </div>
+      <div class="hint">
+        Rotella = zoom · trascina sfondo = sposta vista · doppio click = centra.
+      </div>
+    </div>
+    <div class="info" id="infoBox"></div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="cv"></canvas>
+    <div class="legend">
+      <div><span class="dot" style="background:#38bdf8"></span><b style="color:#38bdf8">V</b> vertice — trascinalo (cambia <b>b,c</b>)</div>
+      <div><span class="dot" style="background:#a3e635"></span><b style="color:#a3e635">Y</b> (0,c) — trascina verticale (cambia <b>c</b>)</div>
+      <div><span class="dot" style="background:#f472b6"></span><b style="color:#f472b6">A</b> apertura — trascina verticale (cambia <b>a</b>)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let a = 1, b = 0, c = 0;
+let view = { xmin: -20, xmax: 20, ymin: -20, ymax: 20 };
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+function resize() {
+  const r = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = r.width * dpr;
+  cv.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function toSX(x) {
+  const r = cv.getBoundingClientRect();
+  return (x - view.xmin) / (view.xmax - view.xmin) * r.width;
+}
+function toSY(y) {
+  const r = cv.getBoundingClientRect();
+  return r.height - (y - view.ymin) / (view.ymax - view.ymin) * r.height;
+}
+function toMX(px) {
+  const r = cv.getBoundingClientRect();
+  return view.xmin + px / r.width * (view.xmax - view.xmin);
+}
+function toMY(py) {
+  const r = cv.getBoundingClientRect();
+  return view.ymin + (r.height - py) / r.height * (view.ymax - view.ymin);
+}
+function f(x) { return a*x*x + b*x + c; }
+function vertex() {
+  if (Math.abs(a) < 1e-9) return null;
+  const h = -b/(2*a);
+  return { h, k: f(h) };
+}
+
+function handles() {
+  const v = vertex();
+  const list = [];
+  if (v) {
+    list.push({ id:'V', x: v.h, y: v.k, color:'#38bdf8', radius: 10 });
+    list.push({ id:'A', x: v.h+1, y: v.k + a, color:'#f472b6', radius: 9 });
+  } else {
+    list.push({ id:'A', x: 1, y: f(1), color:'#f472b6', radius: 9 });
+  }
+  list.push({ id:'Y', x: 0, y: c, color:'#a3e635', radius: 9 });
+  return list;
+}
+
+function niceStep(range) {
+  const raw = range / 10;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / mag;
+  if (n < 1.5) return mag;
+  if (n < 3.5) return 2*mag;
+  if (n < 7.5) return 5*mag;
+  return 10*mag;
+}
+
+function draw() {
+  const r = cv.getBoundingClientRect();
+  const W = r.width, H = r.height;
+  ctx.clearRect(0,0,W,H);
+
+  // griglia
+  const stepX = niceStep(view.xmax - view.xmin);
+  const stepY = niceStep(view.ymax - view.ymin);
+  ctx.font = '11px system-ui'; ctx.textAlign = 'left';
+  for (let x = Math.ceil(view.xmin/stepX)*stepX; x <= view.xmax; x += stepX) {
+    const sx = toSX(x);
+    ctx.strokeStyle = Math.abs(x) < 1e-9 ? '#64748b' : '#1e293b';
+    ctx.lineWidth = Math.abs(x) < 1e-9 ? 2 : 1;
+    ctx.beginPath(); ctx.moveTo(sx,0); ctx.lineTo(sx,H); ctx.stroke();
+    if (Math.abs(x) > 1e-9) { ctx.fillStyle='#64748b'; ctx.fillText(Number(x.toFixed(2)), sx+4, toSY(0)-4); }
+  }
+  for (let y = Math.ceil(view.ymin/stepY)*stepY; y <= view.ymax; y += stepY) {
+    const sy = toSY(y);
+    ctx.strokeStyle = Math.abs(y) < 1e-9 ? '#64748b' : '#1e293b';
+    ctx.lineWidth = Math.abs(y) < 1e-9 ? 2 : 1;
+    ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(W,sy); ctx.stroke();
+    if (Math.abs(y) > 1e-9) { ctx.fillStyle='#64748b'; ctx.fillText(Number(y.toFixed(2)), toSX(0)+4, sy-4); }
+  }
+  // "0"
+  ctx.fillStyle = '#94a3b8'; ctx.fillText('0', toSX(0)+4, toSY(0)+14);
+
+  // radici
+  const D = b*b - 4*a*c;
+  let roots = [];
+  if (Math.abs(a) < 1e-9) {
+    if (Math.abs(b) > 1e-9) roots = [-c/b];
+  } else if (D >= 0) {
+    roots = [(-b-Math.sqrt(D))/(2*a), (-b+Math.sqrt(D))/(2*a)];
+  }
+  // parabola / retta
+  ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
+  const N = 600;
+  let started = false;
+  for (let i=0;i<=N;i++) {
+    const x = view.xmin + (view.xmax-view.xmin)*i/N;
+    const y = f(x);
+    const sy = toSY(y);
+    if (y < view.ymin-100 || y > view.ymax+100) { started=false; continue; }
+    const sx = toSX(x);
+    if (!started) { ctx.moveTo(sx,sy); started=true; } else ctx.lineTo(sx,sy);
+  }
+  ctx.stroke();
+
+  // radici
+  ctx.fillStyle = '#fbbf24';
+  roots.forEach(x => {
+    if (x < view.xmin || x > view.xmax) return;
+    ctx.beginPath(); ctx.arc(toSX(x), toSY(0), 6, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#0f172a'; ctx.lineWidth=2; ctx.stroke();
+  });
+
+  // handles
+  handles().forEach(h => {
+    const sx = toSX(h.x), sy = toSY(h.y);
+    ctx.beginPath(); ctx.arc(sx, sy, h.radius, 0, Math.PI*2);
+    ctx.fillStyle = h.color; ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = '#0f172a'; ctx.font='bold 11px system-ui';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(h.id, sx, sy+0.5);
+  });
+
+  updatePanel(D, roots);
+}
+
+function fmt(n) {
+  const v = Math.round(n*100)/100;
+  return (v===0?0:v).toString();
+}
+function fmtSigned(n) {
+  const v = Math.round(n*100)/100;
+  return (v>=0?'+ ':'− ') + Math.abs(v===0?0:v).toString().replace('-','');
+}
+
+function updatePanel(D, roots) {
+  document.getElementById('eqA').textContent = fmt(a);
+  document.getElementById('eqB').textContent = fmt(b);
+  document.getElementById('eqC').textContent = fmt(c);
+  document.getElementById('valA').textContent = fmt(a);
+  document.getElementById('valB').textContent = fmt(b);
+  document.getElementById('valC').textContent = fmt(c);
+  if (document.activeElement !== document.getElementById('numA')) document.getElementById('numA').value = Math.round(a*1000)/1000;
+  if (document.activeElement !== document.getElementById('numB')) document.getElementById('numB').value = Math.round(b*1000)/1000;
+  if (document.activeElement !== document.getElementById('numC')) document.getElementById('numC').value = Math.round(c*1000)/1000;
+  document.getElementById('sliderA').value = a;
+  document.getElementById('sliderB').value = b;
+  document.getElementById('sliderC').value = c;
+
+  const v = vertex();
+  let html = '';
+  if (Math.abs(a) < 1e-9) {
+    html += `<div>📏 <b>a = 0</b> → è una <b>retta</b>: y = ${fmt(b)}x + ${fmt(c)}</div>`;
+    if (Math.abs(b) > 1e-9) html += `<div>✂️ Radice: x = ${fmt(-c/b)}</div>`;
+    else html += `<div>✂️ Nessuna radice (retta orizzontale).</div>`;
+  } else {
+    const conc = a > 0 ? 'verso l’alto ☺ (minimo)' : 'verso il basso ☹ (massimo)';
+    html += `<div>Δ = b² − 4ac = <code>${fmt(D)}</code></div>`;
+    html += `<div>V vertice: <code>(${fmt(v.h)} ; ${fmt(v.k)})</code></div>`;
+    html += `<div>Concavità: <b>${conc}</b></div>`;
+    html += `<div>Intercetta y: <code>(0 ; ${fmt(c)})</code> · asse: <code>x = ${fmt(v.h)}</code></div>`;
+    if (D > 0) html += `<div>✂️ Radici: x₁ = <code>${fmt(roots[0])}</code>, x₂ = <code>${fmt(roots[1])}</code></div>`;
+    else if (Math.abs(D) < 1e-9) html += `<div>✂️ Radice doppia: x = <code>${fmt(-b/(2*a))}</code></div>`;
+    else html += `<div>✂️ Nessuna radice reale (Δ &lt; 0).</div>`;
+  }
+  document.getElementById('infoBox').innerHTML = html;
+}
+
+// --- sync controlli ---
+function setParams(na, nb, nc, source) {
+  a = Math.max(-20, Math.min(20, na));
+  b = Math.max(-20, Math.min(20, nb));
+  c = Math.max(-20, Math.min(20, nc));
+  draw();
+}
+function stepParam(p, d) {
+  if (p==='a') setParams(a+d,b,c);
+  if (p==='b') setParams(a,b+d,c);
+  if (p==='c') setParams(a,b,c+d);
+}
+function resetParams() { setParams(1,0,0); }
+function resetView() { view = { xmin:-20, xmax:20, ymin:-20, ymax:20 }; draw(); }
+
+[['sliderA','numA','a'],['sliderB','numB','b'],['sliderC','numC','c']].forEach(([s,n,p]) => {
+  document.getElementById(s).addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    if (p==='a') setParams(v,b,c); if (p==='b') setParams(a,v,c); if (p==='c') setParams(a,b,v);
+  });
+  document.getElementById(n).addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    if (isNaN(v)) return;
+    if (p==='a') setParams(v,b,c); if (p==='b') setParams(a,v,c); if (p==='c') setParams(a,b,v);
+  });
+});
+
+// --- drag sul grafico ---
+let dragId = null, panning = false, lastPX=0, lastPY=0;
+
+function handleAt(px, py) {
+  let best = null, bestD = 22;
+  handles().forEach(h => {
+    const d = Math.hypot(toSX(h.x)-px, toSY(h.y)-py);
+    if (d < bestD) { bestD = d; best = h; }
+  });
+  return best;
+}
+function pos(e) {
+  const r = cv.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+cv.addEventListener('pointerdown', e => {
+  const p = pos(e);
+  const h = handleAt(p.x, p.y);
+  cv.setPointerCapture(e.pointerId);
+  if (h) dragId = h.id;
+  else { panning = true; lastPX = p.x; lastPY = p.y; }
+});
+cv.addEventListener('pointermove', e => {
+  const p = pos(e);
+  const mx = toMX(p.x), my = toMY(p.y);
+  if (dragId) {
+    const v = vertex();
+    if (dragId === 'V' && v) {
+      // vertice (h,k) con a fisso → b = -2ah, c = k + ah²
+      const hNew = Math.max(-20, Math.min(20, mx));
+      const kNew = Math.max(-20, Math.min(20, my));
+      b = -2*a*hNew;
+      c = kNew + a*hNew*hNew;
+      b = Math.max(-20, Math.min(20, b));
+      c = Math.max(-20, Math.min(20, c));
+    } else if (dragId === 'Y') {
+      c = Math.max(-20, Math.min(20, my));
+    } else if (dragId === 'A') {
+      if (v) {
+        let aNew = my - v.k;           // P = k + a → a = yP − k
+        aNew = Math.max(-20, Math.min(20, aNew));
+        if (Math.abs(aNew) < 0.05 && my !== v.k) aNew = my > v.k ? 0.05 : -0.05;
+        // mantieni vertice fisso
+        a = aNew;
+        b = -2*a*v.h;
+        c = v.k + a*v.h*v.h;
+        b = Math.max(-20, Math.min(20, b));
+        c = Math.max(-20, Math.min(20, c));
+      } else {
+        // caso retta: a = y − bx − c in x=1
+        a = Math.max(-20, Math.min(20, my - b*1 - c));
+      }
+    }
+    draw();
+  } else if (panning) {
+    const dx = p.x - lastPX, dy = p.y - lastPY;
+    const r = cv.getBoundingClientRect();
+    const sx = (view.xmax-view.xmin)/r.width;
+    const sy = (view.ymax-view.ymin)/r.height;
+    view.xmin -= dx*sx; view.xmax -= dx*sx;
+    view.ymin += dy*sy; view.ymax += dy*sy;
+    lastPX = p.x; lastPY = p.y;
+    draw();
+  } else {
+    cv.style.cursor = handleAt(p.x,p.y) ? 'grab' : 'crosshair';
+  }
+});
+window.addEventListener('pointerup', () => { dragId = null; panning = false; });
+cv.addEventListener('dblclick', resetView);
+cv.addEventListener('wheel', e => {
+  e.preventDefault();
+  const p = pos(e);
+  const mx = toMX(p.x), my = toMY(p.y);
+  const z = e.deltaY > 0 ? 1.15 : 1/1.15;
+  view.xmin = mx + (view.xmin-mx)*z;
+  view.xmax = mx + (view.xmax-mx)*z;
+  view.ymin = my + (view.ymin-my)*z;
+  view.ymax = my + (view.ymax-my)*z;
+  draw();
+}, { passive: false });
+
+resize();
+</script>
+</body>
+</html>

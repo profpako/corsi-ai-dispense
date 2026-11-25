@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Procedurale Lab — Variabili, Condizioni, Cicli, Array</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#11161f; --panel2:#151c28; --panel3:#0e131c;
+    --border:#232c3d; --border-soft:#1b2331;
+    --text:#e6e9ef; --muted:#8b94a5; --faint:#5b6575;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --amber:#e3b341; --blue:#6aa6ff; --green:#3fb950; --red:#f47067; --violet:#9e8cff;
+    --assign-border:#6aa6ff; --choice-border:#e3b341; --io-border:#3fb950;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh}
+  header.topbar{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--panel3);position:sticky;top:0;z-index:20}
+  .logo{width:30px;height:30px;border:1px solid var(--border);border-radius:6px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:15px;color:var(--amber);flex:none}
+  .titleblock h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.01em}
+  .titleblock p{margin:0;font-size:12px;color:var(--muted)}
+  nav.tabs{display:flex;gap:6px;margin-left:8px;flex-wrap:wrap}
+  nav.tabs button{font-family:var(--sans);font-size:13px;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:6px;padding:7px 12px;cursor:pointer}
+  nav.tabs button:hover{color:var(--text);background:var(--panel2)}
+  nav.tabs button.active{color:var(--text);background:var(--panel2);border-color:var(--border)}
+  nav.tabs button.active .dot{background:var(--amber)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--faint);margin-right:7px;vertical-align:1px}
+  .execbar{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}
+  .execbar button{font-size:13px;border:1px solid var(--border);background:var(--panel2);color:var(--text);border-radius:6px;padding:7px 12px;cursor:pointer;font-family:var(--sans)}
+  .execbar button:hover{border-color:#33405a;background:#1a2231}
+  .execbar button:disabled{opacity:.4;cursor:default}
+  #btnRun{background:var(--amber);border-color:var(--amber);color:#1a1405;font-weight:650}
+  #btnRun:hover{background:#eec25e}
+  .speed{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+  input[type=range]{accent-color:var(--amber)}
+  main.layout{display:grid;grid-template-columns:320px minmax(380px,1fr) minmax(340px,1fr);gap:12px;padding:12px 16px 20px;align-items:start;max-width:1560px;margin:0 auto}
+  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .panelhead{padding:10px 14px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:8px}
+  .panelhead h2{font-size:12px;margin:0;font-weight:650;letter-spacing:.04em;color:var(--muted)}
+  .panelhead .tag{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .panelbody{padding:14px}
+  .viewlabel{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.03em;margin-bottom:10px}
+  /* memory boxes */
+  .membox{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:var(--panel3);transition:border-color .2s}
+  .membox.live{border-color:var(--amber)}
+  .membox .row1{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .typename{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;background:#1a2231;color:var(--blue);border:1px solid #2b3a55}
+  .addr{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto}
+  .varname{font-family:var(--mono);font-size:13px;font-weight:700}
+  .membox input,.membox select{background:#0a0e15;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 9px;font-family:var(--mono);font-size:13px;width:100%}
+  .membox input:focus,.membox select:focus{outline:none;border-color:var(--amber)}
+  .size{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:6px}
+  /* generic controls */
+  label.f{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  input[type=number],input[type=text],select.full{background:#0a0e15;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 9px;font-family:var(--mono);font-size:13px;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--amber)}
+  input[type=range].full{width:100%}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .btnrow button,.ghost{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 11px;font-size:12.5px;cursor:pointer;font-family:var(--sans)}
+  .btnrow button:hover{border-color:#33405a}
+  .btnrow button.warn{border-color:#5a3a2b;color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .stat{border:1px solid var(--border-soft);border-radius:6px;padding:8px 10px;background:var(--panel3)}
+  .stat .k{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .stat .v{font-family:var(--mono);font-size:16px;font-weight:700}
+  .result{margin-top:12px;border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:13px;background:var(--panel3);min-height:44px}
+  .result.ok{border-color:#2b4a35}
+  .result .big{font-size:15px;font-weight:700}
+  /* array cells */
+  .cells{display:flex;gap:6px;margin:8px 0 4px}
+  .cell{flex:1;border:1px solid var(--border);border-radius:6px;background:var(--panel3);text-align:center;padding:6px 2px;cursor:pointer;transition:border-color .15s,background .15s;min-width:0}
+  .cell:hover{border-color:var(--blue)}
+  .cell.sel{border-color:var(--blue)}
+  .cell.cur{border-color:var(--amber);background:#221b08}
+  .cell.found{border-color:var(--green);background:#0f2117}
+  .cell .idx{font-family:var(--mono);font-size:10px;color:var(--faint)}
+  .cell .val{font-family:var(--mono);font-size:16px;font-weight:700;display:block;margin-top:2px}
+  .cell input{width:100%;background:#0a0e15;border:1px solid var(--border);color:var(--text);border-radius:4px;font-family:var(--mono);font-size:13px;text-align:center;padding:3px 0;margin-top:4px}
+  /* flowchart */
+  #flowWrap{background:var(--panel3)}
+  #flowSvg{width:100%;height:auto;display:block}
+  .fnode{fill:#131a26;stroke-width:1.5}
+  .fnode.assign{stroke:var(--assign-border)}
+  .fnode.choice{stroke:var(--choice-border)}
+  .fnode.io{stroke:var(--io-border)}
+  .fnode.term{stroke:#5b6575}
+  .fnode.active{stroke:var(--amber);stroke-width:3;fill:#221b08}
+  .flabel{font-family:var(--mono);font-size:11.5px;fill:var(--text);text-anchor:middle}
+  .fsub{font-family:var(--mono);font-size:10px;fill:var(--muted);text-anchor:middle}
+  .fedge{stroke:#3a465c;stroke-width:1.5;fill:none}
+  .fedge.active{stroke:var(--amber);stroke-width:2.5;stroke-dasharray:6 4;animation:dash 1s linear infinite}
+  @keyframes dash{to{stroke-dashoffset:-10}}
+  .fbranch{font-family:var(--mono);font-size:10.5px;font-weight:700}
+  .fbranch.t{fill:var(--green)} .fbranch.f{fill:var(--red)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--border-soft);font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .sw{display:inline-block;width:22px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1.5px solid}
+  /* code */
+  .codehead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border-soft)}
+  .dots{display:flex;gap:6px}
+  .dots span{width:10px;height:10px;border-radius:50%;background:#2a3345;display:block}
+  .filename{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  #pc{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--amber)}
+  #codeBox{font-family:var(--mono);font-size:12.8px;line-height:1.75;padding:6px 0;overflow-x:auto}
+  .cline{display:flex;padding:1px 0;border-left:3px solid transparent}
+  .cline.cur{background:#221b08;border-left-color:var(--amber)}
+  .cline.done{opacity:.55}
+  .ln{width:38px;flex:none;text-align:right;padding-right:12px;color:var(--faint);font-size:11.5px;user-select:none}
+  .lc{white-space:pre;padding-right:16px}
+  .k{color:#c792ea}.t{color:var(--blue)}.n{color:var(--amber)}.s{color:#9ece6a}.c{color:#5b6575;font-style:italic}.f{color:#7dcfff}.p{color:#89ddff}
+  #trace{border-top:1px solid var(--border-soft);padding:10px 14px;font-family:var(--mono);font-size:12px;min-height:76px;color:var(--muted)}
+  #trace .step-pc{color:var(--amber);font-weight:700}
+  #statusbar{display:flex;gap:16px;align-items:center;padding:8px 20px;border-top:1px solid var(--border);background:var(--panel3);font-family:var(--mono);font-size:11.5px;color:var(--muted);position:sticky;bottom:0;flex-wrap:wrap}
+  #statusbar b{color:var(--text)}
+  .tabpage{display:none} .tabpage.on{display:block}
+  .note{font-size:12px;color:var(--muted);border-left:2px solid var(--border);padding:2px 0 2px 10px;margin:12px 0}
+  .note code{font-family:var(--mono);color:var(--text);font-size:11.5px}
+  @media(max-width:1100px){main.layout{grid-template-columns:1fr 1fr} #panelSim{grid-column:1/-1}}
+  @media(max-width:760px){main.layout{grid-template-columns:1fr} header.topbar{flex-wrap:wrap}}
+  @media(prefers-reduced-motion:reduce){.fedge.active{animation:none}}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">λ</div>
+  <div class="titleblock">
+    <h1>Procedurale Lab</h1>
+    <p>Simulatore · Flowchart · C++ — viste sincrone</p>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="var" class="active"><span class="dot"></span>Variabili</button>
+    <button data-tab="cond"><span class="dot"></span>Condizioni</button>
+    <button data-tab="loop"><span class="dot"></span>Cicli</button>
+    <button data-tab="array"><span class="dot"></span>Array</button>
+  </nav>
+  <div class="execbar">
+    <button id="btnReset" title="Riporta il modulo allo stato iniziale">Reset</button>
+    <button id="btnStep" title="Avanza di un passo">Passo</button>
+    <button id="btnRun" title="Esecuzione automatica">Esegui</button>
+    <label class="speed">Velocità <input type="range" id="speed" min="1" max="10" value="4"><span id="speedVal">750ms</span></label>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- 1. SIMULATORE -->
+  <section class="panel" id="panelSim">
+    <div class="panelhead"><h2>Simulatore grafico interattivo</h2><span class="tag" id="simTag">modulo 1/4</span></div>
+    <div class="panelbody">
+
+      <div class="tabpage on" id="page-var">
+        <div class="viewlabel">MEMORIA · 4 scatole · modifica i valori</div>
+        <div class="membox" id="box-x">
+          <div class="row1"><span class="varname">x</span><span class="typename">int</span><span class="addr">0x1000</span></div>
+          <input type="number" id="in-x" value="10" step="1">
+          <div class="size">4 byte · intero con segno · <span id="bin-x">…</span></div>
+        </div>
+        <div class="membox" id="box-t">
+          <div class="row1"><span class="varname">temp</span><span class="typename">float</span><span class="addr">0x1004</span></div>
+          <input type="number" id="in-t" value="36.6" step="0.1">
+          <div class="size">4 byte · virgola mobile · precisione singola</div>
+        </div>
+        <div class="membox" id="box-c">
+          <div class="row1"><span class="varname">c</span><span class="typename">char</span><span class="addr">0x1008</span></div>
+          <input type="text" id="in-c" value="A" maxlength="1">
+          <div class="size">1 byte · carattere ASCII · <span id="ascii-c">65</span></div>
+        </div>
+        <div class="membox" id="box-b">
+          <div class="row1"><span class="varname">ok</span><span class="typename">bool</span><span class="addr">0x1009</span></div>
+          <select id="in-b"><option value="true">true</option><option value="false">false</option></select>
+          <div class="size">1 byte · vero / falso</div>
+        </div>
+        <p class="note">Ogni modifica riscrive l'istruzione nel flowchart e nel codice: <code>int x = 10;</code></p>
+      </div>
+
+      <div class="tabpage" id="page-cond">
+        <div class="viewlabel">INPUT · voto esame 0–100</div>
+        <label class="f">Voto (input utente)</label>
+        <input type="range" class="full" id="in-voto" min="0" max="100" value="75">
+        <div class="statgrid">
+          <div class="stat"><div class="k">voto</div><div class="v" id="v-voto">75</div></div>
+          <div class="stat"><div class="k">soglia</div><div class="v">60</div></div>
+        </div>
+        <div class="result" id="condResult">—</div>
+        <p class="note">Catena valutata: <code>if (voto &gt;= 90)</code> → <code>else if (voto &gt;= 60)</code> → <code>else</code>. Cambia il voto e premi Passo.</p>
+      </div>
+
+      <div class="tabpage" id="page-loop">
+        <div class="viewlabel">PARAMETRI CICLO · conteggio e accumulo</div>
+        <label class="f">Costrutto</label>
+        <select class="full" id="loop-kind"><option value="for">for (conteggio noto)</option><option value="while">while (condizione)</option></select>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+          <div><label class="f">Inizio</label><input type="number" id="loop-start" value="1"></div>
+          <div><label class="f">Fine (incl.)</label><input type="number" id="loop-end" value="5"></div>
+          <div><label class="f">Passo</label><input type="number" id="loop-step" value="1"></div>
+        </div>
+        <div class="statgrid">
+          <div class="stat"><div class="k">i corrente</div><div class="v" id="loop-i">—</div></div>
+          <div class="stat"><div class="k">somma</div><div class="v" id="loop-sum">0</div></div>
+        </div>
+        <div class="btnrow"><button id="loop-apply">Applica parametri</button></div>
+        <div class="result" id="loopResult">Premi Passo per avanzare freccia per freccia.</div>
+      </div>
+
+      <div class="tabpage" id="page-array">
+        <div class="viewlabel">VETTORE · celle adiacenti int arr[5]</div>
+        <div class="cells" id="cells"></div>
+        <div class="btnrow">
+          <button data-preset="base">Base {2,5,8,1,9}</button>
+          <button data-preset="ord">Ordinato</button>
+          <button data-preset="rnd">Casuale</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <div><label class="f">Indice i</label><input type="number" id="arr-idx" value="2" min="0" max="4"></div>
+          <div><label class="f">Nuovo valore</label><input type="number" id="arr-val" value="8"></div>
+        </div>
+        <div class="btnrow"><button id="arr-write">Scrivi arr[i] = valore</button></div>
+        <label class="f">Algoritmo di scansione</label>
+        <select class="full" id="arr-algo">
+          <option value="sum">Somma di tutti gli elementi</option>
+          <option value="search">Ricerca lineare di un target</option>
+          <option value="max">Ricerca del massimo</option>
+        </select>
+        <div id="arr-target-row" style="display:none"><label class="f">Target da cercare</label><input type="number" id="arr-target" value="8"></div>
+        <div class="result" id="arrResult">—</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. FLOWCHART -->
+  <section class="panel" id="flowWrap">
+    <div class="panelhead"><h2>Diagramma di flusso</h2><span class="tag">SVG · standard AlgoBuild</span></div>
+    <svg id="flowSvg" viewBox="0 0 420 560" role="img" aria-label="Diagramma di flusso"></svg>
+    <div class="legend">
+      <span><i class="sw" style="border-color:#8b94a5"></i>Inizio / Fine</span>
+      <span><i class="sw" style="border-color:#6aa6ff"></i>Assegnazione</span>
+      <span><i class="sw" style="border-color:#e3b341"></i>Scelta</span>
+      <span><i class="sw" style="border-color:#3fb950"></i>I/O</span>
+    </div>
+  </section>
+
+  <!-- 3. CODICE -->
+  <section class="panel">
+    <div class="codehead"><div class="dots"><span></span><span></span><span></span></div><span class="filename" id="filename">variabili.cpp</span><span id="pc">pc 0/0</span></div>
+    <div id="codeBox"></div>
+    <div id="trace">Pronto. Premi <b style="color:var(--text)">Passo</b> o <b style="color:var(--text)">Esegui</b>.</div>
+  </section>
+</main>
+
+<footer id="statusbar">
+  <span>modulo <b id="st-mod">variabili</b></span>
+  <span>passo <b id="st-step">0 / 0</b></span>
+  <span>stato <b id="st-state">in attesa</b></span>
+  <span id="st-msg">3 viste sincronizzate: simulatore, flowchart, C++.</span>
+</footer>
+
+<script>
+"use strict";
+/* ---------- util ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function hl(line){
+  let s = esc(line);
+  s = s.replace(/(\/\/.*)$/, '<span class="c">$1</span>');
+  s = s.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="s">$1</span>');
+  s = s.replace(/\b(0x[0-9A-Fa-f]+|\d+\.?\d*f?)\b/g, '<span class="n">$1</span>');
+  s = s.replace(/\b(int|float|double|char|bool|void|if|else|for|while|return|true|false|using|namespace|std|include)\b/g, '<span class="k">$1</span>');
+  s = s.replace(/\b(cout|cin|endl|string|vector)\b/g, '<span class="f">$1</span>');
+  return s;
+}
+const ARROW = `<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a465c"/></marker><marker id="ahA" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e3b341"/></marker></defs>`;
+
+/* ---------- runner ---------- */
+let activeTab = "var";
+let steps = [], idx = -1, timer = null;
+const speedMs = () => { const v = +$("speed").value; return Math.round(2100 - v*190); }; // 1→1910ms … 10→200ms
+$("speed").addEventListener("input", () => $("speedVal").textContent = speedMs()+"ms");
+$("speedVal").textContent = speedMs()+"ms";
+
+function setSteps(list){ steps = list; idx = -1; stopAuto(); paintCode(); paintFlow(-1); updateStatus("in attesa"); $("trace").innerHTML = "Pronto. Premi <b style='color:var(--text)'>Passo</b> o <b style='color:var(--text)'>Esegui</b>."; }
+function stopAuto(){ if(timer){clearInterval(timer); timer=null;} $("btnRun").textContent="Esegui"; }
+function updateStatus(state){
+  $("st-mod").textContent = activeTab==="var"?"variabili":activeTab==="cond"?"condizioni":activeTab==="loop"?"cicli":"array";
+  $("st-step").textContent = (idx+1)+" / "+steps.length;
+  $("st-state").textContent = state;
+  $("pc").textContent = "pc "+(idx+1)+"/"+steps.length;
+}
+function doStep(){
+  if(idx+1 >= steps.length){ updateStatus("terminato"); return false; }
+  idx++;
+  const st = steps[idx];
+  if(st.run) st.run();
+  paintCode(); paintFlow(idx); paintSim();
+  $("trace").innerHTML = `<span class="step-pc">passo ${idx+1}/${steps.length}</span> · ${st.msg}`;
+  updateStatus(idx+1>=steps.length ? "terminato" : "in esecuzione");
+  return true;
+}
+$("btnStep").onclick = () => { stopAuto(); doStep(); };
+$("btnReset").onclick = () => { MODS[activeTab].reset(); };
+$("btnRun").onclick = () => {
+  if(timer){ stopAuto(); updateStatus("in pausa"); return; }
+  if(idx+1 >= steps.length) MODS[activeTab].reset();
+  $("btnRun").textContent = "Pausa";
+  timer = setInterval(() => { if(!doStep()) stopAuto(); }, speedMs());
+};
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); activeTab = b.dataset.tab;
+  document.querySelectorAll(".tabpage").forEach(p=>p.classList.remove("on"));
+  $("page-"+activeTab).classList.add("on");
+  const n = {var:"1/4",cond:"2/4",loop:"3/4",array:"4/4"}[activeTab];
+  $("simTag").textContent = "modulo "+n;
+  stopAuto(); MODS[activeTab].reset();
+});
+
+/* ---------- shared painters ---------- */
+let codeLines = [], codeMap = []; // codeMap[stepIdx] -> lineIdx
+function paintCode(){
+  const box = $("codeBox"); box.innerHTML = "";
+  codeLines.forEach((ln,i) => {
+    const d = document.createElement("div"); d.className = "cline";
+    const curLine = idx>=0 ? codeMap[idx] : -1;
+    if(i===curLine) d.classList.add("cur");
+    if(idx>=0 && i<curLine && codeMap.includes(i)) d.classList.add("done");
+    d.innerHTML = `<span class="ln">${i+1}</span><span class="lc">${hl(ln)||" "}</span>`;
+    box.appendChild(d);
+  });
+}
+let flowNodes = [], flowEdges = [];
+function paintFlow(stepIdx){
+  const svg = $("flowSvg");
+  const active = stepIdx>=0 ? steps[stepIdx] : null;
+  const aids = active ? active.flow||[] : [];
+  const ae = active ? active.edge||[] : [];
+  svg.innerHTML = ARROW + flowNodes.map(n=>{
+    const on = aids.includes(n.id) ? " active" : "";
+    const cx=210;
+    if(n.shape==="term") return `<g><rect class="fnode term${on}" x="${cx-70}" y="${n.y}" width="140" height="36" rx="18"/><text class="flabel" x="${cx}" y="${n.y+22}">${esc(n.t)}</text>${edgeLabels(n,ae)}</g>`;
+    if(n.shape==="rect") return `<g><rect class="fnode assign${on}" x="${cx-110}" y="${n.y}" width="220" height="44" rx="4"/><text class="flabel" x="${cx}" y="${n.y+19}">${esc(n.t)}</text>${n.s?`<text class="fsub" x="${cx}" y="${n.y+34}">${esc(n.s)}</text>`:""}${edgeLabels(n,ae)}</g>`;
+    if(n.shape==="io") return `<g><polygon class="fnode io${on}" points="${cx-105},${n.y} ${cx+125},${n.y} ${cx+105},${n.y+44} ${cx-125},${n.y+44}"/><text class="flabel" x="${cx}" y="${n.y+27}">${esc(n.t)}</text>${edgeLabels(n,ae)}</g>`;
+    if(n.shape==="diamond") return `<g><polygon class="fnode choice${on}" points="${cx},${n.y} ${cx+115},${n.y+32} ${cx},${n.y+64} ${cx-115},${n.y+32}"/><text class="flabel" x="${cx}" y="${n.y+28}">${esc(n.t)}</text><text class="fsub" x="${cx}" y="${n.y+43}">${esc(n.s||"")}</text>${edgeLabels(n,ae)}</g>`;
+    return "";
+  }).join("") + flowEdges.map(e=>{
+    const on = ae.includes(e.id) ? " active" : "";
+    const m = on ? "ahA" : "ah";
+    return `<path class="fedge${on}" d="${e.d}" marker-end="url(#${m})"/>` + (e.lb?`<text class="fbranch ${e.bc||""}" x="${e.lx}" y="${e.ly}">${e.lb}</text>`:"");
+  }).join("");
+}
+function edgeLabels(){ return ""; }
+function paintSim(){ MODS[activeTab].paint && MODS[activeTab].paint(); }
+
+/* ================= MODULO 1 · VARIABILI ================= */
+const Mvar = {
+  reset(){
+    $("filename").textContent = "variabili.cpp";
+    const x = $("in-x").value||"0", t = $("in-t").value||"0", c = ($("in-c").value||" ")[0], b = $("in-b").value;
+    $("bin-x").textContent = "bin " + (parseInt(x,10)>>>0).toString(2).padStart(8,"0").slice(-8);
+    $("ascii-c").textContent = c.charCodeAt(0);
+    codeLines = [
+      "#include <iostream>","",
+      "int main() {",
+      `    int x = ${x};          // intero`,
+      `    float temp = ${t}f;    // reale`,
+      `    char c = '${c}';         // carattere`,
+      `    bool ok = ${b};        // booleano`,
+      "    return 0;",
+      "}"
+    ];
+    codeMap = [2,3,4,5,6,7,8];
+    flowNodes = [
+      {id:"s", shape:"term", y:8, t:"Inizio"},
+      {id:"a1",shape:"rect", y:64, t:`x = ${x}`, s:"int · 0x1000"},
+      {id:"a2",shape:"rect", y:124,t:`temp = ${t}`, s:"float · 0x1004"},
+      {id:"a3",shape:"rect", y:184,t:`c = '${c}'`, s:"char · 0x1008"},
+      {id:"a4",shape:"rect", y:244,t:`ok = ${b}`, s:"bool · 0x1009"},
+      {id:"e", shape:"term", y:308,t:"Fine"},
+    ];
+    flowEdges = [
+      {id:"e0",d:"M210,44 L210,64"},{id:"e1",d:"M210,108 L210,124"},
+      {id:"e2",d:"M210,168 L210,184"},{id:"e3",d:"M210,228 L210,244"},
+      {id:"e4",d:"M210,288 L210,308"},
+    ];
+    document.querySelectorAll(".membox").forEach(m=>m.classList.remove("live"));
+    setSteps([
+      {flow:["s"],edge:["e0"],msg:"programma avviato, memoria riservata per 4 variabili.",run(){}},
+      {flow:["a1"],edge:["e1"],msg:`assegnazione: <b style="color:var(--text)">int x = ${esc(x)};</b> — scrive nella scatola 0x1000.`,run(){flash("box-x")}},
+      {flow:["a2"],edge:["e2"],msg:`assegnazione: <b style="color:var(--text)">float temp = ${esc(t)};</b> — scatola 0x1004.`,run(){flash("box-t")}},
+      {flow:["a3"],edge:["e3"],msg:`assegnazione: <b style="color:var(--text)">char c = '${esc(c)}';</b> — scatola 0x1008 (ASCII ${c.charCodeAt(0)}).`,run(){flash("box-c")}},
+      {flow:["a4"],edge:["e4"],msg:`assegnazione: <b style="color:var(--text)">bool ok = ${esc(b)};</b> — scatola 0x1009.`,run(){flash("box-b")}},
+      {flow:["e"],edge:[],msg:"fine: tutte le scatole contengono un valore tipizzato.",run(){}},
+    ]);
+  },
+  paint(){}
+};
+function flash(id){ const el=$(id); el.classList.add("live"); setTimeout(()=>el.classList.remove("live"), Math.min(1200, speedMs())); }
+["in-x","in-t","in-c","in-b"].forEach(id=>$(id).addEventListener("input",()=>{ if(activeTab==="var") Mvar.reset(); }));
+
+/* ================= MODULO 2 · CONDIZIONI ================= */
+const Mcond = {
+  voto:75,
+  reset(){
+    this.voto = +$("in-voto").value;
+    $("v-voto").textContent = this.voto;
+    $("filename").textContent = "voto.cpp";
+    codeLines = [
+      "#include <iostream>","",
+      "int main() {",
+      `    int voto = ${this.voto}; // input`,
+      "    if (voto >= 90) {",
+      '        cout << "Eccellente";',
+      "    } else if (voto >= 60) {",
+      '        cout << "Promosso";',
+      "    } else {",
+      '        cout << "Bocciato";',
+      "    }",
+      "    return 0;",
+      "}"
+    ];
+    flowNodes = [
+      {id:"s", shape:"term", y:6, t:"Inizio"},
+      {id:"io",shape:"io",   y:58, t:`leggi voto = ${this.voto}`},
+      {id:"d1",shape:"diamond", y:122, t:"voto >= 90 ?", s:"rombo · scelta"},
+      {id:"o1",shape:"io",   y:206, t:"stampa Eccellente"},
+      {id:"d2",shape:"diamond", y:206, t:"voto >= 60 ?", s:"rombo · scelta"},
+      {id:"o2",shape:"io",   y:300, t:"stampa Promosso"},
+      {id:"o3",shape:"io",   y:300, t:"stampa Bocciato"},
+      {id:"e", shape:"term", y:384, t:"Fine"},
+    ];
+    const v=this.voto, lode=v>=90, pass=v>=60;
+    flowEdges = [
+      {id:"e0",d:"M210,42 L210,58"},
+      {id:"e1",d:"M210,102 L210,122"},
+      {id:"eL",d:"M95,154 C60,180 60,200 85,206",lb:"Vero",lx:52,ly:190,bc:"t"},
+      {id:"eR",d:"M325,154 C360,180 360,200 335,206",lb:"Falso",lx:352,ly:190,bc:"f"},
+      {id:"eP",d:"M95,250 L95,300"},
+      {id:"eQ",d:"M325,250 L325,300"},
+      {id:"eF1",d:"M210,270 L125,300",lb:"Vero",lx:150,ly:288,bc:"t"},
+      {id:"eF2",d:"M210,270 L295,300",lb:"Falso",lx:262,ly:288,bc:"f"},
+      {id:"eE1",d:"M95,344 L150,384"},{id:"eE2",d:"M210,344 L210,384"},{id:"eE3",d:"M325,344 L270,384"},
+    ];
+    // posiziona o1 a sinistra, d2 a destra: aggiusto via transform post-render
+    const list = [
+      {flow:["s"],edge:["e0"],line:2,msg:"avvio del programma."},
+      {flow:["io"],edge:["e1"],line:3,msg:`I/O: lettura input — <b style="color:var(--text)">voto = ${v}</b>.`},
+      {flow:["d1"],edge:lode?["eL"]:["eR"],line:4,msg:`rombo: <b style="color:var(--text)">voto &gt;= 90 ?</b> → ${lode?"<b style='color:var(--green)'>Vero</b>":"<b style='color:var(--red)'>Falso</b>"} (${v}).`},
+    ];
+    if(lode){
+      list.push(
+        {flow:["o1"],edge:["eP"],line:5,msg:`ramo Vero: stampa "Eccellente".`,run:()=>this.show("Eccellente, voto "+v,"ok")},
+        {flow:["e"],edge:[],line:11,msg:"fine.",run(){}},
+      );
+    } else {
+      list.push({flow:["d2"],edge:pass?["eF1"]:["eF2"],line:6,msg:`rombo: <b style="color:var(--text)">voto &gt;= 60 ?</b> → ${pass?"<b style='color:var(--green)'>Vero</b>":"<b style='color:var(--red)'>Falso</b>"} (${v}).`});
+      if(pass) list.push(
+        {flow:["o2"],edge:["eE2"],line:7,msg:`ramo Vero: stampa "Promosso".`,run:()=>this.show("Promosso, voto "+v,"ok")},
+        {flow:["e"],edge:[],line:11,msg:"fine.",run(){}},
+      );
+      else list.push(
+        {flow:["o3"],edge:["eE3"],line:9,msg:`ramo Falso (else): stampa "Bocciato".`,run:()=>this.show("Bocciato, voto "+v,"ko")},
+        {flow:["e"],edge:[],line:11,msg:"fine.",run(){}},
+      );
+    }
+    codeMap = list.map(s=>s.line);
+    $("condResult").innerHTML = "—";
+    $("condResult").className = "result";
+    // layout laterale: sposto nodi via paintFlow custom
+    this._layout = {lode, pass};
+    setSteps(list.map(s=>({flow:s.flow, edge:s.edge, msg:s.msg, run:s.run})));
+    this.relayout();
+  },
+  relayout(){
+    // sposta o1 a sinistra e d2 a destra manipolando l'SVG dopo il render
+    const svg = $("flowSvg");
+    const shift = () => {
+      // trova i gruppi generati: ordine = flowNodes; o1 indice 3, d2 indice 4
+      const g = svg.querySelectorAll("g");
+      if(g[3]) g[3].setAttribute("transform","translate(-115,0)");
+      if(g[4]) g[4].setAttribute("transform","translate(115,0)");
+      if(g[5]) g[5].setAttribute("transform","translate(-115,46)");
+      if(g[6]) g[6].setAttribute("transform","translate(115,46)");
+    };
+    // applica dopo ogni paintFlow
+    this._shift = shift; shift();
+  },
+  show(txt, kind){
+    const el = $("condResult");
+    el.innerHTML = `<span class="big" style="color:${kind==="ok"?"var(--green)":"var(--red)"}">${esc(txt)}</span>`;
+    el.className = "result ok";
+  },
+  paint(){ if(this._shift) this._shift(); }
+};
+const _origPaintFlow = paintFlow;
+paintFlow = function(si){
+  _origPaintFlow(si);
+  if(activeTab==="cond") Mcond.paint();
+  if(activeTab==="loop") Mloop.paint();
+  if(activeTab==="array") Marr.paint();
+};
+$("in-voto").addEventListener("input",()=>{ if(activeTab==="cond"){ Mcond.reset(); }});
+
+/* ================= MODULO 3 · CICLI ================= */
+const Mloop = {
+  P:{kind:"for",a:1,b:5,s:1}, i:null, sum:0,
+  reset(){
+    this.P = {kind:$("loop-kind").value, a:+$("loop-start").value||0, b:+$("loop-end").value||0, s:+$("loop-step").value||1};
+    if(this.P.s===0) this.P.s=1;
+    const {kind,a,b,s} = this.P;
+    $("filename").textContent = kind==="for" ? "ciclo_for.cpp" : "ciclo_while.cpp";
+    $("loop-i").textContent = "—"; $("loop-sum").textContent = "0";
+    $("loopResult").textContent = "Premi Passo per avanzare freccia per freccia.";
+    codeLines = kind==="for" ? [
+      "#include <iostream>","",
+      "int main() {",
+      "    int somma = 0;",
+      `    for (int i = ${a}; i <= ${b}; i += ${s}) {`,
+      "        somma += i; // corpo",
+      "    }",
+      `    cout << somma; // totale`,
+      "}"
+    ] : [
+      "#include <iostream>","",
+      "int main() {",
+      "    int somma = 0;",
+      `    int i = ${a};`,
+      `    while (i <= ${b}) {`,
+      "        somma += i; // corpo",
+      `        i += ${s};      // incremento`,
+      "    }",
+      `    cout << somma; // totale`,
+      "}"
+    ];
+    flowNodes = [
+      {id:"s", shape:"term", y:6, t:"Inizio"},
+      {id:"init",shape:"rect", y:58, t: kind==="for"?`i = ${a}, somma = 0`:`i = ${a}, somma = 0` , s: kind==="for"?"inizializzazione for":"inizializzazione while"},
+      {id:"chk",shape:"diamond", y:122, t:`i <= ${b} ?`, s:"verifica condizione"},
+      {id:"body",shape:"rect", y:216, t:"somma += i", s:"corpo del ciclo"},
+      {id:"inc",shape:"rect", y:280, t:`i += ${s}`, s: kind==="for"?"incremento i++":"incremento while"},
+      {id:"out",shape:"io",  y:344, t:"stampa somma"},
+      {id:"e", shape:"term", y:408, t:"Fine"},
+    ];
+    flowEdges = [
+      {id:"e0",d:"M210,42 L210,58"},
+      {id:"e1",d:"M210,102 L210,122"},
+      {id:"eT",d:"M210,186 L210,216",lb:"Vero",lx:222,ly:205,bc:"t"},
+      {id:"eB",d:"M210,260 L210,280"},
+      {id:"eLoop",d:"M320,302 C320,200 320,150 268,142",lb:"ripeti",lx:330,ly:220},
+      {id:"eF",d:"M95,154 C60,220 60,300 150,366",lb:"Falso",lx:52,ly:260,bc:"f"},
+      {id:"eO",d:"M210,388 L210,408"},
+    ];
+    // genera passi srotolando il ciclo (tetto 40 iterazioni)
+    const iters=[]; let i=a, guard=0;
+    if(s>0){ while(i<=b && guard<40){iters.push(i); i+=s; guard++;} }
+    else { while(i>=b && guard<40){iters.push(i); i+=s; guard++;} }
+    const tooMany = guard>=40;
+    const L = kind==="for" ? {init:4,chk:4,body:5,inc:4,out:7} : {init:4,chk:5,body:6,inc:7,out:9};
+    const list=[{flow:["s"],edge:["e0"],line:2,msg:"avvio."}];
+    list.push({flow:["init"],edge:["e1"],line:L.init,msg:`inizializzazione: <b style="color:var(--text)">i = ${a}, somma = 0</b>.`,run:()=>{this.i=a; this.sum=0; this.sync();}});
+    iters.forEach((v,k)=>{
+      list.push({flow:["chk"],edge:["eT"],line:L.chk,msg:`verifica <b style="color:var(--text)">i &lt;= ${b}</b> con i=${v} → <b style="color:var(--green)">Vero</b> (iterazione ${k+1}).`,run:()=>{this.i=v; this.sync();}});
+      list.push({flow:["body"],edge:["eB"],line:L.body,msg:`corpo: <b style="color:var(--text)">somma += ${v}</b> → somma = ${this.previewSum(iters,k)}.`,run:()=>{this.sum+=v; this.sync();}});
+      list.push({flow:["inc"],edge:["eLoop"],line:L.inc,msg:`incremento: <b style="color:var(--text)">i += ${s}</b> → i = ${v+s}. Freccia di loop: si torna al rombo.`,run:()=>{this.i=v+s; this.sync();}});
+    });
+    const lastI = iters.length? iters[iters.length-1]+s : a;
+    list.push({flow:["chk"],edge:["eF"],line:L.chk,msg:`verifica <b style="color:var(--text)">i &lt;= ${b}</b> con i=${lastI} → <b style="color:var(--red)">Falso</b>: si esce dal ciclo.`,run:()=>{this.i=lastI; this.sync();}});
+    list.push({flow:["out"],edge:["eO"],line:L.out,msg:`I/O: stampa somma = <b style="color:var(--text)">${iters.reduce((x,y)=>x+y,0)}</b>.`,run:()=>this.done(iters.reduce((x,y)=>x+y,0))});
+    list.push({flow:["e"],edge:[],line:codeLines.length-1,msg:"fine."});
+    codeMap = list.map(x=>x.line);
+    setSteps(list.map(x=>({flow:x.flow,edge:x.edge,msg:x.msg,run:x.run})));
+    if(tooMany) $("loopResult").textContent = "Attenzione: oltre 40 iterazioni, mostrate solo le prime 40.";
+  },
+  previewSum(iters,k){ return iters.slice(0,k+1).reduce((x,y)=>x+y,0); },
+  sync(){ $("loop-i").textContent = this.i; $("loop-sum").textContent = this.sum; },
+  done(tot){ this.sum = tot; this.sync(); $("loopResult").innerHTML = `Ciclo terminato. <b>somma = ${tot}</b>`; },
+  paint(){}
+};
+$("loop-apply").onclick = () => { if(activeTab==="loop") Mloop.reset(); };
+["loop-kind","loop-start","loop-end","loop-step"].forEach(id=>$(id).addEventListener("change",()=>{ if(activeTab==="loop") Mloop.reset(); }));
+
+/* ================= MODULO 4 · ARRAY ================= */
+const Marr = {
+  arr:[2,5,8,1,9], sel:2, algo:"sum", target:8,
+  reset(){
+    this.algo = $("arr-algo").value; this.target = +$("arr-target").value||0;
+    $("arr-target-row").style.display = this.algo==="search" ? "block" : "none";
+    $("filename").textContent = "array.cpp";
+    const init = this.arr.join(", ");
+    const N = this.arr.length;
+    codeLines = this.algo==="sum" ? [
+      "#include <iostream>","",
+      "int main() {",
+      `    int arr[${N}] = {${init}};`,
+      "    int somma = 0;",
+      `    for (int i = 0; i < ${N}; i++) {`,
+      "        somma += arr[i];",
+      "    }",
+      '    cout << somma;',
+      "}"
+    ] : this.algo==="search" ? [
+      "#include <iostream>","",
+      "int main() {",
+      `    int arr[${N}] = {${init}};`,
+      `    int target = ${this.target};`,
+      `    for (int i = 0; i < ${N}; i++) {`,
+      "        if (arr[i] == target)",
+      '            cout << "trovato " << i;',
+      "    }",
+      "}"
+    ] : [
+      "#include <iostream>","",
+      "int main() {",
+      `    int arr[${N}] = {${init}};`,
+      "    int massimo = arr[0];",
+      `    for (int i = 1; i < ${N}; i++) {`,
+      "        if (arr[i] > massimo)",
+      "            massimo = arr[i];",
+      "    }",
+      "}"
+    ];
+    flowNodes = [
+      {id:"s", shape:"term", y:6, t:"Inizio"},
+      {id:"init",shape:"rect", y:58, t:`arr = {${init}}`, s:"int arr[N] · celle adiacenti"},
+      {id:"chk",shape:"diamond", y:122, t:`i < ${N} ?`, s:`scansione i = 0…${N-1}`},
+      {id:"body",shape:"rect", y:216, t: this.algo==="sum"?"somma += arr[i]":this.algo==="search"?`arr[i] == ${this.target} ?`:"aggiorna massimo", s:" lavora sulla cella evidenziata"},
+      {id:"inc",shape:"rect", y:280, t:"i++", s:"prossimo indice"},
+      {id:"out",shape:"io",  y:344, t: this.algo==="sum"?"stampa somma":this.algo==="search"?"stampa indice":"stampa massimo"},
+      {id:"e", shape:"term", y:408, t:"Fine"},
+    ];
+    flowEdges = [
+      {id:"e0",d:"M210,42 L210,58"},{id:"e1",d:"M210,102 L210,122"},
+      {id:"eT",d:"M210,186 L210,216",lb:"Vero",lx:222,ly:205,bc:"t"},
+      {id:"eB",d:"M210,260 L210,280"},
+      {id:"eLoop",d:"M320,302 C320,200 320,150 268,142",lb:"i++",lx:330,ly:220},
+      {id:"eF",d:"M95,154 C60,220 60,300 150,366",lb:"Falso",lx:52,ly:260,bc:"f"},
+      {id:"eO",d:"M210,388 L210,408"},
+    ];
+    this.renderCells(-1);
+    const list=[{flow:["s"],edge:["e0"],line:2,msg:"avvio.",cell:-1}];
+    list.push({flow:["init"],edge:["e1"],line:3,msg:`inizializzazione: <b style="color:var(--text)">int arr[${N}] = {${esc(init)}};</b> — ${N} celle adiacenti.`,cell:-1});
+    let acc=0, mx=this.arr[0], found=-1;
+    const L = this.algo==="sum"?{c:5,b:6,o:8}:this.algo==="search"?{c:5,b:7,o:8}:{c:5,b:7,o:9};
+    const startI = this.algo==="max"?1:0;
+    if(this.algo==="max"){ acc=mx; }
+    for(let i=startI;i<N;i++){
+      list.push({flow:["chk"],edge:["eT"],line:L.c,msg:`verifica <b style="color:var(--text)">i &lt; ${N}</b> con i=${i} → <b style="color:var(--green)">Vero</b>. Cella [${i}] = ${this.arr[i]}.`,cell:i});
+      if(this.algo==="sum"){ const v=this.arr[i]; acc+=v;
+        list.push({flow:["body"],edge:["eB"],line:L.b,msg:`corpo: <b style="color:var(--text)">somma += arr[${i}]</b> → somma = ${acc}.`,cell:i,run:((a)=>()=>{$("arrResult").innerHTML=`somma parziale = <b>${a}</b>`;})(acc)});
+      } else if(this.algo==="search"){
+        const hit = this.arr[i]===this.target; if(hit&&found<0) found=i;
+        list.push({flow:["body"],edge:["eB"],line:L.b,msg:`confronto: <b style="color:var(--text)">arr[${i}] == ${this.target}</b> → ${hit?"<b style='color:var(--green)'>trovato qui</b>":"no"}.`,cell:i,hit,run:((h,ix)=>()=>{ if(h){$("arrResult").innerHTML=`<b style="color:var(--green)">trovato</b> target ${Marr.target} in posizione [${ix}]`;} })(hit,i)});
+      } else {
+        const better = this.arr[i]>mx; if(better) mx=this.arr[i];
+        list.push({flow:["body"],edge:["eB"],line:L.b,msg:`confronto: <b style="color:var(--text)">arr[${i}] &gt; massimo</b> (${this.arr[i]} &gt; ${better?mx:this.arr[i]===mx?mx:mx}) → ${better?"<b style='color:var(--green)'>nuovo massimo "+mx+"</b>":"invariato"}.`,cell:i,run:((m)=>()=>{$("arrResult").innerHTML=`massimo provvisorio = <b>${m}</b>`;})(mx)});
+      }
+      list.push({flow:["inc"],edge:["eLoop"],line:L.c,msg:`incremento <b style="color:var(--text)">i++</b> → i = ${i+1}.`,cell:i});
+    }
+    list.push({flow:["chk"],edge:["eF"],line:L.c,msg:`verifica <b style="color:var(--text)">i &lt; ${N}</b> con i=${N} → <b style="color:var(--red)">Falso</b>: scansione completa.`,cell:-1});
+    const fin = this.algo==="sum"?`somma = ${acc}`:this.algo==="search"?(found>=0?`trovato in [${found}]`:"non trovato"): `massimo = ${mx}`;
+    list.push({flow:["out"],edge:["eO"],line:L.o,msg:`I/O: risultato — <b style="color:var(--text)">${esc(fin)}</b>.`,cell:found>=0&&this.algo==="search"?found:-1,run:()=>{$("arrResult").innerHTML=`Risultato: <b>${esc(fin)}</b>`;}});
+    list.push({flow:["e"],edge:[],line:codeLines.length-1,msg:"fine.",cell:-1});
+    codeMap = list.map(x=>x.line);
+    $("arrResult").textContent = "Premi Passo: la cella, il blocco e il for avanzano insieme.";
+    setSteps(list.map(x=>({flow:x.flow,edge:x.edge,msg:x.msg,cell:x.cell,hit:x.hit,run:()=>{ Marr.renderCells(x.cell, x.hit&&x.cell>=0); if(x.run) x.run(); }})));
+  },
+  renderCells(cur, hit){
+    const c = $("cells"); c.innerHTML = "";
+    this.arr.forEach((v,i)=>{
+      const d = document.createElement("div");
+      d.className = "cell" + (i===cur ? (hit?" found":" cur") : "") + (i===this.sel?" sel":"");
+      d.innerHTML = `<span class="idx">[${i}]</span><span class="val">${v}</span>`;
+      d.title = "clicca per selezionare, poi Scrivi";
+      d.onclick = () => { this.sel=i; $("arr-idx").value=i; $("arr-val").value=this.arr[i]; this.renderCells(cur,hit); };
+      c.appendChild(d);
+    });
+  },
+  paint(){ const st = idx>=0?steps[idx]:null; this.renderCells(st?st.cell:-1, st?st.hit:false); }
+};
+document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{
+  const p=b.dataset.preset;
+  Marr.arr = p==="base"?[2,5,8,1,9]:p==="ord"?[1,3,5,7,9]:Array.from({length:5},()=>Math.floor(Math.random()*20));
+  if(activeTab==="array") Marr.reset();
+});
+$("arr-write").onclick = ()=>{
+  const i=+$("arr-idx").value, v=+$("arr-val").value;
+  if(i<0||i>4){ $("arrResult").textContent="Indice fuori intervallo [0..4]."; return; }
+  Marr.arr[i]=v; Marr.sel=i; if(activeTab==="array") Marr.reset();
+};
+$("arr-algo").addEventListener("change",()=>{ if(activeTab==="array") Marr.reset(); });
+$("arr-target").addEventListener("input",()=>{ if(activeTab==="array") Marr.reset(); });
+
+/* ---------- boot ---------- */
+const MODS = {var:Mvar, cond:Mcond, loop:Mloop, array:Marr};
+Mvar.reset();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Presentazioni e laboratori di intelligenza artificiale per docenti: strumenti didattici, agenti AI, Brisk, OpenCode e GitHub Pages.">
+  <meta name="description" content="Presentazioni, laboratori di intelligenza artificiale e app didattiche interattive per docenti.">
   <title>AI pratica per docenti · Presentazioni e laboratori</title>
   <style>
     :root {
@@ -31,9 +31,10 @@
     .container { width: min(1160px, calc(100% - 96px)); margin-inline: auto; }
     .skip-link { position: absolute; top: 12px; left: 12px; padding: 10px 16px; background: var(--white); z-index: 1; transform: translateY(-180%); }
     .skip-link:focus { transform: translateY(0); }
-    .header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 28px; border-bottom: 1px solid var(--line); }
+    .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 28px; border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.025em; }
     .brand::before { content: ""; width: 12px; height: 12px; border-radius: 4px; background: var(--blue); box-shadow: 5px 5px 0 #36c6e840; }
+    .header nav { display: flex; flex-wrap: wrap; gap: 8px 16px; }
     .header a { font-size: .9rem; font-weight: 650; text-decoration: none; }
     .header a:hover { color: var(--blue); text-decoration: underline; }
     .hero { padding: clamp(48px, 7vw, 88px) 0 54px; }
@@ -60,6 +61,9 @@
     .lab { background: linear-gradient(135deg, #f1edff, #f8fbff); border-color: #d9ccff; }
     .lab .card-label, .lab .card-action { color: #6840d5; }
     .lab:hover { border-color: var(--violet); }
+    .app-list { margin: 0; padding: 0; list-style: none; }
+    .app-list .card { height: 100%; gap: 4px; padding: 14px 18px; border-radius: 12px; }
+    .app-list .card span { color: var(--muted); font-size: .88rem; }
     .footer { border-top: 1px solid var(--line); padding-block: 24px 32px; color: var(--muted); font-size: .82rem; }
     .footer p { margin: 0; }
     @media (max-width: 720px) {
@@ -74,10 +78,13 @@
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#presentazioni">Vai alle presentazioni</a>
+  <a class="skip-link" href="#presentazioni">Vai ai contenuti</a>
   <header class="header container">
     <div class="brand">AI per docenti</div>
-    <nav aria-label="Navigazione principale"><a href="#presentazioni">Presentazioni</a></nav>
+    <nav aria-label="Navigazione principale">
+      <a href="#presentazioni">Presentazioni</a>
+      <a href="#app-didattiche">App didattiche</a>
+    </nav>
   </header>
 
   <main class="container">
@@ -115,6 +122,26 @@
           <div class="card-action" aria-hidden="true"><span>Apri la presentazione</span><span>→</span></div>
         </a>
       </div>
+    </section>
+
+    <section class="presentations" id="app-didattiche" aria-labelledby="titolo-app">
+      <div class="section-heading">
+        <h2 id="titolo-app">App didattiche interattive</h2>
+        <p>Esempi da provare nel browser e da condividere con la classe.</p>
+      </div>
+      <ul class="grid app-list" role="list">
+        <li><a class="card" href="./app/funzioni/"><strong>Parabola interattiva</strong><span>Esplora il grafico di una funzione di secondo grado.</span></a></li>
+        <li><a class="card" href="./app/simulatore_orbite/"><strong>Simulatore orbitale</strong><span>Sperimenta la gravità tra più corpi celesti.</span></a></li>
+        <li><a class="card" href="./app/cucina-matematica-dta/"><strong>Dalla ricetta al costo della porzione</strong><span>Calcola il costo degli ingredienti al variare delle porzioni.</span></a></li>
+        <li><a class="card" href="./app/calcolatore-fiscale/"><strong>IRPEF 2026</strong><span>Visualizza come funzionano gli scaglioni.</span></a></li>
+        <li><a class="card" href="./app/introduzione-alla-programmazione/"><strong>Procedurale Lab</strong><span>Fai pratica con variabili, condizioni, cicli e array.</span></a></li>
+        <li><a class="card" href="./app/generatore-mappa-concettuale/"><strong>Generatore di mappe concettuali</strong><span>Crea collegamenti tra autori e idee di filosofia della scienza.</span></a></li>
+        <li><a class="card" href="./app/mappa-storica-interattiva/"><strong>Atlante — Rotte della Storia</strong><span>Esplora itinerari storici sulla mappa.</span></a></li>
+        <li><a class="card" href="./app/timeline/"><strong>Meridiani del tempo</strong><span>Esplora e filtra gli eventi di una linea del tempo.</span></a></li>
+        <li><a class="card" href="./app/processo-giuridico/"><strong>Ius Interattivo</strong><span>Analizza casi giuridici e confronta le tue decisioni.</span></a></li>
+        <li><a class="card" href="./app/pallavolo/"><strong>VolleyLab</strong><span>Impara regole e rotazioni con il simulatore di pallavolo.</span></a></li>
+        <li><a class="card" href="https://profpako.github.io/cocktail-creator/"><strong>Cocktail Creator</strong><span>Sperimenta con ingredienti, dosi e tecniche di miscelazione.</span></a></li>
+      </ul>
     </section>
   </main>
 
